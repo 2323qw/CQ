@@ -101,7 +101,6 @@ function ThreatSphere({ threat }: { threat: ThreatData }) {
           color="#ffffff"
           anchorX="center"
           anchorY="center"
-          font-family="monospace"
         >
           {threat.type.toUpperCase()}
         </Text>
@@ -318,7 +317,6 @@ export function ThreatVisualization() {
         color="#ffffff"
         anchorX="left"
         anchorY="center"
-        font-family="monospace"
       >
         THREAT LEVELS
       </Text>
@@ -329,7 +327,6 @@ export function ThreatVisualization() {
         color="#ff0040"
         anchorX="left"
         anchorY="center"
-        font-family="monospace"
       >
         ● CRITICAL
       </Text>
@@ -340,7 +337,6 @@ export function ThreatVisualization() {
         color="#ff6600"
         anchorX="left"
         anchorY="center"
-        font-family="monospace"
       >
         ● HIGH
       </Text>
@@ -351,7 +347,6 @@ export function ThreatVisualization() {
         color="#ffcc00"
         anchorX="left"
         anchorY="center"
-        font-family="monospace"
       >
         ● MEDIUM
       </Text>
@@ -362,7 +357,6 @@ export function ThreatVisualization() {
         color="#39ff14"
         anchorX="left"
         anchorY="center"
-        font-family="monospace"
       >
         ● LOW
       </Text>

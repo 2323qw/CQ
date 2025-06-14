@@ -361,7 +361,6 @@ export function CyberSecurityModel() {
         color="#00f5ff"
         anchorX="center"
         anchorY="center"
-        font-family="monospace"
       >
         CYBERGUARD
       </Text>
@@ -372,7 +371,6 @@ export function CyberSecurityModel() {
         color="#39ff14"
         anchorX="center"
         anchorY="center"
-        font-family="monospace"
       >
         NETWORK SECURITY SYSTEM
       </Text>

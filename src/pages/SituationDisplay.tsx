@@ -514,6 +514,7 @@ function GeographicThreatMap() {
 // 实时日志流
 function RealTimeLogStream() {
   const [logs, setLogs] = useState([]);
+  const [logCounter, setLogCounter] = useState(0);
 
   useEffect(() => {
     const generateLog = () => {
@@ -526,21 +527,26 @@ function RealTimeLogStream() {
       ];
 
       const randomLog = logTypes[Math.floor(Math.random() * logTypes.length)];
-      const newLog = {
-        id: Date.now(),
-        time: new Date().toLocaleTimeString("zh-CN"),
-        type: randomLog.type,
-        message: randomLog.message,
-        color: randomLog.color,
-      };
 
-      setLogs((prev) => [newLog, ...prev.slice(0, 9)]);
+      setLogCounter((prev) => {
+        const newCounter = prev + 1;
+        const newLog = {
+          id: `log-${Date.now()}-${newCounter}`, // 使用时间戳+计数器确保唯一性
+          time: new Date().toLocaleTimeString("zh-CN"),
+          type: randomLog.type,
+          message: randomLog.message,
+          color: randomLog.color,
+        };
+
+        setLogs((prevLogs) => [newLog, ...prevLogs.slice(0, 9)]);
+        return newCounter;
+      });
     };
 
     const interval = setInterval(generateLog, 3000);
     // 初始化一些日志
     for (let i = 0; i < 5; i++) {
-      setTimeout(generateLog, i * 500);
+      setTimeout(() => generateLog(), i * 500);
     }
 
     return () => clearInterval(interval);

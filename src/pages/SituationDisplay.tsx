@@ -208,64 +208,63 @@ function PerformanceMonitor() {
   );
 }
 
-// 企业级共享材质管理器
-const BusinessSharedMaterials = {
-  building: new MeshStandardMaterial({
-    color: BUSINESS_COLORS.slate,
-    metalness: 0.4,
-    roughness: 0.6,
-  }),
-  buildingActive: new MeshStandardMaterial({
-    color: BUSINESS_COLORS.primary,
-    metalness: 0.3,
-    roughness: 0.7,
-    emissive: BUSINESS_COLORS.primary,
-    emissiveIntensity: 0.1,
-  }),
-  server: new MeshStandardMaterial({
-    color: BUSINESS_COLORS.info,
-    metalness: 0.8,
-    roughness: 0.2,
-    emissive: BUSINESS_COLORS.info,
-    emissiveIntensity: 0.05,
-  }),
-  serverActive: new MeshStandardMaterial({
-    color: BUSINESS_COLORS.success,
-    metalness: 0.7,
-    roughness: 0.3,
-    emissive: BUSINESS_COLORS.success,
-    emissiveIntensity: 0.1,
-  }),
-  vehicle: new MeshStandardMaterial({
-    color: BUSINESS_COLORS.slate,
-    metalness: 0.6,
-    roughness: 0.4,
-  }),
-  platform: new MeshStandardMaterial({
-    color: "#f8fafc",
-    transparent: true,
-    opacity: 0.3,
-    metalness: 0.1,
-    roughness: 0.9,
-  }),
-  light: new MeshStandardMaterial({
-    color: BUSINESS_COLORS.primary,
-    emissive: BUSINESS_COLORS.primary,
-    emissiveIntensity: 0.4,
-    transparent: true,
-    opacity: 0.8,
-  }),
-  network: new MeshStandardMaterial({
-    color: BUSINESS_COLORS.indigo,
-    emissive: BUSINESS_COLORS.indigo,
-    emissiveIntensity: 0.2,
-  }),
-  threat: new MeshStandardMaterial({
-    color: BUSINESS_COLORS.danger,
-    emissive: BUSINESS_COLORS.danger,
-    emissiveIntensity: 0.3,
-  }),
+// 企业级共享材质管理器 - 修复版本
+const createBusinessMaterials = () => {
+  const materials = {
+    building: new MeshStandardMaterial({
+      color: BUSINESS_COLORS.slate,
+      metalness: 0.4,
+      roughness: 0.6,
+    }),
+    buildingActive: new MeshStandardMaterial({
+      color: BUSINESS_COLORS.primary,
+      metalness: 0.3,
+      roughness: 0.7,
+    }),
+    server: new MeshStandardMaterial({
+      color: BUSINESS_COLORS.info,
+      metalness: 0.8,
+      roughness: 0.2,
+    }),
+    serverActive: new MeshStandardMaterial({
+      color: BUSINESS_COLORS.success,
+      metalness: 0.7,
+      roughness: 0.3,
+    }),
+    vehicle: new MeshStandardMaterial({
+      color: BUSINESS_COLORS.slate,
+      metalness: 0.6,
+      roughness: 0.4,
+    }),
+    platform: new MeshStandardMaterial({
+      color: "#f8fafc",
+      transparent: true,
+      opacity: 0.3,
+      metalness: 0.1,
+      roughness: 0.9,
+    }),
+    light: new MeshStandardMaterial({
+      color: BUSINESS_COLORS.primary,
+      transparent: true,
+      opacity: 0.8,
+    }),
+    network: new MeshStandardMaterial({
+      color: BUSINESS_COLORS.indigo,
+    }),
+    threat: new MeshStandardMaterial({
+      color: BUSINESS_COLORS.danger,
+    }),
+  };
+
+  // 确保所有材质都正确初始化
+  Object.values(materials).forEach((material) => {
+    material.needsUpdate = true;
+  });
+
+  return materials;
 };
+
+const BusinessSharedMaterials = createBusinessMaterials();
 
 // 共享几何体管理器 - 优化版本
 const OptimizedGeometries = {
@@ -2093,7 +2092,7 @@ function BusinessLoadingScreen() {
           加载企业态势感知平台
         </div>
         <div className="text-gray-600 text-sm">
-          正在启动企业级安全监控系统...
+          正在启动企业��安全监控系统...
         </div>
       </div>
     </div>
@@ -2146,7 +2145,7 @@ export default function SituationDisplay() {
               powerPreference: "high-performance",
               precision: "highp", // 企业级精度
             }}
-            dpr={[1, 2]} // 企业级设备像素比
+            dpr={[1, 2]} // 企业级设备像���比
             performance={{ min: 0.7 }} // 企业级性能要求
           >
             <Suspense fallback={null}>

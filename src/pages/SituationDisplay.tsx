@@ -636,7 +636,7 @@ function OptimizedInfoPanel({
 function OptimizedMainScene() {
   const sceneRef = useRef<Group>(null);
   const { data: realTimeData } = useRealTimeData(generateSituationData, {
-    interval: 2000, // 降低更新频率以��高性能
+    interval: 2000, // 降低更新频率以提高性能
     enabled: true,
   });
 
@@ -692,18 +692,27 @@ function OptimizedMainScene() {
 
   return (
     <group ref={sceneRef}>
-      {/* 优化的光照系统 - 减少光源数量 */}
-      <ambientLight intensity={0.4} color="#ffffff" />
+      {/* 增强的光照系统 - 补偿移除的Environment */}
+      <ambientLight intensity={0.6} color="#ffffff" />
       <directionalLight
         position={[30, 30, 30]}
-        intensity={1}
+        intensity={1.2}
         color="#ffffff"
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
       />
-      <pointLight position={[0, 15, 0]} intensity={0.8} color="#0088ff" />
-      <pointLight position={[20, 10, 20]} intensity={0.5} color="#ff8800" />
+      <directionalLight
+        position={[-30, 20, -30]}
+        intensity={0.8}
+        color="#4488ff"
+      />
+      <pointLight position={[0, 15, 0]} intensity={1.0} color="#0088ff" />
+      <pointLight position={[20, 10, 20]} intensity={0.6} color="#ff8800" />
+      <pointLight position={[-20, 10, -20]} intensity={0.6} color="#88ff00" />
+
+      {/* 背景环境光模拟 */}
+      <hemisphereLight color="#4488ff" groundColor="#112244" intensity={0.4} />
 
       {/* 性能监控 */}
       <PerformanceMonitor />
@@ -847,7 +856,7 @@ function InfoPanel2D({
     {
       id: 4,
       name: "Web服务器集群",
-      status: "正���",
+      status: "正常",
       connections: 432,
       traffic: "3.1GB/s",
     },
@@ -1432,7 +1441,7 @@ export default function SituationDisplay() {
               powerPreference: "high-performance",
               precision: "lowp", // 使用低精度以提高性能
             }}
-            dpr={[1, 1.5]} // 限制设备���素比
+            dpr={[1, 1.5]} // 限制设备像素比
             performance={{ min: 0.5 }} // 自动性能调节
           >
             <Suspense fallback={null}>
@@ -1473,7 +1482,7 @@ export default function SituationDisplay() {
         </button>
       )}
 
-      {/* 简化的底部状态 */}
+      {/* 简化的底部��态 */}
       <div
         className={`absolute bottom-0 left-0 bg-matrix-surface/90 backdrop-blur-sm border-t border-matrix-border p-2 transition-all duration-300 ${
           is2DPanelVisible ? "right-[480px]" : "right-0"

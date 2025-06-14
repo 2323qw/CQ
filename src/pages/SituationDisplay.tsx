@@ -514,40 +514,37 @@ function GeographicThreatMap() {
 // 实时日志流
 function RealTimeLogStream() {
   const [logs, setLogs] = useState([]);
-  const [logCounter, setLogCounter] = useState(0);
 
   useEffect(() => {
+    const logTypes = [
+      { type: "INFO", message: "用户登录成功", color: "text-neon-blue" },
+      { type: "WARN", message: "检测到异常访问", color: "text-neon-orange" },
+      { type: "ERROR", message: "防火墙拦截攻击", color: "text-threat-high" },
+      { type: "INFO", message: "系统备份完成", color: "text-neon-green" },
+      { type: "WARN", message: "CPU使用率过高", color: "text-neon-orange" },
+    ];
+
     const generateLog = () => {
-      const logTypes = [
-        { type: "INFO", message: "用户登录成功", color: "text-neon-blue" },
-        { type: "WARN", message: "检测到异常访问", color: "text-neon-orange" },
-        { type: "ERROR", message: "防火墙拦截攻击", color: "text-threat-high" },
-        { type: "INFO", message: "系统备份完成", color: "text-neon-green" },
-        { type: "WARN", message: "CPU使用率过高", color: "text-neon-orange" },
-      ];
-
       const randomLog = logTypes[Math.floor(Math.random() * logTypes.length)];
+      const uniqueId = crypto.randomUUID
+        ? crypto.randomUUID()
+        : `log-${Date.now()}-${Math.random()}`;
 
-      setLogCounter((prev) => {
-        const newCounter = prev + 1;
-        const newLog = {
-          id: `log-${Date.now()}-${newCounter}`, // 使用时间戳+计数器确保唯一性
-          time: new Date().toLocaleTimeString("zh-CN"),
-          type: randomLog.type,
-          message: randomLog.message,
-          color: randomLog.color,
-        };
+      const newLog = {
+        id: uniqueId,
+        time: new Date().toLocaleTimeString("zh-CN"),
+        type: randomLog.type,
+        message: randomLog.message,
+        color: randomLog.color,
+      };
 
-        setLogs((prevLogs) => [newLog, ...prevLogs.slice(0, 9)]);
-        return newCounter;
-      });
+      setLogs((prevLogs) => [newLog, ...prevLogs.slice(0, 9)]);
     };
 
-    // 初始化一些日志，确保它们有不同的时间戳
-    const initializeLogs = async () => {
+    // 初始化日志
+    const initializeLogs = () => {
       for (let i = 0; i < 5; i++) {
-        await new Promise((resolve) => setTimeout(resolve, 100)); // 等待100ms
-        generateLog();
+        setTimeout(() => generateLog(), i * 200);
       }
     };
 

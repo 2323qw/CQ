@@ -12,6 +12,7 @@ import SystemLogs from "@/pages/SystemLogs";
 import ThreatIntelligence from "@/pages/ThreatIntelligence";
 import AssetManagement from "@/pages/AssetManagement";
 import ApiKeys from "@/pages/ApiKeys";
+import SituationDisplay from "@/pages/SituationDisplay";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
 
@@ -36,6 +37,16 @@ function AppLayout() {
           <ProtectedRoute>
             <ProtectedLayout>
               <Index />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/situation"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <SituationDisplay />
             </ProtectedLayout>
           </ProtectedRoute>
         }

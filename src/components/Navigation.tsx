@@ -13,10 +13,13 @@ import {
   Users,
   Server,
   Key,
+  Monitor,
+  Globe,
 } from "lucide-react";
 
 const navItems = [
   { name: "仪表板", path: "/", icon: Activity },
+  { name: "3D态势展示", path: "/situation", icon: Globe },
   { name: "威胁告警", path: "/alerts", icon: AlertTriangle },
   { name: "安全报告", path: "/reports", icon: FileText },
   { name: "威胁情报", path: "/threat-intelligence", icon: Shield },
@@ -52,7 +55,7 @@ export function Navigation() {
             <h1 className="text-xl font-bold text-white glow-text">
               CyberGuard
             </h1>
-            <p className="text-xs text-muted-foreground">网络安全监控系统</p>
+            <p className="text-xs text-muted-foreground">3D态势监控系统</p>
           </div>
         </div>
       </div>

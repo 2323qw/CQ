@@ -86,7 +86,7 @@ export default function Login() {
                   <div className="text-center">
                     <Loader className="w-8 h-8 text-neon-blue animate-spin mx-auto mb-2" />
                     <p className="text-neon-blue font-mono text-sm">
-                      加载超级量子防护矩阵...
+                      加载3D态势感知系统...
                     </p>
                   </div>
                 </div>
@@ -140,9 +140,9 @@ export default function Login() {
             <h1 className="text-4xl font-bold text-white glow-text mb-2">
               CyberGuard
             </h1>
-            <p className="text-lg text-neon-blue font-mono">超级量子防护矩阵</p>
+            <p className="text-lg text-neon-blue font-mono">3D态势监控系统</p>
             <p className="text-sm text-muted-foreground mt-2">
-              下一代神���量子级智能安全防护平台
+              下一代智能3D网络安全态势感知平台
             </p>
           </div>
         </div>
@@ -152,14 +152,14 @@ export default function Login() {
           <div className="cyber-card p-4 bg-matrix-surface/80 backdrop-blur-sm">
             <div className="flex items-center space-x-3 text-sm">
               <div className="w-3 h-3 bg-neon-green rounded-full animate-pulse"></div>
-              <span className="text-neon-green font-mono">神经矩阵在线</span>
+              <span className="text-neon-green font-mono">3D系统在线</span>
               <span className="text-muted-foreground">|</span>
-              <span className="text-neon-blue font-mono">量子神经加密</span>
+              <span className="text-neon-blue font-mono">态势感��激活</span>
             </div>
             <div className="mt-2 text-xs text-muted-foreground">
-              <span>防护等级: </span>
+              <span>监控等级: </span>
               <span className="text-threat-critical font-mono">
-                ULTRA-QUANTUM
+                3D-ENHANCED
               </span>
             </div>
           </div>
@@ -202,7 +202,7 @@ export default function Login() {
             <h1 className="text-2xl font-bold text-white glow-text mb-1">
               CyberGuard
             </h1>
-            <p className="text-sm text-muted-foreground">超级量子防护矩阵</p>
+            <p className="text-sm text-muted-foreground">3D态势监控系统</p>
           </div>
 
           {/* 登录表单容器 */}
@@ -210,10 +210,10 @@ export default function Login() {
             {/* 表单标题 */}
             <div className="text-center mb-6">
               <h2 className="text-2xl font-semibold text-white mb-2">
-                神经量子系统登录
+                3D态势系统登录
               </h2>
               <p className="text-sm text-muted-foreground">
-                请输入您的凭据以访问神经量子安全控制台
+                请输入您的凭据以访问3D态势监控控制台
               </p>
             </div>
 

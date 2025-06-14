@@ -123,8 +123,8 @@ export default function Login() {
                     minPolarAngle={Math.PI / 6}
                   />
 
-                  {/* 基础网络安全模型 - 确保加载 */}
-                  <BasicCyberSecurityModel />
+                  {/* 超级丰富网络安全模型 */}
+                  <UltraCyberSecurityModel />
 
                   {/* 雾效 */}
                   <fog attach="fog" args={["#0d1117", 8, 25]} />
@@ -142,7 +142,7 @@ export default function Login() {
             </h1>
             <p className="text-lg text-neon-blue font-mono">超级量子防护矩阵</p>
             <p className="text-sm text-muted-foreground mt-2">
-              下一代神经量子级智能安全防护平台
+              下一代神���量子级智能安全防护平台
             </p>
           </div>
         </div>

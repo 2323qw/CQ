@@ -9,7 +9,7 @@ import {
   AlertTriangle,
   Loader,
 } from "lucide-react";
-import { Scene3D } from "@/components/3d/Scene3D";
+import { SimpleScene3D } from "@/components/3d/SimpleScene3D";
 import { ThreeErrorBoundary } from "@/components/3d/ErrorBoundary";
 import { SimpleShield } from "@/components/3d/SimpleShield";
 
@@ -89,7 +89,7 @@ export default function Login() {
                 </div>
               }
             >
-              <Scene3D />
+              <SimpleScene3D />
             </Suspense>
           </ThreeErrorBoundary>
         </div>

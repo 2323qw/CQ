@@ -876,7 +876,7 @@ function InfoPanel2D({
           "恶意软件拦截",
           "端口扫描检测",
           "SQL注入尝试",
-          "文件完整���检查",
+          "文件完整性检查",
           "系统性能警告",
           "网络流量异常",
         ][Math.floor(Math.random() * 8)],
@@ -1390,10 +1390,16 @@ function LoadingScreen() {
 // 主要态势显示组件
 export default function SituationDisplay() {
   const [isLoading, setIsLoading] = useState(true);
+  const [is2DPanelVisible, setIs2DPanelVisible] = useState(false);
+  const [panelMode, setPanelMode] = useState("overview");
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 2000);
     return () => clearTimeout(timer);
+  }, []);
+
+  const toggle2DPanel = useCallback(() => {
+    setIs2DPanelVisible((prev) => !prev);
   }, []);
 
   if (isLoading) {
@@ -1402,9 +1408,16 @@ export default function SituationDisplay() {
 
   return (
     <div className="h-screen w-full relative overflow-hidden bg-gradient-to-br from-black via-gray-900 to-black">
-      <OptimizedTopControlBar />
+      <OptimizedTopControlBar
+        onToggle2DPanel={toggle2DPanel}
+        is2DPanelVisible={is2DPanelVisible}
+      />
 
-      <div className="absolute inset-0 pt-16">
+      <div
+        className={`absolute inset-0 pt-16 transition-all duration-300 ${
+          is2DPanelVisible ? "pr-[480px]" : "pr-0"
+        }`}
+      >
         <ThreeErrorBoundary>
           <Canvas
             shadows={false} // 禁用阴影以提高性能
@@ -1443,11 +1456,37 @@ export default function SituationDisplay() {
         </ThreeErrorBoundary>
       </div>
 
+      {/* 2D信息面板 */}
+      <InfoPanel2D
+        isVisible={is2DPanelVisible}
+        onToggle={toggle2DPanel}
+        panelMode={panelMode}
+        setPanelMode={setPanelMode}
+      />
+
+      {/* 2D面板切换按钮 - 悬浮版本 */}
+      {!is2DPanelVisible && (
+        <button
+          onClick={toggle2DPanel}
+          className="fixed right-4 top-1/2 transform -translate-y-1/2 z-50 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-l-lg shadow-lg transition-all duration-300"
+          title="打开2D信息面板"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+      )}
+
       {/* 简化的底部状态 */}
-      <div className="absolute bottom-0 left-0 right-0 bg-matrix-surface/90 backdrop-blur-sm border-t border-matrix-border p-2">
+      <div
+        className={`absolute bottom-0 left-0 bg-matrix-surface/90 backdrop-blur-sm border-t border-matrix-border p-2 transition-all duration-300 ${
+          is2DPanelVisible ? "right-[480px]" : "right-0"
+        }`}
+      >
         <div className="flex justify-between items-center text-xs text-muted-foreground">
           <span>优化版 3D 网络安全态势感知平台</span>
-          <span>高性能模式已启用</span>
+          <span>
+            高性能模式已启用
+            {is2DPanelVisible && <span className="ml-2">| 2D面板已开启</span>}
+          </span>
         </div>
       </div>
     </div>

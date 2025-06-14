@@ -140,6 +140,79 @@
     animation: data-flow 2s linear infinite;
   }
 
+  /* 3D登录界面动画 */
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes rotate-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes glow-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 40px rgba(0, 245, 255, 0.8);
+    }
+  }
+
+  .float-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .rotate-slow {
+    animation: rotate-slow 20s linear infinite;
+  }
+
+  .login-form-enter {
+    animation: slideInRight 0.8s ease-out;
+  }
+
+  .login-3d-enter {
+    animation: slideInLeft 0.8s ease-out;
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  /* 3D Canvas优化 */
+  canvas {
+    outline: none;
+  }
+
   /* Toggle switch 样式 */
   .toggle-switch {
     appearance: none;

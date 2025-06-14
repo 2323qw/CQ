@@ -10,11 +10,10 @@ import {
   Points,
   AdditiveBlending,
   DoubleSide,
-  MathUtils,
 } from "three";
-import { Text, Line, Sphere, Torus } from "@react-three/drei";
+import { Text, Line } from "@react-three/drei";
 
-// 量子核心组件 - 简化版
+// 量子核心组件
 function QuantumCore() {
   const coreRef = useRef<Group>(null);
   const innerCoreRef = useRef<Mesh>(null);
@@ -23,19 +22,15 @@ function QuantumCore() {
   useFrame((state) => {
     if (coreRef.current) {
       const time = state.clock.getElapsedTime();
-
-      // 缓慢旋转核心
       coreRef.current.rotation.y = time * 0.3;
       coreRef.current.rotation.x = Math.sin(time * 0.2) * 0.1;
 
       if (innerCoreRef.current) {
-        // 内核脉冲效果
         const pulse = 1 + Math.sin(time * 4) * 0.15;
         innerCoreRef.current.scale.setScalar(pulse);
       }
 
       if (pulseRingRef.current) {
-        // 脉冲环扩散效果
         const ringPulse = 1 + Math.sin(time * 3) * 0.2;
         pulseRingRef.current.scale.setScalar(ringPulse);
         pulseRingRef.current.material.opacity = 0.8 - (ringPulse - 1) * 2;
@@ -86,14 +81,13 @@ function QuantumCore() {
 function DefenseMatrix() {
   const matrixRef = useRef<Group>(null);
 
-  // 生成防护节点位置
   const nodePositions = useMemo(() => {
     const positions = [];
     const layers = 3;
-    const nodesPerLayer = 8;
+    const nodesPerLayer = 6;
 
     for (let layer = 0; layer < layers; layer++) {
-      const radius = 3 + layer * 1.5;
+      const radius = 3 + layer * 1.2;
       for (let i = 0; i < nodesPerLayer; i++) {
         const angle = (i / nodesPerLayer) * Math.PI * 2;
         const y = (layer - 1) * 0.8;
@@ -123,6 +117,7 @@ function DefenseMatrix() {
     <group ref={matrixRef}>
       {nodePositions.map((node, index) => (
         <group key={index}>
+          {/* 节点球体 */}
           <mesh position={node.position}>
             <sphereGeometry args={[node.size, 8, 8]} />
             <meshStandardMaterial
@@ -147,13 +142,13 @@ function DefenseMatrix() {
         </group>
       ))}
 
-      {/* 连接线网络 */}
-      {nodePositions.slice(0, 8).map((node, index) => {
-        const nextIndex = (index + 1) % 8;
+      {/* 第一层连接线 */}
+      {nodePositions.slice(0, 6).map((node, index) => {
+        const nextIndex = (index + 1) % 6;
         const nextNode = nodePositions[nextIndex];
         return (
           <Line
-            key={`connection-${index}`}
+            key={`layer1-${index}`}
             points={[
               new Vector3(...node.position),
               new Vector3(...nextNode.position),
@@ -165,35 +160,47 @@ function DefenseMatrix() {
           />
         );
       })}
+
+      {/* 核心连接线 */}
+      {nodePositions.slice(0, 6).map((node, index) => (
+        <Line
+          key={`core-${index}`}
+          points={[new Vector3(0, 0, 0), new Vector3(...node.position)]}
+          color={node.color}
+          lineWidth={1}
+          transparent
+          opacity={0.2}
+        />
+      ))}
     </group>
   );
 }
 
-// 全息数据界面
+// 全息界面
 function HolographicInterface() {
   const interfaceRef = useRef<Group>(null);
 
   const interfaces = useMemo(
     () => [
       {
-        position: [4, 2, 0] as [number, number, number],
-        rotation: [0, -Math.PI / 3, 0] as [number, number, number],
-        text: "QUANTUM FIREWALL",
-        subtext: "STATUS: ACTIVE",
+        position: [3.5, 2, 0] as [number, number, number],
+        rotation: [0, -Math.PI / 4, 0] as [number, number, number],
+        text: "FIREWALL",
+        subtext: "ACTIVE",
         color: "#00ff88",
       },
       {
-        position: [-4, 1.5, 1] as [number, number, number],
-        rotation: [0, Math.PI / 3, 0] as [number, number, number],
-        text: "THREAT ANALYSIS",
-        subtext: "THREATS: 0",
+        position: [-3.5, 1.5, 1] as [number, number, number],
+        rotation: [0, Math.PI / 4, 0] as [number, number, number],
+        text: "THREATS",
+        subtext: "0",
         color: "#00f5ff",
       },
       {
-        position: [0, 4, 3] as [number, number, number],
+        position: [0, 3.5, 2.5] as [number, number, number],
         rotation: [-Math.PI / 6, 0, 0] as [number, number, number],
-        text: "NEURAL SHIELD",
-        subtext: "INTEGRITY: 100%",
+        text: "SHIELD",
+        subtext: "100%",
         color: "#ff6b00",
       },
     ],
@@ -217,7 +224,7 @@ function HolographicInterface() {
         <group key={index} position={ui.position} rotation={ui.rotation}>
           {/* 全息屏幕背景 */}
           <mesh>
-            <planeGeometry args={[2, 1.2]} />
+            <planeGeometry args={[1.5, 0.8]} />
             <meshBasicMaterial
               color={ui.color}
               transparent
@@ -229,11 +236,11 @@ function HolographicInterface() {
           {/* 屏幕边框 */}
           <Line
             points={[
-              new Vector3(-1, -0.6, 0.01),
-              new Vector3(1, -0.6, 0.01),
-              new Vector3(1, 0.6, 0.01),
-              new Vector3(-1, 0.6, 0.01),
-              new Vector3(-1, -0.6, 0.01),
+              new Vector3(-0.75, -0.4, 0.01),
+              new Vector3(0.75, -0.4, 0.01),
+              new Vector3(0.75, 0.4, 0.01),
+              new Vector3(-0.75, 0.4, 0.01),
+              new Vector3(-0.75, -0.4, 0.01),
             ]}
             color={ui.color}
             lineWidth={2}
@@ -241,8 +248,8 @@ function HolographicInterface() {
 
           {/* 主标题 */}
           <Text
-            position={[0, 0.2, 0.02]}
-            fontSize={0.15}
+            position={[0, 0.15, 0.02]}
+            fontSize={0.12}
             color={ui.color}
             anchorX="center"
             anchorY="middle"
@@ -252,8 +259,8 @@ function HolographicInterface() {
 
           {/* 副标题 */}
           <Text
-            position={[0, -0.1, 0.02]}
-            fontSize={0.1}
+            position={[0, -0.05, 0.02]}
+            fontSize={0.08}
             color={ui.color}
             anchorX="center"
             anchorY="middle"
@@ -262,8 +269,8 @@ function HolographicInterface() {
           </Text>
 
           {/* 状态指示器 */}
-          <mesh position={[0.7, 0.4, 0.02]}>
-            <sphereGeometry args={[0.03, 8, 8]} />
+          <mesh position={[0.6, 0.3, 0.02]}>
+            <sphereGeometry args={[0.025, 8, 8]} />
             <meshBasicMaterial color={ui.color} />
           </mesh>
         </group>
@@ -274,33 +281,31 @@ function HolographicInterface() {
 
 // 能量流动系统
 function EnergyFlow() {
-  const flowRef = useRef<Group>(null);
+  const energyPackets = useRef<Mesh[]>([]);
 
   const energyStreams = useMemo(() => {
     const streams = [];
     for (let i = 0; i < 6; i++) {
       const angle = (i / 6) * Math.PI * 2;
-      const radius = 5;
+      const radius = 4.5;
       streams.push({
         start: [0, 0, 0] as [number, number, number],
         end: [
           Math.cos(angle) * radius,
-          Math.sin(i * 0.5) * 2,
+          Math.sin(i * 0.5) * 1.5,
           Math.sin(angle) * radius,
         ] as [number, number, number],
         color: i % 3 === 0 ? "#00f5ff" : i % 3 === 1 ? "#ff6b00" : "#00ff88",
-        speed: 1 + Math.random() * 2,
+        speed: 1 + Math.random(),
       });
     }
     return streams;
   }, []);
 
-  const energyPacketRefs = useRef<Mesh[]>([]);
-
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
 
-    energyPacketRefs.current.forEach((packet, index) => {
+    energyPackets.current.forEach((packet, index) => {
       if (packet) {
         const stream = energyStreams[index];
         const progress = (Math.sin(time * stream.speed) + 1) / 2;
@@ -318,7 +323,7 @@ function EnergyFlow() {
   });
 
   return (
-    <group ref={flowRef}>
+    <group>
       {energyStreams.map((stream, index) => (
         <group key={index}>
           {/* 能量流路径 */}
@@ -336,10 +341,10 @@ function EnergyFlow() {
           {/* 移动的能量包 */}
           <mesh
             ref={(el) => {
-              if (el) energyPacketRefs.current[index] = el;
+              if (el) energyPackets.current[index] = el;
             }}
           >
-            <octahedronGeometry args={[0.08, 1]} />
+            <octahedronGeometry args={[0.06, 1]} />
             <meshBasicMaterial color={stream.color} transparent opacity={0.8} />
           </mesh>
         </group>
@@ -354,10 +359,10 @@ function ProtectionRings() {
 
   const rings = useMemo(
     () =>
-      Array.from({ length: 5 }, (_, i) => ({
-        radius: 6 + i * 0.8,
+      Array.from({ length: 4 }, (_, i) => ({
+        radius: 5.5 + i * 0.8,
         color: i % 2 === 0 ? "#00f5ff" : "#ff6b00",
-        speed: 0.5 + i * 0.1,
+        speed: 0.3 + i * 0.1,
         axis: i % 3,
       })),
     [],
@@ -385,13 +390,13 @@ function ProtectionRings() {
     <group ref={ringsRef}>
       {rings.map((ring, index) => (
         <mesh key={index}>
-          <torusGeometry args={[ring.radius, 0.05, 8, 64]} />
+          <torusGeometry args={[ring.radius, 0.04, 8, 64]} />
           <meshStandardMaterial
             color={ring.color}
             emissive={ring.color}
-            emissiveIntensity={0.5}
+            emissiveIntensity={0.4}
             transparent
-            opacity={0.7}
+            opacity={0.6}
           />
         </mesh>
       ))}
@@ -399,12 +404,12 @@ function ProtectionRings() {
   );
 }
 
-// 优化的粒子系统
-function OptimizedParticleSystem() {
+// 粒子系统
+function ParticleSystem() {
   const particlesRef = useRef<Points>(null);
 
   const particleSystem = useMemo(() => {
-    const count = 600; // 减少粒子数量以提高性能
+    const count = 400;
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
 
@@ -418,8 +423,7 @@ function OptimizedParticleSystem() {
     for (let i = 0; i < count; i++) {
       const i3 = i * 3;
 
-      // 球形分布
-      const radius = 8 + Math.random() * 4;
+      const radius = 7 + Math.random() * 3;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.random() * Math.PI;
 
@@ -427,7 +431,6 @@ function OptimizedParticleSystem() {
       positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
       positions[i3 + 2] = radius * Math.cos(phi);
 
-      // 随机颜色
       const color =
         colorPalette[Math.floor(Math.random() * colorPalette.length)];
       colors[i3] = color.r;
@@ -445,18 +448,18 @@ function OptimizedParticleSystem() {
   useFrame((state) => {
     if (particlesRef.current) {
       const time = state.clock.getElapsedTime();
-      particlesRef.current.rotation.y = time * 0.02;
-      particlesRef.current.rotation.x = Math.sin(time * 0.05) * 0.05;
+      particlesRef.current.rotation.y = time * 0.01;
+      particlesRef.current.rotation.x = Math.sin(time * 0.02) * 0.02;
     }
   });
 
   return (
     <points ref={particlesRef} geometry={particleSystem}>
       <pointsMaterial
-        size={0.03}
+        size={0.025}
         vertexColors
         transparent
-        opacity={0.8}
+        opacity={0.7}
         blending={AdditiveBlending}
         sizeAttenuation={true}
       />
@@ -470,23 +473,22 @@ export function UltraCyberSecurityModel() {
 
   useFrame((state) => {
     if (mainGroupRef.current) {
-      // 非常缓慢的整体旋转
-      mainGroupRef.current.rotation.y = state.clock.getElapsedTime() * 0.02;
+      mainGroupRef.current.rotation.y = state.clock.getElapsedTime() * 0.01;
     }
   });
 
   return (
     <group ref={mainGroupRef}>
-      {/* 优化的光照系统 */}
+      {/* 光照系统 */}
       <ambientLight intensity={0.4} />
       <pointLight position={[0, 0, 0]} intensity={2} color="#ffffff" />
-      <pointLight position={[5, 5, 5]} intensity={1.5} color="#00f5ff" />
-      <pointLight position={[-5, -5, -5]} intensity={1.5} color="#ff6b00" />
+      <pointLight position={[5, 5, 5]} intensity={1.2} color="#00f5ff" />
+      <pointLight position={[-5, -5, -5]} intensity={1.2} color="#ff6b00" />
       <spotLight
-        position={[0, 10, 0]}
+        position={[0, 8, 0]}
         angle={Math.PI / 6}
         penumbra={1}
-        intensity={1}
+        intensity={0.8}
         color="#00ff88"
       />
 
@@ -505,13 +507,19 @@ export function UltraCyberSecurityModel() {
       {/* 防护环 */}
       <ProtectionRings />
 
-      {/* 优化粒子系统 */}
-      <OptimizedParticleSystem />
+      {/* 粒子系统 */}
+      <ParticleSystem />
 
-      {/* 扫描线效果 */}
+      {/* 外层扫描环 */}
       <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[10, 10.1, 128]} />
-        <meshBasicMaterial color="#00ff88" transparent opacity={0.5} />
+        <ringGeometry args={[9, 9.05, 128]} />
+        <meshBasicMaterial color="#00ff88" transparent opacity={0.4} />
+      </mesh>
+
+      {/* 垂直扫描环 */}
+      <mesh rotation={[0, 0, 0]}>
+        <ringGeometry args={[8.5, 8.55, 128]} />
+        <meshBasicMaterial color="#00f5ff" transparent opacity={0.3} />
       </mesh>
     </group>
   );

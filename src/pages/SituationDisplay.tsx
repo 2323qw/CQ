@@ -230,7 +230,7 @@ function OptimizedInstancedBuildings() {
     const buildings = [];
     const tempObject = new Object3D();
 
-    // 生成建筑数据
+    // ���成建筑数据
     const districts = [
       { center: [45, 0, 45], count: 8, heightRange: [25, 50] },
       { center: [-45, 0, 45], count: 8, heightRange: [12, 25] },
@@ -661,12 +661,12 @@ function OptimizedMainScene() {
           { label: "威胁", value: realTimeData?.realTimeThreats || 3 },
           { label: "已拦截", value: realTimeData?.blockedAttacks || 1247 },
           { label: "防护", value: "启用" },
-          { label: "级��", value: "高" },
+          { label: "级别", value: "高" },
         ],
       },
       {
         position: [0, 8, 40] as [number, number, number],
-        title: "网���状态",
+        title: "网络状态",
         color: "#00ff66",
         data: [
           { label: "连接数", value: realTimeData?.activeConnections || 8247 },
@@ -692,7 +692,7 @@ function OptimizedMainScene() {
 
   return (
     <group ref={sceneRef}>
-      {/* 增强的光照系统 - 补偿移除的Environment */}
+      {/* 增强的光照系统 - 补���移除的Environment */}
       <ambientLight intensity={0.6} color="#ffffff" />
       <directionalLight
         position={[30, 30, 30]}
@@ -789,6 +789,338 @@ function OptimizedMainScene() {
         <meshBasicMaterial color="#003366" transparent opacity={0.3} side={2} />
       </mesh>
     </group>
+  );
+}
+
+// 前端2D信息平面组件 - 商务风格
+function ForegroundInfoOverlay() {
+  const { data: realTimeData } = useRealTimeData(generateSituationData, {
+    interval: 1000,
+    enabled: true,
+  });
+
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="absolute inset-0 pointer-events-none z-30">
+      {/* 顶部企业级仪表板 */}
+      <div className="absolute top-20 left-6 right-6 pointer-events-auto">
+        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-2xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">
+              网络安全运营中心
+            </h2>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span className="text-sm text-gray-600">系统运行正常</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-6 gap-6">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+              <div className="flex items-center justify-between">
+                <Shield className="w-8 h-8 text-blue-600" />
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-blue-800">
+                    {realTimeData?.realTimeThreats || 3}
+                  </div>
+                  <div className="text-sm text-blue-600">威胁检测</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+              <div className="flex items-center justify-between">
+                <Target className="w-8 h-8 text-green-600" />
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-green-800">
+                    {Math.floor((realTimeData?.blockedAttacks || 1247) / 1000)}K
+                  </div>
+                  <div className="text-sm text-green-600">拦截攻击</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+              <div className="flex items-center justify-between">
+                <Users className="w-8 h-8 text-purple-600" />
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-purple-800">
+                    {Math.floor((realTimeData?.onlineUsers || 8247) / 1000)}K
+                  </div>
+                  <div className="text-sm text-purple-600">在线用户</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-4 border border-indigo-200">
+              <div className="flex items-center justify-between">
+                <Network className="w-8 h-8 text-indigo-600" />
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-indigo-800">
+                    {Math.floor(
+                      (realTimeData?.activeConnections || 5432) / 1000,
+                    )}
+                    K
+                  </div>
+                  <div className="text-sm text-indigo-600">活跃连接</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
+              <div className="flex items-center justify-between">
+                <Cpu className="w-8 h-8 text-orange-600" />
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-orange-800">
+                    {realTimeData?.cpuUsage || 45}%
+                  </div>
+                  <div className="text-sm text-orange-600">CPU使用率</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 border border-slate-200">
+              <div className="flex items-center justify-between">
+                <Clock className="w-8 h-8 text-slate-600" />
+                <div className="text-right">
+                  <div className="text-lg font-semibold text-slate-800 font-mono">
+                    {currentTime.toLocaleTimeString()}
+                  </div>
+                  <div className="text-sm text-slate-600">系统时间</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 左侧安全风险评估 */}
+      <div className="absolute left-6 top-1/2 transform -translate-y-1/2 pointer-events-auto">
+        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-xl p-6 w-80">
+          <div className="flex items-center mb-4">
+            <div className="bg-red-100 rounded-lg p-2 mr-3">
+              <AlertTriangle className="w-5 h-5 text-red-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-800">安全风险评估</h3>
+              <p className="text-sm text-gray-600">Security Risk Assessment</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-gray-700">
+                  高风险事件
+                </span>
+                <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+                  2
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="bg-red-500 h-2 rounded-full w-4/12"></div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-gray-700">
+                  中风险事件
+                </span>
+                <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
+                  5
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="bg-yellow-500 h-2 rounded-full w-7/12"></div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-gray-700">
+                  低风险事件
+                </span>
+                <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                  12
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="bg-green-500 h-2 rounded-full w-9/12"></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-gray-700">
+                整体风险等级
+              </span>
+              <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+                中等
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 右侧系统性能监控 */}
+      <div className="absolute right-6 top-1/2 transform -translate-y-1/2 pointer-events-auto">
+        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-xl p-6 w-80">
+          <div className="flex items-center mb-4">
+            <div className="bg-blue-100 rounded-lg p-2 mr-3">
+              <Activity className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-800">系统性能监控</h3>
+              <p className="text-sm text-gray-600">
+                System Performance Monitor
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="font-medium text-gray-700">CPU 使用率</span>
+                <span className="font-semibold text-blue-600">
+                  {realTimeData?.cpuUsage || 45}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div
+                  className="bg-blue-500 h-3 rounded-full transition-all duration-500"
+                  style={{ width: `${realTimeData?.cpuUsage || 45}%` }}
+                ></div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="font-medium text-gray-700">内存使用率</span>
+                <span className="font-semibold text-green-600">
+                  {realTimeData?.memoryUsage || 68}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div
+                  className="bg-green-500 h-3 rounded-full transition-all duration-500"
+                  style={{ width: `${realTimeData?.memoryUsage || 68}%` }}
+                ></div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="font-medium text-gray-700">网络流量</span>
+                <span className="font-semibold text-purple-600">
+                  {realTimeData?.networkUsage || 34}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div
+                  className="bg-purple-500 h-3 rounded-full transition-all duration-500"
+                  style={{ width: `${realTimeData?.networkUsage || 34}%` }}
+                ></div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="font-medium text-gray-700">存储空间</span>
+                <span className="font-semibold text-orange-600">
+                  {realTimeData?.diskUsage || 72}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div
+                  className="bg-orange-500 h-3 rounded-full transition-all duration-500"
+                  style={{ width: `${realTimeData?.diskUsage || 72}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-gray-700">
+                系统状态
+              </span>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-sm font-medium text-green-600">
+                  正常运行
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 底部操作日志 */}
+      <div className="absolute bottom-6 left-6 right-6 pointer-events-auto">
+        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <div className="bg-gray-100 rounded-lg p-2 mr-3">
+                <FileText className="w-4 h-4 text-gray-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-800">安全事件日志</h3>
+                <p className="text-sm text-gray-600">Security Event Logs</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span className="text-sm text-green-600 font-medium">
+                实时监控
+              </span>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 rounded-lg p-4 h-24 overflow-y-auto border">
+            <div className="font-mono text-sm text-gray-700 space-y-1">
+              <div className="flex items-center space-x-3">
+                <span className="text-gray-500">
+                  [{currentTime.toLocaleTimeString()}]
+                </span>
+                <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs">
+                  INFO
+                </span>
+                <span>防火墙规则更新完成，系统安全策略已生效</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <span className="text-gray-500">
+                  [{new Date(currentTime.getTime() - 5000).toLocaleTimeString()}
+                  ]
+                </span>
+                <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs">
+                  WARN
+                </span>
+                <span>检测到异常登录尝试 - IP: 192.168.1.100</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <span className="text-gray-500">
+                  [
+                  {new Date(currentTime.getTime() - 10000).toLocaleTimeString()}
+                  ]
+                </span>
+                <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs">
+                  SUCCESS
+                </span>
+                <span>DDoS攻击已成功拦截，已阻止 247 个恶意连接</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -1330,7 +1662,7 @@ function OptimizedTopControlBar({
                   CyberGuard 3D 态势感知
                 </h1>
                 <p className="text-xs text-muted-foreground">
-                  优化版网络安全监控平台
+                  企业级网络安全监控平台
                 </p>
               </div>
             </div>
@@ -1385,293 +1717,6 @@ function OptimizedTopControlBar({
             >
               <Layers className="w-4 h-4" />
             </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// 前端2D信息平面组件 - 商务风格
-function ForegroundInfoOverlay() {
-  const { data: realTimeData } = useRealTimeData(generateSituationData, {
-    interval: 1000,
-    enabled: true,
-  });
-
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  return (
-    <div className="absolute inset-0 pointer-events-none z-30">
-      {/* 顶部企业级仪表板 */}
-      <div className="absolute top-20 left-6 right-6 pointer-events-auto">
-        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-2xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">网络安全运营中心</h2>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-sm text-gray-600">系统运行正常</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-6 gap-6">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
-              <div className="flex items-center justify-between">
-                <Shield className="w-8 h-8 text-blue-600" />
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-blue-800">{realTimeData?.realTimeThreats || 3}</div>
-                  <div className="text-sm text-blue-600">威胁检测</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
-              <div className="flex items-center justify-between">
-                <Target className="w-8 h-8 text-green-600" />
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-green-800">{Math.floor((realTimeData?.blockedAttacks || 1247) / 1000)}K</div>
-                  <div className="text-sm text-green-600">拦截攻击</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
-              <div className="flex items-center justify-between">
-                <Users className="w-8 h-8 text-purple-600" />
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-purple-800">{Math.floor((realTimeData?.onlineUsers || 8247) / 1000)}K</div>
-                  <div className="text-sm text-purple-600">在线用户</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-4 border border-indigo-200">
-              <div className="flex items-center justify-between">
-                <Network className="w-8 h-8 text-indigo-600" />
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-indigo-800">{Math.floor((realTimeData?.activeConnections || 5432) / 1000)}K</div>
-                  <div className="text-sm text-indigo-600">活跃连接</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
-              <div className="flex items-center justify-between">
-                <Cpu className="w-8 h-8 text-orange-600" />
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-orange-800">{realTimeData?.cpuUsage || 45}%</div>
-                  <div className="text-sm text-orange-600">CPU使用率</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 border border-slate-200">
-              <div className="flex items-center justify-between">
-                <Clock className="w-8 h-8 text-slate-600" />
-                <div className="text-right">
-                  <div className="text-lg font-semibold text-slate-800 font-mono">{currentTime.toLocaleTimeString()}</div>
-                  <div className="text-sm text-slate-600">系统时间</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 左侧安全风险评估 */}
-      <div className="absolute left-6 top-1/2 transform -translate-y-1/2 pointer-events-auto">
-        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-xl p-6 w-80">
-          <div className="flex items-center mb-4">
-            <div className="bg-red-100 rounded-lg p-2 mr-3">
-              <AlertTriangle className="w-5 h-5 text-red-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-800">安全风险评估</h3>
-              <p className="text-sm text-gray-600">Security Risk Assessment</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-gray-700">高风险事件</span>
-                <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">2</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-red-500 h-2 rounded-full w-4/12"></div>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-gray-700">中风险事件</span>
-                <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">5</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-yellow-500 h-2 rounded-full w-7/12"></div>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-gray-700">低风险事件</span>
-                <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">12</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-green-500 h-2 rounded-full w-9/12"></div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 pt-4 border-t border-gray-200">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-700">整体风险等级</span>
-              <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">中等</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 右侧系统性能监控 */}
-      <div className="absolute right-6 top-1/2 transform -translate-y-1/2 pointer-events-auto">
-        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-xl p-6 w-80">
-          <div className="flex items-center mb-4">
-            <div className="bg-blue-100 rounded-lg p-2 mr-3">
-              <Activity className="w-5 h-5 text-blue-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-800">系统性能监控</h3>
-              <p className="text-sm text-gray-600">System Performance Monitor</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <div className="flex justify-between text-sm mb-2">
-                <span className="font-medium text-gray-700">CPU 使用率</span>
-                <span className="font-semibold text-blue-600">{realTimeData?.cpuUsage || 45}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div
-                  className="bg-blue-500 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${realTimeData?.cpuUsage || 45}%` }}
-                ></div>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-sm mb-2">
-                <span className="font-medium text-gray-700">内存使用率</span>
-                <span className="font-semibold text-green-600">{realTimeData?.memoryUsage || 68}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div
-                  className="bg-green-500 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${realTimeData?.memoryUsage || 68}%` }}
-                ></div>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-sm mb-2">
-                <span className="font-medium text-gray-700">网络流量</span>
-                <span className="font-semibold text-purple-600">{realTimeData?.networkUsage || 34}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div
-                  className="bg-purple-500 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${realTimeData?.networkUsage || 34}%` }}
-                ></div>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-sm mb-2">
-                <span className="font-medium text-gray-700">存储空间</span>
-                <span className="font-semibold text-orange-600">{realTimeData?.diskUsage || 72}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div
-                  className="bg-orange-500 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${realTimeData?.diskUsage || 72}%` }}
-                ></div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 pt-4 border-t border-gray-200">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-700">系统状态</span>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm font-medium text-green-600">正常运行</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 底部操作日志 */}
-      <div className="absolute bottom-6 left-6 right-6 pointer-events-auto">
-        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center">
-              <div className="bg-gray-100 rounded-lg p-2 mr-3">
-                <FileText className="w-4 h-4 text-gray-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-800">安全事件日志</h3>
-                <p className="text-sm text-gray-600">Security Event Logs</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="text-sm text-green-600 font-medium">实时监控</span>
-            </div>
-          </div>
-
-          <div className="bg-gray-50 rounded-lg p-4 h-24 overflow-y-auto border">
-            <div className="font-mono text-sm text-gray-700 space-y-1">
-              <div className="flex items-center space-x-3">
-                <span className="text-gray-500">[{currentTime.toLocaleTimeString()}]</span>
-                <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs">INFO</span>
-                <span>防火墙规则更新完成，系统安全策略已生效</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <span className="text-gray-500">[{new Date(currentTime.getTime() - 5000).toLocaleTimeString()}]</span>
-                <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs">WARN</span>
-                <span>检测到异常登录尝试 - IP: 192.168.1.100</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <span className="text-gray-500">[{new Date(currentTime.getTime() - 10000).toLocaleTimeString()}]</span>
-                <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs">SUCCESS</span>
-                <span>DDoS攻击已成功拦截，已阻止 247 个恶意连接</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
-        <div className="bg-black/60 backdrop-blur-sm border border-red-500/50 rounded-full p-6 w-48 h-48 flex items-center justify-center">
-          <div className="text-center">
-            <Radar
-              className="w-12 h-12 text-red-500 mx-auto mb-2 animate-spin"
-              style={{ animationDuration: "3s" }}
-            />
-            <div className="text-white font-bold">威胁雷达</div>
-            <div className="text-red-400 text-sm">扫描中...</div>
-            <div className="text-2xl font-bold text-red-500 mt-2">
-              {realTimeData?.realTimeThreats || 3}
-            </div>
-            <div className="text-xs text-gray-400">活跃威胁</div>
           </div>
         </div>
       </div>
@@ -1762,7 +1807,7 @@ export default function SituationDisplay() {
         </ThreeErrorBoundary>
       </div>
 
-      {/* 前端2D���息平面 */}
+      {/* 前端2D信息平面 */}
       <ForegroundInfoOverlay />
 
       {/* 2D信息面板 */}
@@ -1791,7 +1836,7 @@ export default function SituationDisplay() {
         }`}
       >
         <div className="flex justify-between items-center text-xs text-muted-foreground">
-          <span>优化版 3D 网络安全态势感知平台</span>
+          <span>企业级 3D 网络安全态势感知平台</span>
           <span>
             高性能模式已启用
             {is2DPanelVisible && <span className="ml-2">| 2D面板已开启</span>}

@@ -102,7 +102,6 @@ function AppLayout() {
             )
           }
         />
-        }
       />
       <Route
         path="/reports"

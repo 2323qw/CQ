@@ -443,7 +443,7 @@ function FirewallStatusPanel() {
         </div>
 
         <div className="space-y-2">
-          <h4 className="text-sm font-semibold text-white">规则���态</h4>
+          <h4 className="text-sm font-semibold text-white">规则状态</h4>
           {firewallRules.map((rule, index) => (
             <div
               key={index}
@@ -543,12 +543,17 @@ function RealTimeLogStream() {
       });
     };
 
-    const interval = setInterval(generateLog, 3000);
-    // 初始化一些日志
-    for (let i = 0; i < 5; i++) {
-      setTimeout(() => generateLog(), i * 500);
-    }
+    // 初始化一些日志，确保它们有不同的时间戳
+    const initializeLogs = async () => {
+      for (let i = 0; i < 5; i++) {
+        await new Promise((resolve) => setTimeout(resolve, 100)); // 等待100ms
+        generateLog();
+      }
+    };
 
+    initializeLogs();
+
+    const interval = setInterval(generateLog, 3000);
     return () => clearInterval(interval);
   }, []);
 

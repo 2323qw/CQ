@@ -10,6 +10,7 @@ import {
   Loader,
 } from "lucide-react";
 import { UltraCyberSecurityModel } from "@/components/3d/UltraCyberSecurityModel";
+import { BasicCyberSecurityModel } from "@/components/3d/BasicCyberSecurityModel";
 import { ThreeErrorBoundary } from "@/components/3d/ErrorBoundary";
 import { SimpleShield } from "@/components/3d/SimpleShield";
 import { Canvas } from "@react-three/fiber";
@@ -122,8 +123,8 @@ export default function Login() {
                     minPolarAngle={Math.PI / 6}
                   />
 
-                  {/* 超级优化网络安全模型 */}
-                  <UltraCyberSecurityModel />
+                  {/* 基础网络安全模型 - 确保加载 */}
+                  <BasicCyberSecurityModel />
 
                   {/* 雾效 */}
                   <fog attach="fog" args={["#0d1117", 8, 25]} />

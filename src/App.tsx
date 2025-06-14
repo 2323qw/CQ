@@ -7,6 +7,11 @@ import Index from "@/pages/Index";
 import Alerts from "@/pages/Alerts";
 import Reports from "@/pages/Reports";
 import Settings from "@/pages/Settings";
+import UserManagement from "@/pages/UserManagement";
+import SystemLogs from "@/pages/SystemLogs";
+import ThreatIntelligence from "@/pages/ThreatIntelligence";
+import AssetManagement from "@/pages/AssetManagement";
+import ApiKeys from "@/pages/ApiKeys";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
 
@@ -25,24 +30,78 @@ function AppLayout() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <ProtectedLayout>
-              <Index />
-            </ProtectedLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/alerts"
-        element={
-          <ProtectedRoute>
-            <ProtectedLayout>
-              <Alerts />
-            </ProtectedLayout>
-          </ProtectedRoute>
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute>
+              <ProtectedLayout>
+                <UserManagement />
+              </ProtectedLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/logs"
+          element={
+            <ProtectedRoute>
+              <ProtectedLayout>
+                <SystemLogs />
+              </ProtectedLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/threat-intelligence"
+          element={
+            <ProtectedRoute>
+              <ProtectedLayout>
+                <ThreatIntelligence />
+              </ProtectedLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/assets"
+          element={
+            <ProtectedRoute>
+              <ProtectedLayout>
+                <AssetManagement />
+              </ProtectedLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/api-keys"
+          element={
+            <ProtectedRoute>
+              <ProtectedLayout>
+                <ApiKeys />
+              </ProtectedLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            isAuthenticated ? (
+              <ProtectedRoute>
+                <ProtectedLayout>
+                  <NotFound />
+                </ProtectedLayout>
+              </ProtectedRoute>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
         }
       />
       <Route

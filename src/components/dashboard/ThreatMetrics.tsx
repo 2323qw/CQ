@@ -5,8 +5,13 @@ import {
   AlertTriangle,
   Eye,
   Zap,
+  RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  useRealTimeData,
+  generateThreatMetrics,
+} from "@/hooks/useRealTimeData";
 
 interface MetricCardProps {
   title: string;
@@ -16,6 +21,7 @@ interface MetricCardProps {
   icon: React.ElementType;
   threatLevel?: "critical" | "high" | "medium" | "low" | "info";
   description?: string;
+  isUpdating?: boolean;
 }
 
 function MetricCard({
@@ -26,6 +32,7 @@ function MetricCard({
   icon: Icon,
   threatLevel,
   description,
+  isUpdating = false,
 }: MetricCardProps) {
   const getThreatColor = (level?: string) => {
     switch (level) {
@@ -89,8 +96,11 @@ function MetricCard({
           </div>
         </div>
 
-        <div className="w-12 h-12 rounded-lg bg-current/10 flex items-center justify-center">
+        <div className="w-12 h-12 rounded-lg bg-current/10 flex items-center justify-center relative">
           <Icon className="w-6 h-6" />
+          {isUpdating && (
+            <div className="absolute inset-0 border-2 border-current rounded-lg animate-pulse opacity-50" />
+          )}
         </div>
       </div>
 
@@ -103,29 +113,41 @@ function MetricCard({
 }
 
 export function ThreatMetrics() {
+  const {
+    data: realTimeData,
+    isUpdating,
+    updateData,
+  } = useRealTimeData(generateThreatMetrics, {
+    interval: 5000,
+    enabled: true,
+  });
+
   const metrics = [
     {
       title: "实时威胁检测",
-      value: "47",
-      change: 12,
-      trend: "up" as const,
+      value: realTimeData.realTimeThreats.toString(),
+      change: Math.floor(Math.random() * 30) - 10,
+      trend: Math.random() > 0.5 ? ("up" as const) : ("down" as const),
       icon: AlertTriangle,
-      threatLevel: "critical" as const,
+      threatLevel:
+        realTimeData.realTimeThreats > 45
+          ? ("critical" as const)
+          : ("high" as const),
       description: "过去1小时",
     },
     {
       title: "活跃连接监控",
-      value: "1,247",
-      change: -3,
-      trend: "down" as const,
+      value: realTimeData.activeConnections.toLocaleString(),
+      change: Math.floor(Math.random() * 10) - 5,
+      trend: Math.random() > 0.5 ? ("up" as const) : ("down" as const),
       icon: Eye,
       threatLevel: "info" as const,
       description: "当前连接数",
     },
     {
       title: "防火墙拦截",
-      value: "892",
-      change: 8,
+      value: realTimeData.blockedAttacks.toString(),
+      change: Math.floor(Math.random() * 20) - 5,
       trend: "up" as const,
       icon: Shield,
       threatLevel: "medium" as const,
@@ -133,20 +155,36 @@ export function ThreatMetrics() {
     },
     {
       title: "系统性能",
-      value: "97.8%",
-      change: 1.2,
+      value: `${realTimeData.systemHealth}%`,
+      change: Math.floor(Math.random() * 3),
       trend: "up" as const,
       icon: Zap,
-      threatLevel: "low" as const,
+      threatLevel:
+        realTimeData.systemHealth > 96 ? ("low" as const) : ("medium" as const),
       description: "运行稳定性",
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {metrics.map((metric, index) => (
-        <MetricCard key={index} {...metric} />
-      ))}
+    <div className="space-y-4">
+      {/* 控制按钮 */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold text-white">实时威胁监控</h2>
+        <button
+          onClick={updateData}
+          disabled={isUpdating}
+          className="neon-button flex items-center space-x-2 px-4 py-2"
+        >
+          <RefreshCw className={cn("w-4 h-4", isUpdating && "animate-spin")} />
+          <span>{isUpdating ? "更新中..." : "手动刷新"}</span>
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {metrics.map((metric, index) => (
+          <MetricCard key={index} {...metric} isUpdating={isUpdating} />
+        ))}
+      </div>
     </div>
   );
 }

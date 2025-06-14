@@ -10,6 +10,7 @@ import {
   Loader,
 } from "lucide-react";
 import { Scene3D } from "@/components/3d/Scene3D";
+import { ThreeErrorBoundary } from "@/components/3d/ErrorBoundary";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -73,16 +74,18 @@ export default function Login() {
 
         {/* 3D场景容器 */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <Suspense
-            fallback={
-              <div className="flex flex-col items-center space-y-4">
-                <Loader className="w-12 h-12 text-neon-blue animate-spin" />
-                <p className="text-neon-blue font-mono">加载3D模型中...</p>
-              </div>
-            }
-          >
-            <Scene3D />
-          </Suspense>
+          <ThreeErrorBoundary>
+            <Suspense
+              fallback={
+                <div className="flex flex-col items-center space-y-4">
+                  <Loader className="w-12 h-12 text-neon-blue animate-spin" />
+                  <p className="text-neon-blue font-mono">加载3D模型中...</p>
+                </div>
+              }
+            >
+              <Scene3D />
+            </Suspense>
+          </ThreeErrorBoundary>
         </div>
 
         {/* 左侧装饰元素 */}
@@ -159,7 +162,7 @@ export default function Login() {
             {/* 表单标题 */}
             <div className="text-center mb-6">
               <h2 className="text-2xl font-semibold text-white mb-2">
-                系统���录
+                系统登录
               </h2>
               <p className="text-sm text-muted-foreground">
                 请输入您的凭据以访问安全控制台

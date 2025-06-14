@@ -134,7 +134,6 @@ export function ShieldModel() {
         color="#00f5ff"
         anchorX="center"
         anchorY="center"
-        font="/fonts/JetBrainsMono-Bold.woff"
       >
         CYBERGUARD
       </Text>

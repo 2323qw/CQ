@@ -386,7 +386,7 @@ function BusinessInstancedBuildings() {
           ref={highDetailRef}
           args={[
             OptimizedGeometries.boxLOD3,
-            BusinessSharedMaterials.buildingActive,
+            BusinessSharedMaterials.buildingActive.clone(),
             buildingData.length,
           ]}
           frustumCulled
@@ -398,7 +398,7 @@ function BusinessInstancedBuildings() {
           ref={mediumDetailRef}
           args={[
             OptimizedGeometries.boxLOD2,
-            BusinessSharedMaterials.building,
+            BusinessSharedMaterials.building.clone(),
             buildingData.length,
           ]}
           frustumCulled
@@ -408,7 +408,7 @@ function BusinessInstancedBuildings() {
           ref={lowDetailRef}
           args={[
             OptimizedGeometries.boxLOD1,
-            BusinessSharedMaterials.building,
+            BusinessSharedMaterials.building.clone(),
             buildingData.length,
           ]}
           frustumCulled
@@ -1728,7 +1728,7 @@ function InfoPanel2D({
         memory: 50 + Math.random() * 25,
         network: 25 + Math.random() * 40,
         threats: Math.floor(Math.random() * 5),
-        security: 85 + Math.random() * 10, // 企业安全评分
+        security: 85 + Math.random() * 10, // 企业��全评分
       };
     });
     return hours;
@@ -2183,7 +2183,7 @@ export default function SituationDisplay() {
         <button
           onClick={toggle2DPanel}
           className="fixed right-4 top-1/2 transform -translate-y-1/2 z-50 bg-white hover:bg-gray-50 text-gray-700 p-3 rounded-l-lg shadow-xl border border-gray-200 transition-all duration-300"
-          title="��开企业控制面板"
+          title="打开企业控制面板"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>

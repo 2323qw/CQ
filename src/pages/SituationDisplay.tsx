@@ -1420,7 +1420,7 @@ export default function SituationDisplay() {
       >
         <ThreeErrorBoundary>
           <Canvas
-            shadows={false} // 禁用阴影以提高性能
+            shadows={false} // 禁用阴影���提高性能
             camera={{
               position: [0, 20, 40],
               fov: 60,
@@ -1449,7 +1449,6 @@ export default function SituationDisplay() {
                 dampingFactor={0.1} // 添加阻尼以减少计算
                 enableDamping
               />
-              <Environment preset="night" />
               <Preload all />
             </Suspense>
           </Canvas>

@@ -491,7 +491,7 @@ function BusinessDataCenters() {
         ref={racksRef}
         args={[
           OptimizedGeometries.serverRack,
-          BusinessSharedMaterials.serverActive,
+          BusinessSharedMaterials.serverActive.clone(),
           rackData.length,
         ]}
         frustumCulled
@@ -605,7 +605,7 @@ function BusinessTrafficSystem() {
   );
 }
 
-// 企业级网络拓扑
+// ���业级网络拓扑
 function BusinessNetworkTopology() {
   const networkRef = useRef<Group>(null);
   const { data: realTimeData } = useRealTimeData(generateSituationData, {
@@ -1636,7 +1636,7 @@ function ForegroundInfoOverlay() {
                 >
                   WARN
                 </span>
-                <span>检测到异常登录尝试，已启动高级认证流程</span>
+                <span>检测到异常登录尝试��已启动高级认证流程</span>
               </div>
               <div className="flex items-center space-x-3">
                 <span className="text-gray-500">
@@ -1728,7 +1728,7 @@ function InfoPanel2D({
         memory: 50 + Math.random() * 25,
         network: 25 + Math.random() * 40,
         threats: Math.floor(Math.random() * 5),
-        security: 85 + Math.random() * 10, // 企业��全评分
+        security: 85 + Math.random() * 10, // 企业安全评分
       };
     });
     return hours;

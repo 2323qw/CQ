@@ -876,7 +876,7 @@ function InfoPanel2D({
           "恶意软件拦截",
           "端口扫描检测",
           "SQL注入尝试",
-          "文件完整性检查",
+          "文件完整���检查",
           "系统性能警告",
           "网络流量异常",
         ][Math.floor(Math.random() * 8)],
@@ -1352,6 +1352,18 @@ function OptimizedTopControlBar({
               ) : (
                 <Play className="w-4 h-4" />
               )}
+            </button>
+
+            <button
+              onClick={onToggle2DPanel}
+              className={`p-2 rounded-lg transition-colors ${
+                is2DPanelVisible
+                  ? "bg-blue-500 hover:bg-blue-600 text-white"
+                  : "bg-matrix-accent/30 hover:bg-matrix-accent/50 text-white"
+              }`}
+              title="切换2D信息面板"
+            >
+              <Layers className="w-4 h-4" />
             </button>
           </div>
         </div>

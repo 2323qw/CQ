@@ -58,6 +58,19 @@ export function generateThreatMetrics() {
     activeConnections: Math.floor(Math.random() * 300) + 1000,
     blockedAttacks: Math.floor(Math.random() * 100) + 800,
     systemHealth: Math.floor(Math.random() * 5) + 95,
+    onlineNodes: Math.floor(Math.random() * 3) + 47,
+    totalNodes: 50,
+    networkStatus: Math.random() > 0.1 ? "正常" : "异常",
+    cpuUsage: Math.floor(Math.random() * 30) + 45,
+    memoryUsage: Math.floor(Math.random() * 25) + 55,
+    diskUsage: Math.floor(Math.random() * 20) + 60,
+    threatLevels: {
+      critical: Math.floor(Math.random() * 3) + 1,
+      high: Math.floor(Math.random() * 5) + 2,
+      medium: Math.floor(Math.random() * 8) + 5,
+      low: Math.floor(Math.random() * 15) + 12,
+    },
+    lastUpdate: new Date().toLocaleTimeString("zh-CN"),
   };
 }
 

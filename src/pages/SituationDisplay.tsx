@@ -305,7 +305,7 @@ function StatusPanel() {
   const statusItems = [
     {
       label: "网络状态",
-      value: "正常",
+      value: realTimeData?.networkStatus || "正常",
       icon: Globe,
       color: "text-neon-green",
       bgColor: "bg-neon-green/10",
@@ -319,7 +319,7 @@ function StatusPanel() {
     },
     {
       label: "在线节点",
-      value: "47/50",
+      value: `${realTimeData?.onlineNodes || 47}/${realTimeData?.totalNodes || 50}`,
       icon: Server,
       color: "text-neon-blue",
       bgColor: "bg-neon-blue/10",
@@ -373,19 +373,27 @@ function StatusPanel() {
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <span className="text-xs text-threat-critical">严重</span>
-            <span className="text-xs font-mono text-threat-critical">1</span>
+            <span className="text-xs font-mono text-threat-critical">
+              {realTimeData?.threatLevels?.critical || 1}
+            </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-xs text-threat-high">高危</span>
-            <span className="text-xs font-mono text-threat-high">2</span>
+            <span className="text-xs font-mono text-threat-high">
+              {realTimeData?.threatLevels?.high || 2}
+            </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-xs text-threat-medium">中等</span>
-            <span className="text-xs font-mono text-threat-medium">5</span>
+            <span className="text-xs font-mono text-threat-medium">
+              {realTimeData?.threatLevels?.medium || 5}
+            </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-xs text-threat-low">低危</span>
-            <span className="text-xs font-mono text-threat-low">12</span>
+            <span className="text-xs font-mono text-threat-low">
+              {realTimeData?.threatLevels?.low || 12}
+            </span>
           </div>
         </div>
       </div>
@@ -468,7 +476,7 @@ function InfoPanel() {
       <div className="cyber-card p-4 bg-matrix-surface/90 backdrop-blur-sm max-w-sm">
         <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
           <BarChart3 className="w-5 h-5 text-neon-orange" />
-          <span>态势信息</span>
+          <span>态势���息</span>
         </h3>
 
         <div className="space-y-3 text-sm">
@@ -505,7 +513,8 @@ function InfoPanel() {
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">最后更新:</span>
             <span className="text-neon-blue font-mono">
-              {new Date().toLocaleTimeString()}
+              {realTimeData?.lastUpdate ||
+                new Date().toLocaleTimeString("zh-CN")}
             </span>
           </div>
         </div>
@@ -539,7 +548,7 @@ export default function SituationDisplay() {
               dpr={[1, 2]}
               gl={{ antialias: true, alpha: true }}
             >
-              {/* 星空背景 */}
+              {/* ��空背景 */}
               <Stars
                 radius={200}
                 depth={100}

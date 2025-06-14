@@ -1,6 +1,6 @@
-import { useState, useRef, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Stars, Text } from "@react-three/drei";
+import { OrbitControls, Stars } from "@react-three/drei";
 import {
   Monitor,
   Activity,
@@ -17,171 +17,13 @@ import {
   Play,
   Pause,
 } from "lucide-react";
-import { UltraCyberSecurityModel } from "@/components/3d/UltraCyberSecurityModel";
+import { SituationMonitoringModel } from "@/components/3d/SituationMonitoringModel";
 import { ThreeErrorBoundary } from "@/components/3d/ErrorBoundary";
 import { SimpleShield } from "@/components/3d/SimpleShield";
 import {
   useRealTimeData,
-  generateThreatMetrics,
+  generateSituationData,
 } from "@/hooks/useRealTimeData";
-
-// 3D网络节点组件
-function NetworkNode({
-  position,
-  status,
-  nodeType,
-  label,
-}: {
-  position: [number, number, number];
-  status: "online" | "warning" | "critical" | "offline";
-  nodeType: "server" | "firewall" | "router" | "endpoint";
-  label: string;
-}) {
-  const meshRef = useRef<any>(null);
-
-  const getStatusColor = () => {
-    switch (status) {
-      case "online":
-        return "#00ff88";
-      case "warning":
-        return "#ffaa00";
-      case "critical":
-        return "#ff3366";
-      case "offline":
-        return "#666666";
-    }
-  };
-
-  const getNodeGeometry = () => {
-    switch (nodeType) {
-      case "server":
-        return <boxGeometry args={[0.2, 0.3, 0.2]} />;
-      case "firewall":
-        return <octahedronGeometry args={[0.15, 0]} />;
-      case "router":
-        return <cylinderGeometry args={[0.1, 0.1, 0.2, 8]} />;
-      case "endpoint":
-        return <sphereGeometry args={[0.08, 8, 8]} />;
-    }
-  };
-
-  return (
-    <group position={position}>
-      <mesh ref={meshRef}>
-        {getNodeGeometry()}
-        <meshStandardMaterial
-          color={getStatusColor()}
-          emissive={getStatusColor()}
-          emissiveIntensity={0.3}
-        />
-      </mesh>
-
-      {/* 节点标签 */}
-      <Text
-        position={[0, 0.4, 0]}
-        fontSize={0.08}
-        color={getStatusColor()}
-        anchorX="center"
-        anchorY="middle"
-      >
-        {label}
-      </Text>
-
-      {/* 状态光环 */}
-      <mesh position={[0, 0, 0]}>
-        <ringGeometry args={[0.2, 0.25, 16]} />
-        <meshBasicMaterial color={getStatusColor()} transparent opacity={0.3} />
-      </mesh>
-    </group>
-  );
-}
-
-// 3D威胁指示器
-function ThreatIndicator({
-  position,
-  severity,
-  threatType,
-}: {
-  position: [number, number, number];
-  severity: "low" | "medium" | "high" | "critical";
-  threatType: string;
-}) {
-  const getSeverityColor = () => {
-    switch (severity) {
-      case "low":
-        return "#00ff88";
-      case "medium":
-        return "#ffaa00";
-      case "high":
-        return "#ff6600";
-      case "critical":
-        return "#ff0033";
-    }
-  };
-
-  return (
-    <group position={position}>
-      <mesh>
-        <tetrahedronGeometry args={[0.12, 0]} />
-        <meshStandardMaterial
-          color={getSeverityColor()}
-          emissive={getSeverityColor()}
-          emissiveIntensity={0.8}
-          transparent
-          opacity={0.9}
-        />
-      </mesh>
-
-      <Text
-        position={[0, -0.3, 0]}
-        fontSize={0.06}
-        color={getSeverityColor()}
-        anchorX="center"
-        anchorY="middle"
-      >
-        {threatType}
-      </Text>
-    </group>
-  );
-}
-
-// 3D数据流
-function DataFlow({
-  start,
-  end,
-  color = "#00f5ff",
-  speed = 1,
-}: {
-  start: [number, number, number];
-  end: [number, number, number];
-  color?: string;
-  speed?: number;
-}) {
-  const dataPacketRef = useRef<any>(null);
-
-  return (
-    <group>
-      {/* 数据流路径 */}
-      <line>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            count={2}
-            array={new Float32Array([...start, ...end])}
-            itemSize={3}
-          />
-        </bufferGeometry>
-        <lineBasicMaterial color={color} transparent opacity={0.4} />
-      </line>
-
-      {/* 移动数据包 */}
-      <mesh ref={dataPacketRef}>
-        <sphereGeometry args={[0.02, 8, 8]} />
-        <meshBasicMaterial color={color} />
-      </mesh>
-    </group>
-  );
-}
 
 // 3D态势场景
 function SituationScene() {
@@ -308,7 +150,6 @@ function StatusPanel() {
 function ControlPanel() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [showGrid, setShowGrid] = useState(true);
-  const [cameraMode, setCameraMode] = useState<"free" | "orbit">("orbit");
 
   const controlButtons = [
     {
@@ -378,6 +219,7 @@ function InfoPanel() {
     interval: 3000,
     enabled: true,
   });
+
   return (
     <div className="absolute top-4 right-4 z-10">
       <div className="cyber-card p-4 bg-matrix-surface/90 backdrop-blur-sm max-w-sm">
@@ -469,27 +311,27 @@ export default function SituationDisplay() {
                 <div className="text-center space-y-4">
                   <SimpleShield />
                   <div className="text-neon-blue font-mono">
-                    加载3D态势展示场景...
+                    加载3D态势监控场景...
                   </div>
                 </div>
               </div>
             }
           >
             <Canvas
-              camera={{ position: [12, 8, 12], fov: 60 }}
+              camera={{ position: [15, 10, 15], fov: 60 }}
               style={{ background: "transparent" }}
               dpr={[1, 2]}
               gl={{ antialias: true, alpha: true }}
             >
               {/* 星空背景 */}
               <Stars
-                radius={200}
-                depth={100}
-                count={5000}
+                radius={300}
+                depth={150}
+                count={8000}
                 factor={4}
                 saturation={0}
                 fade
-                speed={0.2}
+                speed={0.1}
               />
 
               {/* 相机控制 */}
@@ -498,18 +340,18 @@ export default function SituationDisplay() {
                 enablePan={true}
                 enableRotate={true}
                 autoRotate={true}
-                autoRotateSpeed={0.3}
-                maxDistance={30}
-                minDistance={5}
-                maxPolarAngle={Math.PI / 1.5}
-                minPolarAngle={Math.PI / 6}
+                autoRotateSpeed={0.2}
+                maxDistance={40}
+                minDistance={8}
+                maxPolarAngle={Math.PI / 1.3}
+                minPolarAngle={Math.PI / 8}
               />
 
               {/* 3D态势场景 */}
               <SituationScene />
 
               {/* 雾效 */}
-              <fog attach="fog" args={["#0d1117", 15, 50]} />
+              <fog attach="fog" args={["#0d1117", 20, 80]} />
             </Canvas>
           </Suspense>
         </ThreeErrorBoundary>

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Scene3D } from "@/components/3d/Scene3D";
 import { ThreeErrorBoundary } from "@/components/3d/ErrorBoundary";
+import { SimpleShield } from "@/components/3d/SimpleShield";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -77,9 +78,14 @@ export default function Login() {
           <ThreeErrorBoundary>
             <Suspense
               fallback={
-                <div className="flex flex-col items-center space-y-4">
-                  <Loader className="w-12 h-12 text-neon-blue animate-spin" />
-                  <p className="text-neon-blue font-mono">加载3D模型中...</p>
+                <div className="flex flex-col items-center space-y-6">
+                  <SimpleShield />
+                  <div className="text-center">
+                    <Loader className="w-8 h-8 text-neon-blue animate-spin mx-auto mb-2" />
+                    <p className="text-neon-blue font-mono text-sm">
+                      加载3D模型中...
+                    </p>
+                  </div>
                 </div>
               }
             >

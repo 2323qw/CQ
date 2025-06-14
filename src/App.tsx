@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Navigation } from "@/components/Navigation";
+import { ToastContainer } from "@/components/ui/toast";
 import Index from "@/pages/Index";
 import Alerts from "@/pages/Alerts";
 import Reports from "@/pages/Reports";
@@ -94,6 +95,7 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <AppLayout />
+        <ToastContainer />
       </BrowserRouter>
     </AuthProvider>
   );

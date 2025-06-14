@@ -1,5 +1,16 @@
-import { AlertTriangle, Clock, MapPin, Eye } from "lucide-react";
+import { useState } from "react";
+import {
+  AlertTriangle,
+  Clock,
+  MapPin,
+  Eye,
+  RefreshCw,
+  Filter,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useRealTimeData, generateAlerts } from "@/hooks/useRealTimeData";
+import { AlertDetailModal } from "@/components/modals/AlertDetailModal";
+import { AdvancedFilter, alertFilters } from "@/components/ui/AdvancedFilter";
 
 interface Alert {
   id: string;
@@ -65,7 +76,7 @@ const mockAlerts: Alert[] = [
   },
 ];
 
-function AlertItem({ alert }: { alert: Alert }) {
+function AlertItem({ alert, onClick }: { alert: Alert; onClick?: () => void }) {
   const getThreatColor = (type: string) => {
     switch (type) {
       case "critical":
@@ -110,9 +121,10 @@ function AlertItem({ alert }: { alert: Alert }) {
   return (
     <div
       className={cn(
-        "cyber-card border-l-4 hover:bg-matrix-accent/50 transition-all duration-200 cursor-pointer",
+        "cyber-card border-l-4 hover:bg-matrix-accent/50 transition-all duration-200 cursor-pointer hover:scale-[1.02]",
         getThreatColor(alert.type),
       )}
+      onClick={onClick}
     >
       <div className="p-4">
         <div className="flex items-start justify-between">
@@ -177,26 +189,112 @@ function AlertItem({ alert }: { alert: Alert }) {
 }
 
 export function AlertsList() {
+  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filters, setFilters] = useState<Record<string, any>>({});
+
+  const {
+    data: alerts,
+    isUpdating,
+    updateData,
+  } = useRealTimeData(generateAlerts, {
+    interval: 15000,
+    enabled: true,
+  });
+
+  // 应用过滤器
+  const filteredAlerts = alerts.filter((alert) => {
+    if (filters.severity && filters.severity.length > 0) {
+      if (!filters.severity.includes(alert.type)) return false;
+    }
+    if (filters.status && filters.status.length > 0) {
+      if (!filters.status.includes(alert.status)) return false;
+    }
+    if (filters.location) {
+      if (
+        !alert.location.toLowerCase().includes(filters.location.toLowerCase())
+      )
+        return false;
+    }
+    if (filters.source) {
+      if (!alert.source.includes(filters.source)) return false;
+    }
+    return true;
+  });
+
+  const handleAlertClick = (alert: Alert) => {
+    setSelectedAlert(alert);
+    setIsModalOpen(true);
+  };
+
+  const handleUpdateAlertStatus = (
+    alertId: string,
+    status: Alert["status"],
+  ) => {
+    // 这里应该调用API更新状态
+    console.log(`更新告警 ${alertId} 状态为 ${status}`);
+    setIsModalOpen(false);
+  };
+
   return (
-    <div className="chart-container">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-2">
-          <AlertTriangle className="w-5 h-5 text-threat-critical" />
-          <h3 className="text-lg font-semibold text-white">实时威胁告警</h3>
+    <>
+      <div className="chart-container">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-2">
+            <AlertTriangle className="w-5 h-5 text-threat-critical" />
+            <h3 className="text-lg font-semibold text-white">实时威胁告警</h3>
+            {isUpdating && (
+              <div className="w-2 h-2 bg-threat-critical rounded-full animate-pulse" />
+            )}
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <AdvancedFilter
+              filters={alertFilters}
+              onFiltersChange={setFilters}
+            />
+
+            <span className="text-sm text-muted-foreground">
+              显示 {filteredAlerts.length} / {alerts.length} 条告警
+            </span>
+
+            <button
+              onClick={updateData}
+              disabled={isUpdating}
+              className="neon-button text-xs px-3 py-1 flex items-center space-x-1"
+            >
+              <RefreshCw
+                className={cn("w-3 h-3", isUpdating && "animate-spin")}
+              />
+              <span>刷新</span>
+            </button>
+          </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-muted-foreground">
-            共 {mockAlerts.length} 条告警
-          </span>
-          <button className="neon-button text-xs px-3 py-1">查看全部</button>
+
+        <div className="space-y-3 max-h-96 overflow-y-auto">
+          {filteredAlerts.length > 0 ? (
+            filteredAlerts.map((alert) => (
+              <AlertItem
+                key={alert.id}
+                alert={alert}
+                onClick={() => handleAlertClick(alert)}
+              />
+            ))
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <AlertTriangle className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p>没有找到匹配的告警</p>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="space-y-3 max-h-96 overflow-y-auto">
-        {mockAlerts.map((alert) => (
-          <AlertItem key={alert.id} alert={alert} />
-        ))}
-      </div>
-    </div>
+      <AlertDetailModal
+        alert={selectedAlert}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onUpdateStatus={handleUpdateAlertStatus}
+      />
+    </>
   );
 }

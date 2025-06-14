@@ -636,7 +636,7 @@ function OptimizedInfoPanel({
 function OptimizedMainScene() {
   const sceneRef = useRef<Group>(null);
   const { data: realTimeData } = useRealTimeData(generateSituationData, {
-    interval: 2000, // 降低更新频率以提高性能
+    interval: 2000, // 降低更��频率以提高性能
     enabled: true,
   });
 
@@ -1201,7 +1201,7 @@ function InfoPanel2D({
       <div className="bg-gray-800 rounded-lg p-4 h-96 flex items-center justify-center">
         <div className="text-center text-gray-400">
           <Map className="w-16 h-16 mx-auto mb-4" />
-          <div>网络拓扑图视图</div>
+          <div>网��拓扑图视图</div>
           <div className="text-sm mt-2">显示网络设备连接关系</div>
         </div>
       </div>
@@ -1285,7 +1285,7 @@ function InfoPanel2D({
   );
 }
 
-// 优化的顶���控制栏
+// 优化的顶部控制栏
 function OptimizedTopControlBar({
   onToggle2DPanel,
   is2DPanelVisible,
@@ -1719,6 +1719,9 @@ export default function SituationDisplay() {
           </Canvas>
         </ThreeErrorBoundary>
       </div>
+
+      {/* 前端2D信息平面 */}
+      <ForegroundInfoOverlay />
 
       {/* 2D信息面板 */}
       <InfoPanel2D

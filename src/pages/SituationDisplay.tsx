@@ -1067,7 +1067,13 @@ function BusinessOptimizedMainScene() {
       {/* 企业级基础平台 */}
       <mesh position={[0, -1.5, 0]} receiveShadow frustumCulled>
         <cylinderGeometry args={[70, 70, 0.3, 32]} />
-        <primitive object={BusinessSharedMaterials.platform} />
+        <meshStandardMaterial
+          color="#f8fafc"
+          transparent
+          opacity={0.3}
+          metalness={0.1}
+          roughness={0.9}
+        />
       </mesh>
 
       {/* 企业级网格 */}
@@ -1854,7 +1860,7 @@ function InfoPanel2D({
             <div className="text-gray-500 mb-4">
               <Monitor className="w-16 h-16 mx-auto mb-4" />
               <h3 className="text-lg font-semibold">企业级功能开发中</h3>
-              <p className="text-sm mt-2">该模块正���针对企业需求进行优化</p>
+              <p className="text-sm mt-2">该模块正在针对企业需求进行优化</p>
             </div>
           </div>
         );

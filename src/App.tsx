@@ -20,74 +20,72 @@ function Settings() {
   );
 }
 
-// 主应用布局组件
-function AppLayout() {
-  const { isAuthenticated } = useAuth();
-
+// 受保护的布局组件
+function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-matrix-bg text-white font-mono">
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/"
-          element={
-            isAuthenticated ? (
-              <ProtectedRoute>
-                <Navigation />
-                <Index />
-              </ProtectedRoute>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/alerts"
-          element={
-            isAuthenticated ? (
-              <ProtectedRoute>
-                <Navigation />
-                <Alerts />
-              </ProtectedRoute>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/reports"
-          element={
-            isAuthenticated ? (
-              <ProtectedRoute>
-                <Navigation />
-                <Reports />
-              </ProtectedRoute>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            isAuthenticated ? (
-              <ProtectedRoute>
-                <Navigation />
-                <Settings />
-              </ProtectedRoute>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="*"
-          element={
-            isAuthenticated ? <NotFound /> : <Navigate to="/login" replace />
-          }
-        />
-      </Routes>
+      <Navigation />
+      {children}
     </div>
+  );
+}
+
+// 主应用布局组件
+function AppLayout() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <Index />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/alerts"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <Alerts />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reports"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <Reports />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <Settings />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="*"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <NotFound />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
   );
 }
 

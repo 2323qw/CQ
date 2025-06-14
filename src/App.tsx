@@ -30,78 +30,25 @@ function AppLayout() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <Settings />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/users"
-          element={
-            <ProtectedRoute>
-              <ProtectedLayout>
-                <UserManagement />
-              </ProtectedLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/logs"
-          element={
-            <ProtectedRoute>
-              <ProtectedLayout>
-                <SystemLogs />
-              </ProtectedLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/threat-intelligence"
-          element={
-            <ProtectedRoute>
-              <ProtectedLayout>
-                <ThreatIntelligence />
-              </ProtectedLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/assets"
-          element={
-            <ProtectedRoute>
-              <ProtectedLayout>
-                <AssetManagement />
-              </ProtectedLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/api-keys"
-          element={
-            <ProtectedRoute>
-              <ProtectedLayout>
-                <ApiKeys />
-              </ProtectedLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="*"
-          element={
-            isAuthenticated ? (
-              <ProtectedRoute>
-                <ProtectedLayout>
-                  <NotFound />
-                </ProtectedLayout>
-              </ProtectedRoute>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <Index />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/alerts"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <Alerts />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
       />
       <Route
         path="/reports"
@@ -118,6 +65,56 @@ function AppLayout() {
         element={
           <ProtectedRoute>
             <Settings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/users"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <UserManagement />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/logs"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <SystemLogs />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/threat-intelligence"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <ThreatIntelligence />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/assets"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <AssetManagement />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/api-keys"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <ApiKeys />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />

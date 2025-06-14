@@ -1,5 +1,6 @@
 import { ThreatMetrics } from "@/components/dashboard/ThreatMetrics";
 import { NetworkChart } from "@/components/dashboard/NetworkChart";
+import { NetworkAnalysis } from "@/components/dashboard/NetworkAnalysis";
 import { AlertsList } from "@/components/dashboard/AlertsList";
 
 export default function Index() {
@@ -13,7 +14,7 @@ export default function Index() {
             网络安全监控仪表板
           </h1>
           <p className="text-muted-foreground">
-            实时监控网络威胁，保护您的数字资产安全
+            实���监控网络威胁，保护您的数字资产安全
           </p>
         </div>
 
@@ -26,6 +27,11 @@ export default function Index() {
           {/* 网络流量和威胁图表 */}
           <section>
             <NetworkChart />
+          </section>
+
+          {/* 高级网络分析 */}
+          <section>
+            <NetworkAnalysis />
           </section>
 
           {/* 实时告警列表 */}

@@ -6,20 +6,9 @@ import { ToastContainer } from "@/components/ui/toast";
 import Index from "@/pages/Index";
 import Alerts from "@/pages/Alerts";
 import Reports from "@/pages/Reports";
+import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
-
-// 设置页面组件
-function Settings() {
-  return (
-    <div className="ml-64 p-8">
-      <h1 className="text-3xl font-bold text-white glow-text mb-4">系统设置</h1>
-      <div className="cyber-card p-6">
-        <p className="text-muted-foreground">设置页面正在开发中...</p>
-      </div>
-    </div>
-  );
-}
 
 // 受保护的布局组件
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
@@ -70,9 +59,7 @@ function AppLayout() {
         path="/settings"
         element={
           <ProtectedRoute>
-            <ProtectedLayout>
-              <Settings />
-            </ProtectedLayout>
+            <Settings />
           </ProtectedRoute>
         }
       />

@@ -471,12 +471,16 @@ function ControlPanel() {
 
 // 信息面板组件
 function InfoPanel() {
+  const { data: realTimeData } = useRealTimeData(generateThreatMetrics, {
+    interval: 5000,
+    enabled: true,
+  });
   return (
     <div className="absolute top-4 right-4 z-10">
       <div className="cyber-card p-4 bg-matrix-surface/90 backdrop-blur-sm max-w-sm">
         <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
           <BarChart3 className="w-5 h-5 text-neon-orange" />
-          <span>态势���息</span>
+          <span>态势信息</span>
         </h3>
 
         <div className="space-y-3 text-sm">
@@ -548,7 +552,7 @@ export default function SituationDisplay() {
               dpr={[1, 2]}
               gl={{ antialias: true, alpha: true }}
             >
-              {/* ��空背景 */}
+              {/* 星空背景 */}
               <Stars
                 radius={200}
                 depth={100}

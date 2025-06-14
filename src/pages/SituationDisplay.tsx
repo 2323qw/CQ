@@ -776,6 +776,18 @@ function OptimizedMainScene() {
         fade
         speed={0.2}
       />
+
+      {/* 自定义环境背景 - 替代Environment组件 */}
+      <mesh position={[0, 0, 0]}>
+        <sphereGeometry args={[400, 32, 32]} />
+        <meshBasicMaterial color="#001122" transparent opacity={0.8} side={2} />
+      </mesh>
+
+      {/* 渐变背景层 */}
+      <mesh position={[0, 0, 0]}>
+        <sphereGeometry args={[350, 16, 16]} />
+        <meshBasicMaterial color="#003366" transparent opacity={0.3} side={2} />
+      </mesh>
     </group>
   );
 }
@@ -1482,7 +1494,7 @@ export default function SituationDisplay() {
         </button>
       )}
 
-      {/* 简化的底部��态 */}
+      {/* 简化的底部状态 */}
       <div
         className={`absolute bottom-0 left-0 bg-matrix-surface/90 backdrop-blur-sm border-t border-matrix-border p-2 transition-all duration-300 ${
           is2DPanelVisible ? "right-[480px]" : "right-0"

@@ -597,7 +597,7 @@ function BusinessTrafficSystem() {
       ref={vehiclesRef}
       args={[
         OptimizedGeometries.vehicleBody,
-        BusinessSharedMaterials.vehicle,
+        BusinessSharedMaterials.vehicle.clone(),
         vehiclePositions.length,
       ]}
       frustumCulled
@@ -605,7 +605,7 @@ function BusinessTrafficSystem() {
   );
 }
 
-// ���业级网络拓扑
+// 企业级网络拓扑
 function BusinessNetworkTopology() {
   const networkRef = useRef<Group>(null);
   const { data: realTimeData } = useRealTimeData(generateSituationData, {
@@ -1636,7 +1636,7 @@ function ForegroundInfoOverlay() {
                 >
                   WARN
                 </span>
-                <span>检测到异常登录尝试��已启动高级认证流程</span>
+                <span>检测到异常登录尝试，已启动高级认证流程</span>
               </div>
               <div className="flex items-center space-x-3">
                 <span className="text-gray-500">
@@ -1854,7 +1854,7 @@ function InfoPanel2D({
             <div className="text-gray-500 mb-4">
               <Monitor className="w-16 h-16 mx-auto mb-4" />
               <h3 className="text-lg font-semibold">企业级功能开发中</h3>
-              <p className="text-sm mt-2">该模块正在针对企业需求进行优化</p>
+              <p className="text-sm mt-2">该模块正���针对企业需求进行优化</p>
             </div>
           </div>
         );

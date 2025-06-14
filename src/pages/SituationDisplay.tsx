@@ -1,5 +1,12 @@
-import { useState, useRef, Suspense, useEffect, useMemo } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import {
+  useState,
+  useRef,
+  Suspense,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   OrbitControls,
   Stars,
@@ -12,6 +19,10 @@ import {
   Cloud,
   Detailed,
   useHelper,
+  Instances,
+  Instance,
+  useTexture,
+  Preload,
 } from "@react-three/drei";
 import {
   Monitor,
@@ -63,6 +74,7 @@ import {
   Scan,
   Search,
   CloudLightning,
+  Loader,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -78,6 +90,16 @@ import {
   PointLight,
   SpotLight,
   DirectionalLight,
+  InstancedMesh,
+  Object3D,
+  Matrix4,
+  MeshStandardMaterial,
+  BoxGeometry,
+  CylinderGeometry,
+  SphereGeometry,
+  Quaternion,
+  Euler,
+  LOD,
 } from "three";
 import { SituationMonitoringModel } from "@/components/3d/SituationMonitoringModel";
 import { ThreeErrorBoundary } from "@/components/3d/ErrorBoundary";
@@ -87,518 +109,279 @@ import {
   generateSituationData,
 } from "@/hooks/useRealTimeData";
 
-// 优化的3D城市建筑群背景（更真实的比例）
-function OptimizedCityBuildings() {
-  const buildingsRef = useRef<Group>(null);
+// 性能监控组件
+function PerformanceMonitor() {
+  const { gl, scene } = useThree();
+  const [stats, setStats] = useState({
+    fps: 60,
+    drawCalls: 0,
+    triangles: 0,
+    geometries: 0,
+    textures: 0,
+  });
 
-  const cityDistricts = useMemo(() => {
-    return [
-      // 商业区 - 高层建筑群
-      {
-        name: "商业区",
-        center: [45, 0, 45],
-        buildings: [
-          { pos: [0, 0, 0], size: [4, 35, 4], color: "#1a2432", lights: 12 },
-          { pos: [8, 0, 0], size: [5, 42, 5], color: "#2a1532", lights: 15 },
-          { pos: [0, 0, 8], size: [4, 38, 4], color: "#1a3522", lights: 14 },
-          { pos: [8, 0, 8], size: [6, 48, 6], color: "#321a25", lights: 18 },
-          { pos: [-8, 0, 0], size: [3, 28, 3], color: "#1a2432", lights: 10 },
-          { pos: [0, 0, -8], size: [4, 32, 4], color: "#2a1532", lights: 12 },
-          { pos: [-8, 0, 8], size: [5, 40, 5], color: "#1a3522", lights: 16 },
-          { pos: [8, 0, -8], size: [3, 30, 3], color: "#321a25", lights: 11 },
-        ],
-      },
-      // 住宅区 - 中层建筑
-      {
-        name: "住宅区",
-        center: [-45, 0, 45],
-        buildings: [
-          { pos: [0, 0, 0], size: [6, 18, 6], color: "#2a3442", lights: 8 },
-          { pos: [12, 0, 0], size: [5, 15, 5], color: "#3a2542", lights: 6 },
-          { pos: [0, 0, 12], size: [7, 20, 7], color: "#2a4532", lights: 9 },
-          { pos: [12, 0, 12], size: [4, 12, 4], color: "#423a25", lights: 5 },
-          { pos: [-12, 0, 0], size: [5, 16, 5], color: "#2a3442", lights: 7 },
-          { pos: [0, 0, -12], size: [6, 14, 6], color: "#3a2542", lights: 6 },
-          { pos: [-12, 0, 12], size: [8, 22, 8], color: "#2a4532", lights: 10 },
-          { pos: [12, 0, -12], size: [3, 10, 3], color: "#423a25", lights: 4 },
-        ],
-      },
-      // 工业区 - 特殊建筑
-      {
-        name: "工业区",
-        center: [45, 0, -45],
-        buildings: [
-          { pos: [0, 0, 0], size: [12, 8, 8], color: "#442a1a", lights: 4 },
-          { pos: [20, 0, 0], size: [8, 25, 6], color: "#1a442a", lights: 12 },
-          { pos: [0, 0, 15], size: [15, 6, 10], color: "#2a1a44", lights: 3 },
-          { pos: [20, 0, 15], size: [6, 20, 6], color: "#442a1a", lights: 8 },
-          { pos: [-20, 0, 0], size: [10, 12, 6], color: "#1a442a", lights: 6 },
-          { pos: [0, 0, -15], size: [8, 10, 8], color: "#2a1a44", lights: 5 },
-          { pos: [-20, 0, 15], size: [14, 7, 9], color: "#442a1a", lights: 4 },
-          { pos: [20, 0, -15], size: [5, 15, 5], color: "#1a442a", lights: 7 },
-        ],
-      },
-      // 科技园区 - 现代建筑
-      {
-        name: "科技园区",
-        center: [-45, 0, -45],
-        buildings: [
-          { pos: [0, 0, 0], size: [8, 30, 6], color: "#1a3a4a", lights: 15 },
-          { pos: [15, 0, 0], size: [6, 25, 8], color: "#3a1a4a", lights: 12 },
-          { pos: [0, 0, 15], size: [10, 35, 5], color: "#4a3a1a", lights: 18 },
-          { pos: [15, 0, 15], size: [5, 20, 6], color: "#1a4a3a", lights: 10 },
-          { pos: [-15, 0, 0], size: [7, 28, 7], color: "#1a3a4a", lights: 14 },
-          { pos: [0, 0, -15], size: [9, 32, 4], color: "#3a1a4a", lights: 16 },
-          { pos: [-15, 0, 15], size: [6, 22, 8], color: "#4a3a1a", lights: 11 },
-          { pos: [15, 0, -15], size: [4, 18, 5], color: "#1a4a3a", lights: 9 },
-        ],
-      },
+  useFrame(() => {
+    const info = gl.info;
+    setStats({
+      fps: Math.round(
+        1 / (performance.now() / 1000 - performance.now() / 1000),
+      ),
+      drawCalls: info.render.calls,
+      triangles: info.render.triangles,
+      geometries: info.memory.geometries,
+      textures: info.memory.textures,
+    });
+  });
+
+  return (
+    <Html position={[-90, 20, 0]} transform>
+      <div className="bg-black/80 text-white p-2 rounded text-xs font-mono">
+        <div>FPS: {stats.fps}</div>
+        <div>Draw Calls: {stats.drawCalls}</div>
+        <div>Triangles: {stats.triangles.toLocaleString()}</div>
+        <div>Geometries: {stats.geometries}</div>
+        <div>Textures: {stats.textures}</div>
+      </div>
+    </Html>
+  );
+}
+
+// 共享材质管理器
+const SharedMaterials = {
+  building: new MeshStandardMaterial({
+    color: "#1a2432",
+    metalness: 0.3,
+    roughness: 0.7,
+  }),
+  buildingGlass: new MeshStandardMaterial({
+    color: "#004466",
+    transparent: true,
+    opacity: 0.3,
+    metalness: 0.8,
+    roughness: 0.1,
+  }),
+  server: new MeshStandardMaterial({
+    color: "#1a1a1a",
+    metalness: 0.8,
+    roughness: 0.2,
+  }),
+  road: new MeshStandardMaterial({ color: "#333333", roughness: 0.9 }),
+  vehicle: new MeshStandardMaterial({
+    color: "#2a2a2a",
+    metalness: 0.6,
+    roughness: 0.4,
+  }),
+  platform: new MeshStandardMaterial({
+    color: "#0a0a0a",
+    transparent: true,
+    opacity: 0.4,
+    metalness: 0.5,
+    roughness: 0.5,
+  }),
+  light: new MeshStandardMaterial({
+    color: "#00f5ff",
+    emissive: "#00f5ff",
+    emissiveIntensity: 0.3,
+    transparent: true,
+    opacity: 0.7,
+  }),
+};
+
+// 共享几何体管理器
+const SharedGeometries = {
+  box: new BoxGeometry(1, 1, 1),
+  cylinder: new CylinderGeometry(1, 1, 1, 8),
+  sphere: new SphereGeometry(1, 8, 8),
+  buildingBase: new BoxGeometry(1, 1, 1),
+  serverRack: new BoxGeometry(2, 8, 1),
+  vehicleBody: new BoxGeometry(1, 0.6, 2),
+};
+
+// 优化的实例化建筑组件
+function OptimizedInstancedBuildings() {
+  const buildingsRef = useRef<Group>(null);
+  const lowDetailRef = useRef<InstancedMesh>(null);
+  const mediumDetailRef = useRef<InstancedMesh>(null);
+  const highDetailRef = useRef<InstancedMesh>(null);
+
+  const buildingData = useMemo(() => {
+    const buildings = [];
+    const tempObject = new Object3D();
+
+    // 生成建筑数据
+    const districts = [
+      { center: [45, 0, 45], count: 8, heightRange: [25, 50] },
+      { center: [-45, 0, 45], count: 8, heightRange: [12, 25] },
+      { center: [45, 0, -45], count: 6, heightRange: [6, 15] },
+      { center: [-45, 0, -45], count: 6, heightRange: [18, 35] },
     ];
+
+    districts.forEach((district) => {
+      for (let i = 0; i < district.count; i++) {
+        const angle = (i / district.count) * Math.PI * 2;
+        const radius = 8 + Math.random() * 12;
+        const x = district.center[0] + Math.cos(angle) * radius;
+        const z = district.center[2] + Math.sin(angle) * radius;
+        const height =
+          district.heightRange[0] +
+          Math.random() * (district.heightRange[1] - district.heightRange[0]);
+
+        buildings.push({
+          position: [x, height / 2, z],
+          scale: [3 + Math.random() * 3, height, 3 + Math.random() * 3],
+          rotation: [0, Math.random() * Math.PI, 0],
+        });
+      }
+    });
+
+    return buildings;
   }, []);
 
-  useFrame((state) => {
-    if (buildingsRef.current) {
-      const time = state.clock.getElapsedTime();
-      // 极缓慢的整体旋转
-      buildingsRef.current.rotation.y = time * 0.0005;
-    }
-  });
+  useEffect(() => {
+    if (
+      !lowDetailRef.current ||
+      !mediumDetailRef.current ||
+      !highDetailRef.current
+    )
+      return;
+
+    const tempObject = new Object3D();
+
+    buildingData.forEach((building, i) => {
+      tempObject.position.set(...building.position);
+      tempObject.scale.set(...building.scale);
+      tempObject.rotation.set(...building.rotation);
+      tempObject.updateMatrix();
+
+      // 应用相同的矩阵到所有LOD级别
+      lowDetailRef.current!.setMatrixAt(i, tempObject.matrix);
+      mediumDetailRef.current!.setMatrixAt(i, tempObject.matrix);
+      highDetailRef.current!.setMatrixAt(i, tempObject.matrix);
+    });
+
+    lowDetailRef.current.instanceMatrix.needsUpdate = true;
+    mediumDetailRef.current.instanceMatrix.needsUpdate = true;
+    highDetailRef.current.instanceMatrix.needsUpdate = true;
+  }, [buildingData]);
 
   return (
     <group ref={buildingsRef}>
-      {cityDistricts.map((district, districtIndex) => (
-        <group key={districtIndex} position={district.center}>
-          {/* 区域标识 */}
-          <Text
-            position={[0, 60, 0]}
-            fontSize={2}
-            color="#ffffff"
-            anchorX="center"
-            anchorY="middle"
-          >
-            {district.name}
-          </Text>
-
-          {district.buildings.map((building, buildingIndex) => (
-            <group key={buildingIndex} position={building.pos}>
-              {/* 建��主体 */}
-              <mesh position={[0, building.size[1] / 2, 0]}>
-                <boxGeometry args={building.size} />
-                <meshStandardMaterial
-                  color={building.color}
-                  metalness={0.3}
-                  roughness={0.7}
-                />
-              </mesh>
-
-              {/* 建筑顶部灯光 */}
-              <pointLight
-                position={[0, building.size[1] + 2, 0]}
-                intensity={0.3}
-                color="#ffffff"
-                distance={15}
-              />
-
-              {/* 窗户灯光 */}
-              {Array.from({ length: building.lights }).map((_, lightIndex) => {
-                const x = (Math.random() - 0.5) * building.size[0] * 0.8;
-                const y =
-                  Math.random() * building.size[1] * 0.8 +
-                  building.size[1] * 0.1;
-                const z = (Math.random() - 0.5) * building.size[2] * 0.8;
-                return (
-                  <mesh key={lightIndex} position={[x, y, z]}>
-                    <boxGeometry args={[0.2, 0.2, 0.05]} />
-                    <meshBasicMaterial
-                      color={Math.random() > 0.7 ? "#ffaa00" : "#ffffff"}
-                      transparent
-                      opacity={Math.random() > 0.3 ? 0.8 : 0.2}
-                    />
-                  </mesh>
-                );
-              })}
-
-              {/* 天线和设备 */}
-              <mesh position={[0, building.size[1] + 1, 0]}>
-                <cylinderGeometry args={[0.05, 0.05, 2, 8]} />
-                <meshStandardMaterial color="#888888" />
-              </mesh>
-            </group>
-          ))}
-        </group>
-      ))}
+      {/* LOD系统 - 远距离用简单几何体 */}
+      <Detailed distances={[0, 50, 100]}>
+        {/* 高细节 - 近距离 */}
+        <instancedMesh
+          ref={highDetailRef}
+          args={[
+            SharedGeometries.buildingBase,
+            SharedMaterials.building,
+            buildingData.length,
+          ]}
+          frustumCulled
+        />
+        {/* 中等细节 - 中距离 */}
+        <instancedMesh
+          ref={mediumDetailRef}
+          args={[
+            SharedGeometries.box,
+            SharedMaterials.building,
+            buildingData.length,
+          ]}
+          frustumCulled
+        />
+        {/* 低细节 - 远距离 */}
+        <instancedMesh
+          ref={lowDetailRef}
+          args={[
+            SharedGeometries.cylinder,
+            SharedMaterials.building,
+            buildingData.length,
+          ]}
+          frustumCulled
+        />
+      </Detailed>
     </group>
   );
 }
 
-// 增强的数据中心系统
-function EnhancedDataCenterRacks() {
-  const rackSystemRef = useRef<Group>(null);
+// 优化的实例化数据中心
+function OptimizedDataCenters() {
+  const racksRef = useRef<InstancedMesh>(null);
 
-  const dataCenters = useMemo(() => {
-    return [
-      {
-        name: "主数据中心",
-        position: [-60, 0, 0],
-        racks: Array.from({ length: 8 }).map((_, i) => ({
-          position: [(i % 4) * 6 - 9, 0, Math.floor(i / 4) * 4 - 2] as [
-            number,
-            number,
-            number,
-          ],
-          status: Math.random() > 0.1 ? "active" : "warning",
-          load: Math.random() * 100,
-          temperature: 20 + Math.random() * 15,
-        })),
-      },
-      {
-        name: "备份数据中心",
-        position: [60, 0, 0],
-        racks: Array.from({ length: 6 }).map((_, i) => ({
-          position: [(i % 3) * 6 - 6, 0, Math.floor(i / 3) * 4 - 2] as [
-            number,
-            number,
-            number,
-          ],
-          status: Math.random() > 0.05 ? "active" : "maintenance",
-          load: Math.random() * 80,
-          temperature: 18 + Math.random() * 12,
-        })),
-      },
-      {
-        name: "边缘计算中心",
-        position: [0, 0, 60],
-        racks: Array.from({ length: 4 }).map((_, i) => ({
-          position: [(i % 2) * 6 - 3, 0, Math.floor(i / 2) * 4 - 2] as [
-            number,
-            number,
-            number,
-          ],
-          status: "active",
-          load: Math.random() * 60,
-          temperature: 22 + Math.random() * 10,
-        })),
-      },
+  const rackData = useMemo(() => {
+    const racks = [];
+    const centers = [
+      { pos: [-60, 0, 0], count: 8 },
+      { pos: [60, 0, 0], count: 6 },
+      { pos: [0, 0, 60], count: 4 },
     ];
-  }, []);
 
-  useFrame((state) => {
-    if (rackSystemRef.current) {
-      const time = state.clock.getElapsedTime();
-      // 数据流动效果
-      rackSystemRef.current.children.forEach((center, centerIndex) => {
-        center.children.forEach((rack, rackIndex) => {
-          if (rack.children[2]) {
-            // 状态指示器
-            const intensity = 0.5 + Math.sin(time * 2 + rackIndex * 0.5) * 0.3;
-            (rack.children[2] as any).material.emissiveIntensity = intensity;
-          }
+    centers.forEach((center) => {
+      for (let i = 0; i < center.count; i++) {
+        const x = center.pos[0] + (i % 4) * 6 - 9;
+        const z = center.pos[2] + Math.floor(i / 4) * 4 - 2;
+        racks.push({
+          position: [x, 4, z],
+          scale: [1, 1, 1],
+          status: Math.random() > 0.1 ? "active" : "warning",
         });
-      });
-    }
-  });
+      }
+    });
 
-  return (
-    <group ref={rackSystemRef}>
-      {dataCenters.map((center, centerIndex) => (
-        <group key={centerIndex} position={center.position}>
-          {/* 数据中心标识 */}
-          <Text
-            position={[0, 12, 0]}
-            fontSize={1.5}
-            color="#00ff88"
-            anchorX="center"
-            anchorY="middle"
-          >
-            {center.name}
-          </Text>
-
-          {/* 防护罩 */}
-          <mesh position={[0, 6, 0]}>
-            <cylinderGeometry args={[15, 15, 0.5, 32]} />
-            <meshStandardMaterial
-              color="#003366"
-              transparent
-              opacity={0.2}
-              wireframe
-            />
-          </mesh>
-
-          {center.racks.map((rack, rackIndex) => (
-            <group key={rackIndex} position={rack.position}>
-              {/* 机架主体 */}
-              <mesh position={[0, 4, 0]}>
-                <boxGeometry args={[2, 8, 1]} />
-                <meshStandardMaterial
-                  color="#1a1a1a"
-                  metalness={0.8}
-                  roughness={0.2}
-                />
-              </mesh>
-
-              {/* 服务器单元 */}
-              {Array.from({ length: 12 }).map((_, unitIndex) => (
-                <mesh
-                  key={unitIndex}
-                  position={[0, 0.5 + unitIndex * 0.6, 0.45]}
-                >
-                  <boxGeometry args={[1.8, 0.4, 0.1]} />
-                  <meshStandardMaterial
-                    color={rack.status === "active" ? "#004400" : "#440000"}
-                  />
-                </mesh>
-              ))}
-
-              {/* 状态指示器 */}
-              <mesh position={[0, 8.5, 0]}>
-                <sphereGeometry args={[0.2, 8, 8]} />
-                <meshBasicMaterial
-                  color={
-                    rack.status === "active"
-                      ? "#00ff00"
-                      : rack.status === "warning"
-                        ? "#ffaa00"
-                        : "#ff0000"
-                  }
-                  emissive={
-                    rack.status === "active"
-                      ? "#004400"
-                      : rack.status === "warning"
-                        ? "#442200"
-                        : "#440000"
-                  }
-                  emissiveIntensity={0.5}
-                />
-              </mesh>
-
-              {/* 负载显示 */}
-              <Html position={[0, -1, 1]} transform>
-                <div className="bg-black/70 text-white p-1 rounded text-xs">
-                  负载: {rack.load.toFixed(1)}%<br />
-                  温度: {rack.temperature.toFixed(1)}°C
-                </div>
-              </Html>
-            </group>
-          ))}
-        </group>
-      ))}
-    </group>
-  );
-}
-
-// 增强的卫星通信系统
-function AdvancedSatelliteSystem() {
-  const satelliteRef = useRef<Group>(null);
-  const [currentTime, setCurrentTime] = useState(new Date());
+    return racks;
+  }, []);
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
+    if (!racksRef.current) return;
 
-  useFrame((state) => {
-    if (satelliteRef.current) {
-      const time = state.clock.getElapsedTime();
-      // 卫星轨道运动
-      satelliteRef.current.position.x = Math.cos(time * 0.1) * 40;
-      satelliteRef.current.position.z = Math.sin(time * 0.1) * 40;
-      satelliteRef.current.position.y = 35 + Math.sin(time * 0.05) * 5;
-      satelliteRef.current.rotation.y = time * 0.2;
-    }
-  });
+    const tempObject = new Object3D();
 
-  const groundStations = [
-    { name: "北京站", position: [20, 0, 20], signal: 95 },
-    { name: "上海站", position: [-20, 0, 20], signal: 88 },
-    { name: "广州站", position: [20, 0, -20], signal: 92 },
-    { name: "深圳站", position: [-20, 0, -20], signal: 90 },
-    { name: "成都站", position: [0, 0, 25], signal: 86 },
-    { name: "西安站", position: [0, 0, -25], signal: 91 },
-  ];
+    rackData.forEach((rack, i) => {
+      tempObject.position.set(...rack.position);
+      tempObject.scale.set(...rack.scale);
+      tempObject.updateMatrix();
+      racksRef.current!.setMatrixAt(i, tempObject.matrix);
+    });
+
+    racksRef.current.instanceMatrix.needsUpdate = true;
+  }, [rackData]);
 
   return (
-    <group>
-      {/* 卫星本体 */}
-      <group ref={satelliteRef}>
-        {/* 卫星主体 */}
-        <mesh>
-          <boxGeometry args={[3, 2, 4]} />
-          <meshStandardMaterial color="#333333" metalness={0.8} />
-        </mesh>
-
-        {/* 太阳能板 */}
-        <mesh position={[-4, 0, 0]}>
-          <boxGeometry args={[2, 6, 0.1]} />
-          <meshStandardMaterial color="#001166" />
-        </mesh>
-        <mesh position={[4, 0, 0]}>
-          <boxGeometry args={[2, 6, 0.1]} />
-          <meshStandardMaterial color="#001166" />
-        </mesh>
-
-        {/* 通信天线 */}
-        <mesh position={[0, 2, 0]}>
-          <coneGeometry args={[0.8, 2, 8]} />
-          <meshStandardMaterial color="#ffffff" />
-        </mesh>
-
-        {/* 天线阵列 */}
-        {Array.from({ length: 4 }).map((_, i) => {
-          const angle = (i / 4) * Math.PI * 2;
-          return (
-            <mesh
-              key={i}
-              position={[Math.cos(angle) * 1.5, -1.5, Math.sin(angle) * 1.5]}
-            >
-              <cylinderGeometry args={[0.05, 0.05, 1, 8]} />
-              <meshStandardMaterial color="#ffaa00" />
-            </mesh>
-          );
-        })}
-
-        {/* 卫星标识 */}
-        <Text
-          position={[0, -3, 0]}
-          fontSize={0.5}
-          color="#ffffff"
-          anchorX="center"
-          anchorY="middle"
-        >
-          CyberGuard-SAT-01
-        </Text>
-
-        {/* 状态信息 */}
-        <Html position={[0, -4, 0]} transform>
-          <div className="bg-black/80 text-white p-2 rounded text-xs">
-            轨道高度: 35,786 km
-            <br />
-            信号强度: 97%
-            <br />
-            工作状态: 正常
-            <br />
-            时间: {currentTime.toLocaleTimeString()}
-          </div>
-        </Html>
-      </group>
-
-      {/* 地面站 */}
-      {groundStations.map((station, index) => (
-        <group key={index} position={station.position}>
-          {/* 地面站建筑 */}
-          <mesh position={[0, 2, 0]}>
-            <cylinderGeometry args={[2, 2, 4, 16]} />
-            <meshStandardMaterial color="#2a2a2a" />
-          </mesh>
-
-          {/* 抛物面天线 */}
-          <mesh position={[0, 5, 0]} rotation={[Math.PI / 6, 0, 0]}>
-            <sphereGeometry
-              args={[1.5, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2]}
-            />
-            <meshStandardMaterial color="#cccccc" />
-          </mesh>
-
-          {/* 通信信号 */}
-          <Line
-            points={[
-              new Vector3(0, 5, 0),
-              new Vector3(
-                satelliteRef.current?.position.x || 0,
-                satelliteRef.current?.position.y || 35,
-                satelliteRef.current?.position.z || 0,
-              ),
-            ]}
-            color="#00aaff"
-            lineWidth={2}
-            transparent
-            opacity={0.6}
-            dashed
-          />
-
-          {/* 地面站标识 */}
-          <Text
-            position={[0, 7, 0]}
-            fontSize={0.3}
-            color="#00ff88"
-            anchorX="center"
-            anchorY="middle"
-          >
-            {station.name}
-          </Text>
-
-          {/* 信号状态 */}
-          <Html position={[0, -1, 0]} transform>
-            <div className="bg-black/70 text-white p-1 rounded text-xs">
-              信号: {station.signal}%
-            </div>
-          </Html>
-        </group>
-      ))}
-
-      {/* 卫星覆盖范围 */}
-      <mesh position={[0, 1, 0]}>
-        <cylinderGeometry args={[80, 80, 0.1, 64]} />
-        <meshBasicMaterial
-          color="#0066ff"
-          transparent
-          opacity={0.1}
-          wireframe
-        />
-      </mesh>
-    </group>
+    <instancedMesh
+      ref={racksRef}
+      args={[
+        SharedGeometries.serverRack,
+        SharedMaterials.server,
+        rackData.length,
+      ]}
+      frustumCulled
+    />
   );
 }
 
-// 智能交通网络系统
-function IntelligentTrafficNetwork() {
-  const trafficRef = useRef<Group>(null);
-
-  const roadNetwork = useMemo(() => {
-    const roads = [
-      // 主干道
-      { start: [-80, 0, 0], end: [80, 0, 0], type: "highway" },
-      { start: [0, 0, -80], end: [0, 0, 80], type: "highway" },
-      // 环线
-      { start: [-50, 0, -50], end: [50, 0, -50], type: "ring" },
-      { start: [50, 0, -50], end: [50, 0, 50], type: "ring" },
-      { start: [50, 0, 50], end: [-50, 0, 50], type: "ring" },
-      { start: [-50, 0, 50], end: [-50, 0, -50], type: "ring" },
-      // 连接道
-      { start: [-50, 0, 0], end: [-25, 0, 0], type: "connector" },
-      { start: [50, 0, 0], end: [25, 0, 0], type: "connector" },
-      { start: [0, 0, -50], end: [0, 0, -25], type: "connector" },
-      { start: [0, 0, 50], end: [0, 0, 25], type: "connector" },
-    ];
-
-    const vehicles = Array.from({ length: 24 }).map((_, i) => ({
-      id: i,
-      type: i % 5 === 0 ? "truck" : i % 3 === 0 ? "bus" : "car",
-      position: [
-        (Math.random() - 0.5) * 150,
-        0.3,
-        (Math.random() - 0.5) * 150,
-      ] as [number, number, number],
-      speed: 0.1 + Math.random() * 0.2,
+// 优化的交通系统
+function OptimizedTrafficSystem() {
+  const vehiclesRef = useRef<InstancedMesh>(null);
+  const [vehiclePositions, setVehiclePositions] = useState(() => {
+    return Array.from({ length: 16 }, (_, i) => ({
+      position: [(Math.random() - 0.5) * 100, 0.3, (Math.random() - 0.5) * 100],
       direction: Math.random() * Math.PI * 2,
-      status: Math.random() > 0.9 ? "alert" : "normal",
+      speed: 0.1 + Math.random() * 0.1,
     }));
+  });
 
-    return { roads, vehicles };
-  }, []);
+  useFrame(() => {
+    if (!vehiclesRef.current) return;
 
-  const [vehicles, setVehicles] = useState(roadNetwork.vehicles);
+    const tempObject = new Object3D();
 
-  useFrame((state) => {
-    const time = state.clock.getElapsedTime();
+    setVehiclePositions((prev) =>
+      prev.map((vehicle) => {
+        const newPos = [...vehicle.position];
+        newPos[0] += Math.cos(vehicle.direction) * vehicle.speed;
+        newPos[2] += Math.sin(vehicle.direction) * vehicle.speed;
 
-    setVehicles((prevVehicles) =>
-      prevVehicles.map((vehicle) => {
-        let newPosition = [...vehicle.position] as [number, number, number];
-        newPosition[0] += Math.cos(vehicle.direction) * vehicle.speed;
-        newPosition[2] += Math.sin(vehicle.direction) * vehicle.speed;
-
-        // 边界检查和折返
-        if (Math.abs(newPosition[0]) > 75 || Math.abs(newPosition[2]) > 75) {
+        // 边界检查
+        if (Math.abs(newPos[0]) > 60 || Math.abs(newPos[2]) > 60) {
           return {
             ...vehicle,
             direction:
@@ -606,987 +389,418 @@ function IntelligentTrafficNetwork() {
           };
         }
 
-        return {
-          ...vehicle,
-          position: newPosition,
-        };
+        return { ...vehicle, position: newPos };
       }),
     );
+
+    vehiclePositions.forEach((vehicle, i) => {
+      tempObject.position.set(...vehicle.position);
+      tempObject.rotation.y = vehicle.direction;
+      tempObject.updateMatrix();
+      vehiclesRef.current!.setMatrixAt(i, tempObject.matrix);
+    });
+
+    vehiclesRef.current.instanceMatrix.needsUpdate = true;
   });
 
   return (
-    <group ref={trafficRef}>
-      {/* 道路网络 */}
-      {roadNetwork.roads.map((road, index) => (
-        <Line
-          key={index}
-          points={[new Vector3(...road.start), new Vector3(...road.end)]}
-          color={
-            road.type === "highway"
-              ? "#ffaa00"
-              : road.type === "ring"
-                ? "#00aaff"
-                : "#888888"
-          }
-          lineWidth={road.type === "highway" ? 6 : road.type === "ring" ? 4 : 2}
-          transparent
-          opacity={0.7}
-        />
-      ))}
-
-      {/* 车辆 */}
-      {vehicles.map((vehicle, index) => (
-        <group
-          key={vehicle.id}
-          position={vehicle.position}
-          rotation={[0, vehicle.direction, 0]}
-        >
-          {/* 车辆主体 */}
-          <mesh>
-            <boxGeometry
-              args={
-                vehicle.type === "truck"
-                  ? [2, 0.8, 4]
-                  : vehicle.type === "bus"
-                    ? [1.5, 1, 3]
-                    : [1, 0.6, 2]
-              }
-            />
-            <meshStandardMaterial
-              color={
-                vehicle.status === "alert"
-                  ? "#ff0000"
-                  : vehicle.type === "truck"
-                    ? "#444444"
-                    : vehicle.type === "bus"
-                      ? "#0066cc"
-                      : "#2a2a2a"
-              }
-            />
-          </mesh>
-
-          {/* 车灯 */}
-          <mesh
-            position={[
-              0,
-              0.2,
-              vehicle.type === "truck" ? 2 : vehicle.type === "bus" ? 1.5 : 1,
-            ]}
-          >
-            <sphereGeometry args={[0.1, 8, 8]} />
-            <meshBasicMaterial color="#ffffff" />
-          </mesh>
-
-          {/* 状态指示 */}
-          {vehicle.status === "alert" && (
-            <pointLight
-              position={[0, 2, 0]}
-              intensity={0.5}
-              color="#ff0000"
-              distance={5}
-            />
-          )}
-        </group>
-      ))}
-
-      {/* 交通信号灯 */}
-      {[
-        [40, 0, 40],
-        [-40, 0, 40],
-        [40, 0, -40],
-        [-40, 0, -40],
-        [0, 0, 0],
-      ].map((pos, index) => (
-        <group key={index} position={pos}>
-          <mesh position={[0, 3, 0]}>
-            <cylinderGeometry args={[0.1, 0.1, 6, 8]} />
-            <meshStandardMaterial color="#666666" />
-          </mesh>
-          <mesh position={[0, 6, 0]}>
-            <boxGeometry args={[0.5, 1.5, 0.3]} />
-            <meshStandardMaterial color="#222222" />
-          </mesh>
-          <mesh position={[0, 6.3, 0.16]}>
-            <sphereGeometry args={[0.15, 8, 8]} />
-            <meshBasicMaterial
-              color={
-                Math.sin(Date.now() * 0.002 + index) > 0 ? "#00ff00" : "#ff0000"
-              }
-            />
-          </mesh>
-        </group>
-      ))}
-    </group>
+    <instancedMesh
+      ref={vehiclesRef}
+      args={[
+        SharedGeometries.vehicleBody,
+        SharedMaterials.vehicle,
+        vehiclePositions.length,
+      ]}
+      frustumCulled
+    />
   );
 }
 
-// 高级网络拓扑可视化
-function AdvancedNetworkTopology() {
+// 优化的粒子系统
+function OptimizedParticleSystem() {
+  const particlesRef = useRef<Points>(null);
+
+  const particleData = useMemo(() => {
+    const count = 1000; // 减少粒子数量以提高性能
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    const sizes = new Float32Array(count);
+
+    for (let i = 0; i < count; i++) {
+      const i3 = i * 3;
+
+      // 随机分布在场景中
+      positions[i3] = (Math.random() - 0.5) * 100;
+      positions[i3 + 1] = Math.random() * 30 + 5;
+      positions[i3 + 2] = (Math.random() - 0.5) * 100;
+
+      // 随机颜色
+      const color = new Color(Math.random() > 0.5 ? "#00f5ff" : "#ff6b00");
+      colors[i3] = color.r;
+      colors[i3 + 1] = color.g;
+      colors[i3 + 2] = color.b;
+
+      sizes[i] = Math.random() * 0.1 + 0.05;
+    }
+
+    const geometry = new BufferGeometry();
+    geometry.setAttribute("position", new Float32BufferAttribute(positions, 3));
+    geometry.setAttribute("color", new Float32BufferAttribute(colors, 3));
+    geometry.setAttribute("size", new Float32BufferAttribute(sizes, 1));
+
+    return geometry;
+  }, []);
+
+  useFrame((state) => {
+    if (particlesRef.current) {
+      particlesRef.current.rotation.y = state.clock.getElapsedTime() * 0.01;
+    }
+  });
+
+  return (
+    <points ref={particlesRef} geometry={particleData} frustumCulled>
+      <pointsMaterial
+        size={0.05}
+        vertexColors
+        transparent
+        opacity={0.6}
+        blending={AdditiveBlending}
+        sizeAttenuation={true}
+      />
+    </points>
+  );
+}
+
+// 简化的网络拓扑
+function SimplifiedNetworkTopology() {
   const networkRef = useRef<Group>(null);
 
-  const networkLayers = useMemo(() => {
-    return [
-      {
-        name: "核心层",
-        radius: 15,
-        height: 10,
-        nodes: [
-          { name: "核心路由器1", type: "core", angle: 0, status: "active" },
-          {
-            name: "核心路由器2",
-            type: "core",
-            angle: Math.PI,
-            status: "active",
-          },
-        ],
-      },
-      {
-        name: "汇聚层",
-        radius: 25,
-        height: 5,
-        nodes: [
-          {
-            name: "汇聚交换机1",
-            type: "aggregation",
-            angle: 0,
-            status: "active",
-          },
-          {
-            name: "汇聚交换机2",
-            type: "aggregation",
-            angle: Math.PI / 2,
-            status: "active",
-          },
-          {
-            name: "汇聚交换机3",
-            type: "aggregation",
-            angle: Math.PI,
-            status: "warning",
-          },
-          {
-            name: "汇聚交换机4",
-            type: "aggregation",
-            angle: (3 * Math.PI) / 2,
-            status: "active",
-          },
-        ],
-      },
-      {
-        name: "接入层",
-        radius: 35,
-        height: 0,
-        nodes: [
-          { name: "接入交换机1", type: "access", angle: 0, status: "active" },
-          {
-            name: "接入交换机2",
-            type: "access",
-            angle: Math.PI / 4,
-            status: "active",
-          },
-          {
-            name: "接入交换机3",
-            type: "access",
-            angle: Math.PI / 2,
-            status: "active",
-          },
-          {
-            name: "接入交换机4",
-            type: "access",
-            angle: (3 * Math.PI) / 4,
-            status: "maintenance",
-          },
-          {
-            name: "接入交换机5",
-            type: "access",
-            angle: Math.PI,
-            status: "active",
-          },
-          {
-            name: "接入交换机6",
-            type: "access",
-            angle: (5 * Math.PI) / 4,
-            status: "active",
-          },
-          {
-            name: "接入交换机7",
-            type: "access",
-            angle: (3 * Math.PI) / 2,
-            status: "active",
-          },
-          {
-            name: "接入交换机8",
-            type: "access",
-            angle: (7 * Math.PI) / 4,
-            status: "active",
-          },
-        ],
-      },
+  const networkNodes = useMemo(() => {
+    const nodes = [];
+    const layers = [
+      { radius: 15, count: 2, height: 10, type: "core" },
+      { radius: 25, count: 4, height: 5, type: "aggregation" },
+      { radius: 35, count: 8, height: 0, type: "access" },
     ];
+
+    layers.forEach((layer) => {
+      for (let i = 0; i < layer.count; i++) {
+        const angle = (i / layer.count) * Math.PI * 2;
+        nodes.push({
+          position: [
+            Math.cos(angle) * layer.radius,
+            layer.height,
+            Math.sin(angle) * layer.radius,
+          ],
+          type: layer.type,
+        });
+      }
+    });
+
+    return nodes;
   }, []);
 
-  useFrame((state) => {
-    if (networkRef.current) {
-      const time = state.clock.getElapsedTime();
-      // 网络层轻微旋转
-      networkRef.current.children.forEach((layer, index) => {
-        layer.rotation.y = time * 0.01 * (index + 1);
-      });
-    }
-  });
-
-  const getNodeGeometry = (type: string) => {
-    switch (type) {
-      case "core":
-        return <octahedronGeometry args={[1]} />;
-      case "aggregation":
-        return <boxGeometry args={[1.5, 1.5, 1.5]} />;
-      case "access":
-        return <sphereGeometry args={[0.8, 16, 16]} />;
-      default:
-        return <sphereGeometry args={[0.5, 8, 8]} />;
-    }
-  };
-
-  const getNodeColor = (type: string, status: string) => {
-    if (status === "warning") return "#ffaa00";
-    if (status === "maintenance") return "#666666";
-    if (status === "error") return "#ff0000";
-
-    switch (type) {
-      case "core":
-        return "#ff6600";
-      case "aggregation":
-        return "#0066ff";
-      case "access":
-        return "#00ff66";
-      default:
-        return "#ffffff";
-    }
-  };
-
   return (
-    <group ref={networkRef} position={[0, 0, 0]}>
-      {networkLayers.map((layer, layerIndex) => (
-        <group key={layerIndex}>
-          {/* 层标识 */}
-          <Text
-            position={[0, layer.height + 3, 0]}
-            fontSize={0.8}
-            color="#ffffff"
-            anchorX="center"
-            anchorY="middle"
-          >
-            {layer.name}
-          </Text>
-
-          {/* 层级圆环 */}
-          <mesh position={[0, layer.height, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <ringGeometry args={[layer.radius - 0.5, layer.radius + 0.5, 32]} />
-            <meshBasicMaterial color="#333333" transparent opacity={0.3} />
-          </mesh>
-
-          {/* 网络节点 */}
-          {layer.nodes.map((node, nodeIndex) => {
-            const x = Math.cos(node.angle) * layer.radius;
-            const z = Math.sin(node.angle) * layer.radius;
-            return (
-              <group key={nodeIndex} position={[x, layer.height, z]}>
-                {/* 节点主体 */}
-                <mesh>
-                  {getNodeGeometry(node.type)}
-                  <meshStandardMaterial
-                    color={getNodeColor(node.type, node.status)}
-                    emissive={getNodeColor(node.type, node.status)}
-                    emissiveIntensity={0.2}
-                  />
-                </mesh>
-
-                {/* 节点名称 */}
-                <Text
-                  position={[0, 2, 0]}
-                  fontSize={0.3}
-                  color="#ffffff"
-                  anchorX="center"
-                  anchorY="middle"
-                >
-                  {node.name}
-                </Text>
-
-                {/* 状态指示器 */}
-                <mesh position={[0, -1.5, 0]}>
-                  <cylinderGeometry args={[0.2, 0.2, 0.1, 8]} />
-                  <meshBasicMaterial
-                    color={getNodeColor(node.type, node.status)}
-                  />
-                </mesh>
-
-                {/* 连接线到中心 */}
-                {layerIndex > 0 && (
-                  <Line
-                    points={[
-                      new Vector3(0, 0, 0),
-                      new Vector3(
-                        -x / 2,
-                        networkLayers[layerIndex - 1].height - layer.height,
-                        -z / 2,
-                      ),
-                    ]}
-                    color="#00aaff"
-                    lineWidth={2}
-                    transparent
-                    opacity={0.6}
-                  />
-                )}
-
-                {/* 数据流动效果 */}
-                <mesh position={[0, 0.5, 0]}>
-                  <sphereGeometry args={[0.1, 8, 8]} />
-                  <meshBasicMaterial
-                    color="#00ffff"
-                    transparent
-                    opacity={0.7}
-                  />
-                </mesh>
-              </group>
-            );
-          })}
-        </group>
+    <group ref={networkRef}>
+      {networkNodes.map((node, index) => (
+        <mesh key={index} position={node.position} frustumCulled>
+          <sphereGeometry args={[node.type === "core" ? 1 : 0.8, 8, 8]} />
+          <meshStandardMaterial
+            color={
+              node.type === "core"
+                ? "#ff6600"
+                : node.type === "aggregation"
+                  ? "#0066ff"
+                  : "#00ff66"
+            }
+            emissive={
+              node.type === "core"
+                ? "#ff6600"
+                : node.type === "aggregation"
+                  ? "#0066ff"
+                  : "#00ff66"
+            }
+            emissiveIntensity={0.2}
+          />
+        </mesh>
       ))}
     </group>
   );
 }
 
-// 增强的安全事件时间轴
-function SecurityEventTimeline() {
-  const timelineRef = useRef<Group>(null);
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const securityEvents = useMemo(() => {
-    const now = new Date();
-    return [
-      {
-        time: new Date(now.getTime() - 5 * 60000),
-        type: "threat_detected",
-        severity: "high",
-        title: "DDoS攻击检测",
-        description: "检测到来自多个IP的DDoS攻击",
-        source: "防火墙系统",
-      },
-      {
-        time: new Date(now.getTime() - 12 * 60000),
-        type: "malware_blocked",
-        severity: "medium",
-        title: "恶意软件拦截",
-        description: "成功拦截恶意软件下载",
-        source: "端点保护",
-      },
-      {
-        time: new Date(now.getTime() - 18 * 60000),
-        type: "access_violation",
-        severity: "high",
-        title: "异常访问尝试",
-        description: "检测到可疑的权限提升尝试",
-        source: "访问控制",
-      },
-      {
-        time: new Date(now.getTime() - 25 * 60000),
-        type: "data_exfiltration",
-        severity: "critical",
-        title: "数据泄露风险",
-        description: "检测到异常的大量数据传输",
-        source: "数据保护",
-      },
-      {
-        time: new Date(now.getTime() - 35 * 60000),
-        type: "phishing_detected",
-        severity: "medium",
-        title: "钓鱼邮件拦截",
-        description: "成功拦截钓鱼邮件攻击",
-        source: "邮件安全",
-      },
-      {
-        time: new Date(now.getTime() - 42 * 60000),
-        type: "system_anomaly",
-        severity: "low",
-        title: "系统异常",
-        description: "检测到系统性能异常",
-        source: "监控系统",
-      },
-      {
-        time: new Date(now.getTime() - 50 * 60000),
-        type: "vulnerability_scan",
-        severity: "info",
-        title: "漏洞扫描完成",
-        description: "定期漏洞扫描已完成",
-        source: "漏洞管理",
-      },
-    ];
-  }, [currentTime]);
-
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case "critical":
-        return "#ff0000";
-      case "high":
-        return "#ff6600";
-      case "medium":
-        return "#ffaa00";
-      case "low":
-        return "#00aaff";
-      case "info":
-        return "#00ff88";
-      default:
-        return "#888888";
-    }
-  };
+// 优化的卫星系统
+function OptimizedSatelliteSystem() {
+  const satelliteRef = useRef<Group>(null);
 
   useFrame((state) => {
-    if (timelineRef.current) {
+    if (satelliteRef.current) {
       const time = state.clock.getElapsedTime();
-      // 时间轴脉冲效果
-      timelineRef.current.scale.y = 1 + Math.sin(time * 2) * 0.02;
+      satelliteRef.current.position.x = Math.cos(time * 0.05) * 30;
+      satelliteRef.current.position.z = Math.sin(time * 0.05) * 30;
+      satelliteRef.current.position.y = 25;
+      satelliteRef.current.rotation.y = time * 0.1;
     }
   });
 
   return (
-    <group ref={timelineRef} position={[80, 0, 0]}>
-      {/* 时间轴主体 */}
-      <mesh>
-        <cylinderGeometry args={[0.2, 0.2, 40, 16]} />
-        <meshStandardMaterial color="#333333" />
+    <group ref={satelliteRef}>
+      {/* 简化的卫星模型 */}
+      <mesh frustumCulled>
+        <boxGeometry args={[2, 1, 3]} />
+        <meshStandardMaterial color="#333333" metalness={0.8} />
       </mesh>
 
-      {/* 时间轴标题 */}
+      {/* 太阳能板 */}
+      <mesh position={[-2.5, 0, 0]} frustumCulled>
+        <boxGeometry args={[1, 4, 0.1]} />
+        <meshStandardMaterial color="#001166" />
+      </mesh>
+      <mesh position={[2.5, 0, 0]} frustumCulled>
+        <boxGeometry args={[1, 4, 0.1]} />
+        <meshStandardMaterial color="#001166" />
+      </mesh>
+
+      {/* 卫星标识 */}
       <Text
-        position={[0, 22, 0]}
-        fontSize={1.2}
+        position={[0, -2, 0]}
+        fontSize={0.4}
         color="#ffffff"
         anchorX="center"
         anchorY="middle"
       >
-        安全事件时间轴
+        CYBERGUARD SAT
       </Text>
-
-      {/* 当前时间显示 */}
-      <Html position={[0, 25, 0]} transform>
-        <div className="bg-black/80 text-white p-2 rounded text-sm">
-          当前时间: {currentTime.toLocaleString()}
-        </div>
-      </Html>
-
-      {/* 安全事件 */}
-      {securityEvents.map((event, index) => {
-        const y = 15 - index * 5;
-        const side = index % 2 === 0 ? 1 : -1;
-        const x = side * 8;
-
-        return (
-          <group key={index} position={[x, y, 0]}>
-            {/* 事件标记 */}
-            <mesh position={[-x, 0, 0]}>
-              <sphereGeometry args={[0.3, 16, 16]} />
-              <meshBasicMaterial
-                color={getSeverityColor(event.severity)}
-                emissive={getSeverityColor(event.severity)}
-                emissiveIntensity={0.3}
-              />
-            </mesh>
-
-            {/* 连接线 */}
-            <Line
-              points={[new Vector3(-x, 0, 0), new Vector3(0, 0, 0)]}
-              color={getSeverityColor(event.severity)}
-              lineWidth={3}
-              transparent
-              opacity={0.7}
-            />
-
-            {/* 事件信息面板 */}
-            <Html transform>
-              <div
-                className="bg-black/90 text-white p-3 rounded border-l-4 min-w-64"
-                style={{ borderLeftColor: getSeverityColor(event.severity) }}
-              >
-                <div className="font-bold text-sm mb-1">{event.title}</div>
-                <div className="text-xs text-gray-300 mb-2">
-                  {event.time.toLocaleTimeString()}
-                </div>
-                <div className="text-xs mb-2">{event.description}</div>
-                <div className="text-xs text-blue-300">
-                  来源: {event.source}
-                </div>
-                <div
-                  className="inline-block px-2 py-1 rounded text-xs mt-2"
-                  style={{
-                    backgroundColor: getSeverityColor(event.severity) + "20",
-                    color: getSeverityColor(event.severity),
-                  }}
-                >
-                  {event.severity.toUpperCase()}
-                </div>
-              </div>
-            </Html>
-          </group>
-        );
-      })}
     </group>
   );
 }
 
-// 系统资源监控可视化
-function SystemResourceMonitor() {
-  const monitorRef = useRef<Group>(null);
+// 优化的信息面板
+function OptimizedInfoPanel({
+  position,
+  title,
+  data,
+  color,
+}: {
+  position: [number, number, number];
+  title: string;
+  data: Array<{ label: string; value: string | number }>;
+  color: string;
+}) {
+  return (
+    <group position={position}>
+      <Html transform occlude>
+        <div
+          className="bg-black/90 text-white p-3 rounded border-l-4 min-w-48 max-w-64"
+          style={{ borderLeftColor: color }}
+        >
+          <div className="font-bold text-sm mb-2" style={{ color }}>
+            {title}
+          </div>
+          <div className="space-y-1">
+            {data.slice(0, 4).map((item, index) => (
+              <div key={index} className="flex justify-between text-xs">
+                <span className="text-gray-300">{item.label}:</span>
+                <span className="font-mono">{item.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Html>
+    </group>
+  );
+}
+
+// 主优化场景组件
+function OptimizedMainScene() {
+  const sceneRef = useRef<Group>(null);
   const { data: realTimeData } = useRealTimeData(generateSituationData, {
-    interval: 1000,
+    interval: 2000, // 降低更新频率以提高性能
     enabled: true,
   });
 
-  const resourceTypes = useMemo(
+  const informationPanels = useMemo(
     () => [
       {
-        name: "CPU",
-        icon: "Cpu",
-        value: realTimeData?.cpuUsage || 45,
-        max: 100,
+        position: [40, 8, 0] as [number, number, number],
+        title: "系统监控",
+        color: "#00f5ff",
+        data: [
+          { label: "CPU", value: `${realTimeData?.cpuUsage || 45}%` },
+          { label: "内存", value: `${realTimeData?.memoryUsage || 68}%` },
+          { label: "网络", value: `${realTimeData?.networkUsage || 34}%` },
+          { label: "状态", value: "正常" },
+        ],
+      },
+      {
+        position: [-40, 8, 0] as [number, number, number],
+        title: "安全监控",
         color: "#ff6600",
-        position: [0, 0, 15] as [number, number, number],
+        data: [
+          { label: "威胁", value: realTimeData?.realTimeThreats || 3 },
+          { label: "已拦截", value: realTimeData?.blockedAttacks || 1247 },
+          { label: "防护", value: "启用" },
+          { label: "级别", value: "高" },
+        ],
       },
       {
-        name: "内存",
-        icon: "MemoryStick",
-        value: realTimeData?.memoryUsage || 68,
-        max: 100,
-        color: "#0066ff",
-        position: [15, 0, 0] as [number, number, number],
-      },
-      {
-        name: "存储",
-        icon: "HardDrive",
-        value: realTimeData?.diskUsage || 72,
-        max: 100,
+        position: [0, 8, 40] as [number, number, number],
+        title: "网络状态",
         color: "#00ff66",
-        position: [0, 0, -15] as [number, number, number],
+        data: [
+          { label: "连接数", value: realTimeData?.activeConnections || 8247 },
+          { label: "带宽", value: "2.4GB/s" },
+          { label: "延迟", value: "12ms" },
+          { label: "健康度", value: "98.7%" },
+        ],
       },
       {
-        name: "网络",
-        icon: "Network",
-        value: realTimeData?.networkUsage || 34,
-        max: 100,
-        color: "#ff00aa",
-        position: [-15, 0, 0] as [number, number, number],
-      },
-      {
-        name: "GPU",
-        icon: "Monitor",
-        value: realTimeData?.gpuUsage || 56,
-        max: 100,
-        color: "#aaff00",
-        position: [10, 0, 10] as [number, number, number],
-      },
-      {
-        name: "带宽",
-        icon: "Wifi",
-        value: realTimeData?.bandwidthUsage || 42,
-        max: 100,
-        color: "#00aaff",
-        position: [-10, 0, 10] as [number, number, number],
+        position: [0, 8, -40] as [number, number, number],
+        title: "系统资源",
+        color: "#aa00ff",
+        data: [
+          { label: "存储", value: `${realTimeData?.diskUsage || 72}%` },
+          { label: "用户", value: realTimeData?.onlineUsers || 1247 },
+          { label: "服务", value: "运行中" },
+          { label: "负载", value: "正常" },
+        ],
       },
     ],
     [realTimeData],
   );
 
-  useFrame((state) => {
-    if (monitorRef.current) {
-      const time = state.clock.getElapsedTime();
-      monitorRef.current.rotation.y = time * 0.05;
-    }
-  });
-
-  return (
-    <group ref={monitorRef} position={[-80, 0, 0]}>
-      {/* 中央监控hub */}
-      <mesh>
-        <cylinderGeometry args={[3, 3, 2, 32]} />
-        <meshStandardMaterial color="#222222" metalness={0.8} />
-      </mesh>
-
-      <Text
-        position={[0, 3, 0]}
-        fontSize={1}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
-      >
-        系统资源监控
-      </Text>
-
-      {resourceTypes.map((resource, index) => {
-        const percentage = (resource.value / resource.max) * 100;
-        const height = (percentage / 100) * 10;
-
-        return (
-          <group key={index} position={resource.position}>
-            {/* 资源柱状图 */}
-            <mesh position={[0, height / 2, 0]}>
-              <cylinderGeometry args={[1, 1, height, 16]} />
-              <meshStandardMaterial
-                color={resource.color}
-                emissive={resource.color}
-                emissiveIntensity={0.1}
-                transparent
-                opacity={0.8}
-              />
-            </mesh>
-
-            {/* 基座 */}
-            <mesh position={[0, -0.5, 0]}>
-              <cylinderGeometry args={[1.2, 1.2, 1, 16]} />
-              <meshStandardMaterial color="#333333" />
-            </mesh>
-
-            {/* 资源名称 */}
-            <Text
-              position={[0, 11, 0]}
-              fontSize={0.5}
-              color="#ffffff"
-              anchorX="center"
-              anchorY="middle"
-            >
-              {resource.name}
-            </Text>
-
-            {/* 数值显示 */}
-            <Html position={[0, height + 1, 0]} transform>
-              <div className="bg-black/80 text-white p-2 rounded text-center">
-                <div
-                  className="text-lg font-bold"
-                  style={{ color: resource.color }}
-                >
-                  {resource.value}%
-                </div>
-                <div className="text-xs">负载率</div>
-              </div>
-            </Html>
-
-            {/* 连接线到中心 */}
-            <Line
-              points={[
-                new Vector3(0, 0, 0),
-                new Vector3(
-                  -resource.position[0] / 3,
-                  1,
-                  -resource.position[2] / 3,
-                ),
-              ]}
-              color={resource.color}
-              lineWidth={2}
-              transparent
-              opacity={0.5}
-            />
-
-            {/* 警报指示器 */}
-            {percentage > 80 && (
-              <mesh position={[0, height + 2, 0]}>
-                <sphereGeometry args={[0.2, 8, 8]} />
-                <meshBasicMaterial color="#ff0000" />
-                <pointLight color="#ff0000" intensity={0.5} distance={5} />
-              </mesh>
-            )}
-          </group>
-        );
-      })}
-    </group>
-  );
-}
-
-// 主3D场景组件
-function Main3DScene() {
-  const sceneRef = useRef<Group>(null);
-
   return (
     <group ref={sceneRef}>
-      {/* 增强的环境光照系统 */}
-      <ambientLight intensity={0.3} color="#ffffff" />
+      {/* 优化的光照系统 - 减少光源数量 */}
+      <ambientLight intensity={0.4} color="#ffffff" />
       <directionalLight
-        position={[50, 50, 50]}
+        position={[30, 30, 30]}
         intensity={1}
         color="#ffffff"
         castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
       />
-      <pointLight position={[0, 20, 0]} intensity={1.2} color="#0088ff" />
-      <pointLight position={[30, 15, 30]} intensity={0.8} color="#ff8800" />
-      <pointLight position={[-30, 15, -30]} intensity={0.8} color="#88ff00" />
-      <pointLight position={[0, 10, -40]} intensity={1.5} color="#ff8800" />
-      <spotLight
-        position={[0, 40, 0]}
-        angle={Math.PI / 6}
-        intensity={2}
-        color="#ffffff"
-        castShadow
-      />
+      <pointLight position={[0, 15, 0]} intensity={0.8} color="#0088ff" />
+      <pointLight position={[20, 10, 20]} intensity={0.5} color="#ff8800" />
 
-      {/* 中央监控模型 */}
-      <SituationMonitoringModel realTimeData={generateSituationData()} />
+      {/* 性能监控 */}
+      <PerformanceMonitor />
 
-      {/* 优化的背景城市建筑群 */}
-      <OptimizedCityBuildings />
+      {/* 中央监控模型 - 简化版本 */}
+      <Suspense fallback={null}>
+        <SituationMonitoringModel realTimeData={realTimeData} />
+      </Suspense>
 
-      {/* 增强的数据中心系统 */}
-      <EnhancedDataCenterRacks />
+      {/* 优化的组件 */}
+      <OptimizedInstancedBuildings />
+      <OptimizedDataCenters />
+      <OptimizedTrafficSystem />
+      <OptimizedParticleSystem />
+      <SimplifiedNetworkTopology />
+      <OptimizedSatelliteSystem />
 
-      {/* 高级卫星通信系统 */}
-      <AdvancedSatelliteSystem />
-
-      {/* 智能交通网络 */}
-      <IntelligentTrafficNetwork />
-
-      {/* 高级网络拓扑 */}
-      <AdvancedNetworkTopology />
-
-      {/* 安全事件时间轴 */}
-      <SecurityEventTimeline />
-
-      {/* 系统资源监控 */}
-      <SystemResourceMonitor />
-
-      {/* 优化的基础平台系统 */}
-      <mesh position={[0, -3, 0]} receiveShadow>
-        <cylinderGeometry args={[120, 120, 1, 128]} />
-        <meshStandardMaterial
-          color="#0a0a0a"
-          transparent
-          opacity={0.4}
-          metalness={0.5}
-          roughness={0.5}
+      {/* 信息面板 */}
+      {informationPanels.map((panel, index) => (
+        <OptimizedInfoPanel
+          key={index}
+          position={panel.position}
+          title={panel.title}
+          data={panel.data}
+          color={panel.color}
         />
+      ))}
+
+      {/* 简化的基础平台 */}
+      <mesh position={[0, -2, 0]} receiveShadow frustumCulled>
+        <cylinderGeometry args={[80, 80, 0.5, 32]} />
+        <primitive object={SharedMaterials.platform} />
       </mesh>
 
-      <mesh position={[0, -2.5, 0]} receiveShadow>
-        <cylinderGeometry args={[100, 100, 0.5, 64]} />
-        <meshStandardMaterial
-          color="#1a1a1a"
-          transparent
-          opacity={0.5}
-          metalness={0.3}
-          roughness={0.7}
-        />
-      </mesh>
-
-      <mesh position={[0, -2, 0]} receiveShadow>
-        <cylinderGeometry args={[80, 80, 0.3, 32]} />
-        <meshStandardMaterial
-          color="#2a2a2a"
-          transparent
-          opacity={0.6}
-          metalness={0.2}
-          roughness={0.8}
-        />
-      </mesh>
-
-      {/* 多层网格系统 */}
+      {/* 简化的网格 */}
       <gridHelper
-        args={[200, 200, "#333333", "#1a1a1a"]}
-        position={[0, -2.9, 0]}
-      />
-      <gridHelper
-        args={[160, 160, "#444444", "#2a2a2a"]}
-        position={[0, -2.8, 0]}
-      />
-      <gridHelper
-        args={[120, 120, "#555555", "#3a3a3a"]}
-        position={[0, -2.7, 0]}
-      />
-      <gridHelper
-        args={[80, 80, "#666666", "#4a4a4a"]}
-        position={[0, -2.6, 0]}
+        args={[160, 80, "#333333", "#1a1a1a"]}
+        position={[0, -1.8, 0]}
       />
 
-      {/* 增强的边界防护系统 */}
-      {Array.from({ length: 32 }).map((_, i) => {
-        const angle = (i / 32) * Math.PI * 2;
-        const radius = 90 + Math.sin(i * 0.5) * 5;
-        const x = Math.cos(angle) * radius;
-        const z = Math.sin(angle) * radius;
-        const height = 6 + Math.sin(i * 0.3) * 2;
-
+      {/* 简化的边界系统 */}
+      {Array.from({ length: 16 }).map((_, i) => {
+        const angle = (i / 16) * Math.PI * 2;
+        const x = Math.cos(angle) * 60;
+        const z = Math.sin(angle) * 60;
         return (
-          <group key={i} position={[x, height / 2, z]}>
-            <mesh>
-              <cylinderGeometry args={[0.3, 0.3, height, 8]} />
-              <meshStandardMaterial
-                color="#00f5ff"
-                emissive="#00f5ff"
-                emissiveIntensity={0.3}
-                transparent
-                opacity={0.7}
-              />
-            </mesh>
-            <pointLight
-              position={[0, height / 2, 0]}
-              intensity={0.2}
-              color="#00f5ff"
-              distance={8}
-            />
-          </group>
+          <mesh key={i} position={[x, 1, z]} frustumCulled>
+            <cylinderGeometry args={[0.2, 0.2, 2, 8]} />
+            <primitive object={SharedMaterials.light} />
+          </mesh>
         );
       })}
 
-      {/* 天空球和星空 */}
+      {/* 优化的星空 - 减少星星数量 */}
       <Stars
-        radius={300}
-        depth={50}
-        count={30000}
-        factor={4}
+        radius={200}
+        depth={30}
+        count={5000}
+        factor={2}
         saturation={0}
         fade
-        speed={0.5}
+        speed={0.2}
       />
-
-      <mesh position={[0, 50, 0]}>
-        <sphereGeometry args={[250, 64, 64]} />
-        <meshBasicMaterial
-          color="#000a1a"
-          transparent
-          opacity={0.15}
-          side={2}
-        />
-      </mesh>
-
-      {/* 大气层效果 */}
-      <mesh position={[0, 0, 0]}>
-        <sphereGeometry args={[200, 32, 32]} />
-        <meshBasicMaterial
-          color="#004466"
-          transparent
-          opacity={0.05}
-          side={2}
-        />
-      </mesh>
     </group>
   );
 }
 
-// 超级增强的顶部控制栏
-function SuperEnhancedTopControlBar() {
+// 优化的顶部控制栏
+function OptimizedTopControlBar() {
   const navigate = useNavigate();
-  const { data: realTimeData } = useRealTimeData(generateSituationData, {
-    interval: 1000,
-    enabled: true,
-  });
-
   const [isPlaying, setIsPlaying] = useState(true);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [viewMode, setViewMode] = useState("overview");
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    const timer = setInterval(() => setCurrentTime(new Date()), 5000); // 降低更新频率
     return () => clearInterval(timer);
   }, []);
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
-    }
-  };
 
   const viewModes = [
     { id: "overview", name: "总览", icon: Monitor },
     { id: "network", name: "网络", icon: Network },
     { id: "security", name: "安全", icon: Shield },
     { id: "performance", name: "性能", icon: Activity },
-    { id: "infrastructure", name: "基础设施", icon: Server },
-    { id: "analytics", name: "分析", icon: BarChart3 },
   ];
 
   return (
-    <div className="absolute top-0 left-0 right-0 z-50 bg-gradient-to-r from-matrix-surface/98 via-matrix-surface/95 to-matrix-surface/98 backdrop-blur-xl border-b-3 border-matrix-border shadow-2xl">
-      {/* 主控制栏 */}
-      <div className="p-4">
+    <div className="absolute top-0 left-0 right-0 z-50 bg-gradient-to-r from-matrix-surface/95 via-matrix-surface/90 to-matrix-surface/95 backdrop-blur-lg border-b border-matrix-border">
+      <div className="p-3">
         <div className="flex items-center justify-between">
-          {/* 左侧控制区 */}
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-4">
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-matrix-accent/50 to-matrix-accent/70 hover:from-matrix-accent/70 hover:to-matrix-accent/90 rounded-lg transition-all duration-300 text-white border border-matrix-border shadow-lg hover:shadow-xl"
+              className="flex items-center space-x-2 px-3 py-2 bg-matrix-accent/50 hover:bg-matrix-accent/70 rounded-lg transition-colors text-white"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span className="font-medium">返回</span>
+              <span>返回</span>
             </button>
 
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Globe className="w-8 h-8 text-neon-blue animate-pulse" />
-                <div className="absolute inset-0 animate-ping opacity-30">
-                  <Globe className="w-8 h-8 text-neon-blue" />
-                </div>
-              </div>
+            <div className="flex items-center space-x-3">
+              <Globe className="w-6 h-6 text-neon-blue animate-pulse" />
               <div>
-                <h1 className="text-2xl font-bold text-white bg-gradient-to-r from-neon-blue via-neon-green to-neon-purple bg-clip-text text-transparent">
-                  CyberGuard 3D 态势感知平台
+                <h1 className="text-xl font-bold text-white">
+                  CyberGuard 3D 态势感知
                 </h1>
-                <p className="text-sm text-muted-foreground font-mono">
-                  Advanced Network Security Situation Awareness Platform
+                <p className="text-xs text-muted-foreground">
+                  优化版网络安全监控平台
                 </p>
               </div>
             </div>
           </div>
 
-          {/* 中央状态监控 */}
-          <div className="flex items-center space-x-6">
-            <div className="grid grid-cols-3 gap-4 bg-matrix-accent/20 rounded-lg p-3 border border-matrix-border">
-              <div className="text-center">
-                <div className="text-xs text-muted-foreground mb-1">
-                  系统状态
-                </div>
-                <div className="flex items-center justify-center space-x-1">
-                  <div className="w-3 h-3 bg-neon-green rounded-full animate-pulse" />
-                  <span className="text-neon-green font-bold text-sm">
-                    在线
-                  </span>
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-xs text-muted-foreground mb-1">
-                  活跃威胁
-                </div>
-                <div className="text-threat-high font-bold text-lg">
-                  {realTimeData?.realTimeThreats || 3}
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-xs text-muted-foreground mb-1">已拦截</div>
-                <div className="text-neon-green font-bold text-lg">
-                  {Math.floor(
-                    ((realTimeData?.blockedAttacks || 1247) / 1000) * 10,
-                  )}
-                  K
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-matrix-accent/20 rounded-lg p-3 border border-matrix-border">
-              <div className="text-xs text-muted-foreground mb-1">当前时间</div>
-              <div className="text-white font-mono text-sm">
-                {currentTime.toLocaleString("zh-CN")}
-              </div>
-            </div>
-          </div>
-
-          {/* 右侧控制区 */}
           <div className="flex items-center space-x-4">
-            {/* 视图模式选择 */}
+            <div className="bg-matrix-accent/20 rounded-lg p-2 border border-matrix-border">
+              <div className="text-xs text-white font-mono">
+                {currentTime.toLocaleTimeString()}
+              </div>
+            </div>
+
             <div className="flex bg-matrix-accent/20 rounded-lg border border-matrix-border">
               {viewModes.map((mode) => {
                 const IconComponent = mode.icon;
@@ -1594,7 +808,7 @@ function SuperEnhancedTopControlBar() {
                   <button
                     key={mode.id}
                     onClick={() => setViewMode(mode.id)}
-                    className={`px-3 py-2 text-xs font-medium transition-all duration-200 ${
+                    className={`px-2 py-1 text-xs transition-colors ${
                       viewMode === mode.id
                         ? "bg-matrix-accent text-white"
                         : "text-muted-foreground hover:text-white"
@@ -1607,41 +821,16 @@ function SuperEnhancedTopControlBar() {
               })}
             </div>
 
-            {/* 控制按钮 */}
-            <div className="flex space-x-2">
-              <button
-                onClick={() => setIsPlaying(!isPlaying)}
-                className="p-2 bg-matrix-accent/30 hover:bg-matrix-accent/50 rounded-lg transition-all duration-200 text-white border border-matrix-border"
-              >
-                {isPlaying ? (
-                  <Pause className="w-4 h-4" />
-                ) : (
-                  <Play className="w-4 h-4" />
-                )}
-              </button>
-              <button
-                onClick={toggleFullscreen}
-                className="p-2 bg-matrix-accent/30 hover:bg-matrix-accent/50 rounded-lg transition-all duration-200 text-white border border-matrix-border"
-              >
-                <Maximize2 className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 快捷状态栏 */}
-      <div className="px-4 pb-2">
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <div className="flex items-center space-x-6">
-            <span>CPU: {realTimeData?.cpuUsage || 45}%</span>
-            <span>内存: {realTimeData?.memoryUsage || 68}%</span>
-            <span>网络: {realTimeData?.networkUsage || 34}%</span>
-          </div>
-          <div className="flex items-center space-x-6">
-            <span>在线用户: {realTimeData?.onlineUsers || 1247}</span>
-            <span>数据包/秒: {realTimeData?.packetsPerSecond || 85432}</span>
-            <span>响应时间: {realTimeData?.responseTime || 12}ms</span>
+            <button
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="p-2 bg-matrix-accent/30 hover:bg-matrix-accent/50 rounded-lg transition-colors text-white"
+            >
+              {isPlaying ? (
+                <Pause className="w-4 h-4" />
+              ) : (
+                <Play className="w-4 h-4" />
+              )}
+            </button>
           </div>
         </div>
       </div>
@@ -1649,103 +838,16 @@ function SuperEnhancedTopControlBar() {
   );
 }
 
-// 增强的底部状态栏
-function EnhancedBottomStatusBar() {
-  const { data: realTimeData } = useRealTimeData(generateSituationData, {
-    interval: 1000,
-    enabled: true,
-  });
-
-  const statusItems = [
-    {
-      label: "网络健康",
-      value: "98.7%",
-      status: "good",
-      icon: Network,
-    },
-    {
-      label: "安全等级",
-      value: "高",
-      status: "good",
-      icon: Shield,
-    },
-    {
-      label: "系统负载",
-      value: `${realTimeData?.cpuUsage || 45}%`,
-      status: "warning",
-      icon: Activity,
-    },
-    {
-      label: "连接数",
-      value: "8,247",
-      status: "good",
-      icon: Users,
-    },
-    {
-      label: "存储",
-      value: `${realTimeData?.diskUsage || 72}%`,
-      status: "warning",
-      icon: HardDrive,
-    },
-    {
-      label: "延迟",
-      value: "12ms",
-      status: "good",
-      icon: Zap,
-    },
-    {
-      label: "带宽",
-      value: "2.4GB/s",
-      status: "good",
-      icon: Wifi,
-    },
-    {
-      label: "安全事件",
-      value: "7",
-      status: "alert",
-      icon: AlertTriangle,
-    },
-  ];
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "good":
-        return "text-neon-green";
-      case "warning":
-        return "text-yellow-400";
-      case "alert":
-        return "text-threat-high";
-      default:
-        return "text-white";
-    }
-  };
-
+// 加载屏幕组件
+function LoadingScreen() {
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-matrix-surface/98 via-matrix-surface/95 to-matrix-surface/98 backdrop-blur-xl border-t border-matrix-border">
-      <div className="p-4">
-        <div className="grid grid-cols-8 gap-4">
-          {statusItems.map((item, index) => {
-            const IconComponent = item.icon;
-            return (
-              <div
-                key={index}
-                className="bg-matrix-accent/20 rounded-lg p-3 border border-matrix-border text-center"
-              >
-                <IconComponent
-                  className={`w-4 h-4 mx-auto mb-1 ${getStatusColor(item.status)}`}
-                />
-                <div className="text-xs text-muted-foreground">
-                  {item.label}
-                </div>
-                <div
-                  className={`text-sm font-bold ${getStatusColor(item.status)}`}
-                >
-                  {item.value}
-                </div>
-              </div>
-            );
-          })}
+    <div className="absolute inset-0 bg-black flex items-center justify-center z-50">
+      <div className="text-center">
+        <Loader className="w-8 h-8 text-neon-blue animate-spin mx-auto mb-4" />
+        <div className="text-white text-lg font-bold mb-2">
+          加载3D态势感知平台
         </div>
+        <div className="text-muted-foreground text-sm">正在优化性能...</div>
       </div>
     </div>
   );
@@ -1753,47 +855,67 @@ function EnhancedBottomStatusBar() {
 
 // 主要态势显示组件
 export default function SituationDisplay() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <div className="h-screen w-full relative overflow-hidden bg-gradient-to-br from-black via-gray-900 to-black">
-      {/* 超级增强的顶部控制栏 */}
-      <SuperEnhancedTopControlBar />
+      <OptimizedTopControlBar />
 
-      {/* 主3D Canvas */}
-      <div className="absolute inset-0 pt-24 pb-20">
+      <div className="absolute inset-0 pt-16">
         <ThreeErrorBoundary>
           <Canvas
-            shadows
+            shadows={false} // 禁用阴影以提高性能
             camera={{
-              position: [0, 25, 50],
+              position: [0, 20, 40],
               fov: 60,
               near: 0.1,
-              far: 1000,
+              far: 500, // 减小远平面以提高性能
             }}
             gl={{
-              antialias: true,
+              antialias: false, // 禁用抗锯齿以提高性能
               alpha: true,
               powerPreference: "high-performance",
+              precision: "lowp", // 使用低精度以提高性能
             }}
+            dpr={[1, 1.5]} // 限制设备像素比
+            performance={{ min: 0.5 }} // 自动性能调节
           >
             <Suspense fallback={null}>
-              <Main3DScene />
+              <OptimizedMainScene />
               <OrbitControls
                 enablePan={true}
                 enableZoom={true}
                 enableRotate={true}
                 minDistance={10}
-                maxDistance={200}
+                maxDistance={150} // 限制最大距离
                 minPolarAngle={0}
-                maxPolarAngle={Math.PI / 2}
+                maxPolarAngle={Math.PI / 2.2}
+                dampingFactor={0.1} // 添加阻尼以减少计算
+                enableDamping
               />
               <Environment preset="night" />
+              <Preload all />
             </Suspense>
           </Canvas>
         </ThreeErrorBoundary>
       </div>
 
-      {/* 增强的底部状态栏 */}
-      <EnhancedBottomStatusBar />
+      {/* 简化的底部状态 */}
+      <div className="absolute bottom-0 left-0 right-0 bg-matrix-surface/90 backdrop-blur-sm border-t border-matrix-border p-2">
+        <div className="flex justify-between items-center text-xs text-muted-foreground">
+          <span>优化版 3D 网络安全态势感知平台</span>
+          <span>高性能模式已启用</span>
+        </div>
+      </div>
     </div>
   );
 }

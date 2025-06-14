@@ -19,12 +19,12 @@ import {
 
 const navItems = [
   { name: "仪表板", path: "/", icon: Activity },
-  { name: "态势大屏", path: "/situation", icon: Monitor },
+  { name: "3D态势大屏", path: "/situation", icon: Globe },
   { name: "威胁告警", path: "/alerts", icon: AlertTriangle },
   { name: "安全报告", path: "/reports", icon: FileText },
   { name: "威胁情报", path: "/threat-intelligence", icon: Shield },
   { name: "资产管理", path: "/assets", icon: Server },
-  { name: "用户管理", path: "/users", icon: Users },
+  { name: "用��管理", path: "/users", icon: Users },
   { name: "系统日志", path: "/logs", icon: FileText },
   { name: "API密钥", path: "/api-keys", icon: Key },
   { name: "系统设置", path: "/settings", icon: Settings },

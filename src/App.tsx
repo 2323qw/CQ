@@ -45,9 +45,7 @@ function AppLayout() {
         path="/situation"
         element={
           <ProtectedRoute>
-            <ProtectedLayout>
-              <SituationDisplay />
-            </ProtectedLayout>
+            <SituationDisplay />
           </ProtectedRoute>
         }
       />

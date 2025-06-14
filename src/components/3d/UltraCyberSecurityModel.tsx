@@ -11,24 +11,10 @@ import {
   AdditiveBlending,
   DoubleSide,
   MathUtils,
-  CylinderGeometry,
-  SphereGeometry,
-  RingGeometry,
 } from "three";
-import {
-  Text,
-  Line,
-  Sphere,
-  Cylinder,
-  Torus,
-  Icosahedron,
-  MeshDistortMaterial,
-  Float,
-  Sparkles,
-  Trail,
-} from "@react-three/drei";
+import { Text, Line, Sphere, Torus } from "@react-three/drei";
 
-// 量子核心组件 - 性能优化版
+// 量子核心组件 - 简化版
 function QuantumCore() {
   const coreRef = useRef<Group>(null);
   const innerCoreRef = useRef<Mesh>(null);
@@ -60,21 +46,16 @@ function QuantumCore() {
   return (
     <group ref={coreRef}>
       {/* 主量子核心 */}
-      <Float speed={2} rotationIntensity={0.5} floatIntensity={0.2}>
-        <mesh ref={innerCoreRef}>
-          <Icosahedron args={[0.8, 2]}>
-            <MeshDistortMaterial
-              color="#ffffff"
-              emissive="#00f5ff"
-              emissiveIntensity={1.2}
-              distort={0.3}
-              speed={2}
-              transparent
-              opacity={0.9}
-            />
-          </Icosahedron>
-        </mesh>
-      </Float>
+      <mesh ref={innerCoreRef}>
+        <icosahedronGeometry args={[0.8, 2]} />
+        <meshStandardMaterial
+          color="#ffffff"
+          emissive="#00f5ff"
+          emissiveIntensity={1.2}
+          transparent
+          opacity={0.9}
+        />
+      </mesh>
 
       {/* 能量脉冲环 */}
       <mesh ref={pulseRingRef}>
@@ -87,15 +68,16 @@ function QuantumCore() {
         />
       </mesh>
 
-      {/* 量子粒子环绕 */}
-      <Sparkles
-        count={50}
-        scale={[4, 4, 4]}
-        size={3}
-        speed={0.4}
-        opacity={0.8}
-        color="#00f5ff"
-      />
+      {/* 核心光环 */}
+      <mesh>
+        <ringGeometry args={[0.9, 1.1, 32]} />
+        <meshBasicMaterial
+          color="#ffffff"
+          transparent
+          opacity={0.4}
+          side={DoubleSide}
+        />
+      </mesh>
     </group>
   );
 }
@@ -140,12 +122,7 @@ function DefenseMatrix() {
   return (
     <group ref={matrixRef}>
       {nodePositions.map((node, index) => (
-        <Float
-          key={index}
-          speed={1 + Math.random()}
-          rotationIntensity={0.5}
-          floatIntensity={0.3}
-        >
+        <group key={index}>
           <mesh position={node.position}>
             <sphereGeometry args={[node.size, 8, 8]} />
             <meshStandardMaterial
@@ -155,19 +132,19 @@ function DefenseMatrix() {
               transparent
               opacity={0.8}
             />
-
-            {/* 节点光环 */}
-            <mesh>
-              <ringGeometry args={[node.size * 1.5, node.size * 2, 16]} />
-              <meshBasicMaterial
-                color={node.color}
-                transparent
-                opacity={0.4}
-                side={DoubleSide}
-              />
-            </mesh>
           </mesh>
-        </Float>
+
+          {/* 节点光环 */}
+          <mesh position={node.position}>
+            <ringGeometry args={[node.size * 1.5, node.size * 2, 16]} />
+            <meshBasicMaterial
+              color={node.color}
+              transparent
+              opacity={0.4}
+              side={DoubleSide}
+            />
+          </mesh>
+        </group>
       ))}
 
       {/* 连接线网络 */}
@@ -237,68 +214,59 @@ function HolographicInterface() {
   return (
     <group ref={interfaceRef}>
       {interfaces.map((ui, index) => (
-        <Float
-          key={index}
-          speed={1.5}
-          rotationIntensity={0.1}
-          floatIntensity={0.1}
-        >
-          <group position={ui.position} rotation={ui.rotation}>
-            {/* 全息屏幕背景 */}
-            <mesh>
-              <planeGeometry args={[2, 1.2]} />
-              <meshBasicMaterial
-                color={ui.color}
-                transparent
-                opacity={0.15}
-                side={DoubleSide}
-              />
-            </mesh>
-
-            {/* 屏幕边框 */}
-            <Line
-              points={[
-                new Vector3(-1, -0.6, 0.01),
-                new Vector3(1, -0.6, 0.01),
-                new Vector3(1, 0.6, 0.01),
-                new Vector3(-1, 0.6, 0.01),
-                new Vector3(-1, -0.6, 0.01),
-              ]}
+        <group key={index} position={ui.position} rotation={ui.rotation}>
+          {/* 全息屏幕背景 */}
+          <mesh>
+            <planeGeometry args={[2, 1.2]} />
+            <meshBasicMaterial
               color={ui.color}
-              lineWidth={2}
+              transparent
+              opacity={0.15}
+              side={DoubleSide}
             />
+          </mesh>
 
-            {/* 主标题 */}
-            <Text
-              position={[0, 0.2, 0.02]}
-              fontSize={0.15}
-              color={ui.color}
-              anchorX="center"
-              anchorY="middle"
-              font="/fonts/orbitron-regular.woff"
-            >
-              {ui.text}
-            </Text>
+          {/* 屏幕边框 */}
+          <Line
+            points={[
+              new Vector3(-1, -0.6, 0.01),
+              new Vector3(1, -0.6, 0.01),
+              new Vector3(1, 0.6, 0.01),
+              new Vector3(-1, 0.6, 0.01),
+              new Vector3(-1, -0.6, 0.01),
+            ]}
+            color={ui.color}
+            lineWidth={2}
+          />
 
-            {/* 副标题 */}
-            <Text
-              position={[0, -0.1, 0.02]}
-              fontSize={0.1}
-              color={ui.color}
-              anchorX="center"
-              anchorY="middle"
-              font="/fonts/orbitron-regular.woff"
-            >
-              {ui.subtext}
-            </Text>
+          {/* 主标题 */}
+          <Text
+            position={[0, 0.2, 0.02]}
+            fontSize={0.15}
+            color={ui.color}
+            anchorX="center"
+            anchorY="middle"
+          >
+            {ui.text}
+          </Text>
 
-            {/* 状态指示器 */}
-            <mesh position={[0.7, 0.4, 0.02]}>
-              <sphereGeometry args={[0.03, 8, 8]} />
-              <meshBasicMaterial color={ui.color} />
-            </mesh>
-          </group>
-        </Float>
+          {/* 副标题 */}
+          <Text
+            position={[0, -0.1, 0.02]}
+            fontSize={0.1}
+            color={ui.color}
+            anchorX="center"
+            anchorY="middle"
+          >
+            {ui.subtext}
+          </Text>
+
+          {/* 状态指示器 */}
+          <mesh position={[0.7, 0.4, 0.02]}>
+            <sphereGeometry args={[0.03, 8, 8]} />
+            <meshBasicMaterial color={ui.color} />
+          </mesh>
+        </group>
       ))}
     </group>
   );
@@ -327,31 +295,54 @@ function EnergyFlow() {
     return streams;
   }, []);
 
+  const energyPacketRefs = useRef<Mesh[]>([]);
+
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime();
+
+    energyPacketRefs.current.forEach((packet, index) => {
+      if (packet) {
+        const stream = energyStreams[index];
+        const progress = (Math.sin(time * stream.speed) + 1) / 2;
+
+        packet.position.lerpVectors(
+          new Vector3(...stream.start),
+          new Vector3(...stream.end),
+          progress,
+        );
+
+        packet.rotation.y += 0.05;
+        packet.rotation.x += 0.03;
+      }
+    });
+  });
+
   return (
     <group ref={flowRef}>
       {energyStreams.map((stream, index) => (
-        <Trail
-          key={index}
-          width={0.5}
-          length={8}
-          color={stream.color}
-          attenuation={(t) => t * t}
-        >
-          <Float
-            speed={stream.speed}
-            rotationIntensity={1}
-            floatIntensity={0.5}
+        <group key={index}>
+          {/* 能量流路径 */}
+          <Line
+            points={[new Vector3(...stream.start), new Vector3(...stream.end)]}
+            color={stream.color}
+            lineWidth={2}
+            transparent
+            opacity={0.4}
+            dashed
+            dashSize={0.1}
+            gapSize={0.1}
+          />
+
+          {/* 移动的能量包 */}
+          <mesh
+            ref={(el) => {
+              if (el) energyPacketRefs.current[index] = el;
+            }}
           >
-            <mesh>
-              <sphereGeometry args={[0.08, 8, 8]} />
-              <meshBasicMaterial
-                color={stream.color}
-                transparent
-                opacity={0.8}
-              />
-            </mesh>
-          </Float>
-        </Trail>
+            <octahedronGeometry args={[0.08, 1]} />
+            <meshBasicMaterial color={stream.color} transparent opacity={0.8} />
+          </mesh>
+        </group>
       ))}
     </group>
   );
@@ -413,7 +404,7 @@ function OptimizedParticleSystem() {
   const particlesRef = useRef<Points>(null);
 
   const particleSystem = useMemo(() => {
-    const count = 800; // 减少粒子数量以提高性能
+    const count = 600; // 减少粒子数量以提高性能
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
 
@@ -508,7 +499,7 @@ export function UltraCyberSecurityModel() {
       {/* 全息界面 */}
       <HolographicInterface />
 
-      {/* 能���流动 */}
+      {/* 能量流动 */}
       <EnergyFlow />
 
       {/* 防护环 */}

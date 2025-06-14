@@ -84,6 +84,13 @@ import {
   EnvironmentalParticles,
   FuturisticEnvironment,
 } from "@/components/3d/FuturisticCyberComponents";
+import {
+  EnhancedQuantumTower,
+  EnhancedNeuralCluster,
+  EnhancedDataFlowSystem,
+  EnhancedQuantumShields,
+  EnhancedEnvironment,
+} from "@/components/3d/EnhancedFuturisticComponents";
 
 /**
  * 未来感网络监控中心主场景
@@ -121,33 +128,30 @@ function FuturisticCyberScene() {
 
   return (
     <group ref={sceneRef}>
-      {/* 未来感环境基础设施 */}
-      <FuturisticEnvironment />
+      {/* 增强版未来感环境基础设施 */}
+      <EnhancedEnvironment />
 
-      {/* 中央监控塔 */}
-      <CentralMonitoringTower />
+      {/* 增强版量子中央监控塔 */}
+      <EnhancedQuantumTower />
 
-      {/* 数据节点群 */}
-      <DataNodeCluster />
+      {/* 增强版神经网络节点群 */}
+      <EnhancedNeuralCluster />
 
-      {/* 数据流管道 */}
-      <DataFlowPipelines />
+      {/* 增强版数据流管道系统 */}
+      <EnhancedDataFlowSystem />
 
-      {/* 防护屏障 */}
-      <ProtectionShields />
+      {/* 增强版量子防护屏障 */}
+      <EnhancedQuantumShields />
 
-      {/* 环境粒子系统 */}
-      <EnvironmentalParticles />
-
-      {/* 深空星域背景 */}
+      {/* 深空星域背景 - 增强版 */}
       <Stars
-        radius={500}
-        depth={80}
-        count={3000}
-        factor={2}
-        saturation={0}
+        radius={600}
+        depth={100}
+        count={4000}
+        factor={3}
+        saturation={0.2}
         fade
-        speed={0.02}
+        speed={0.015}
       />
     </group>
   );
@@ -341,13 +345,13 @@ function FuturisticStatusCard({
 
   return (
     <div
-      className="rounded-lg p-4 border backdrop-blur-sm hover:shadow-xl transition-all duration-500 relative overflow-hidden"
+      className="rounded-xl p-5 border backdrop-blur-md hover:shadow-2xl transition-all duration-500 relative overflow-hidden cyber-card-enhanced"
       style={{
-        backgroundColor: "rgba(30, 41, 59, 0.6)",
+        backgroundColor: "rgba(17, 24, 39, 0.9)",
         borderColor: color,
-        borderWidth: "1px",
-        boxShadow: `0 0 15px ${color}30`,
-        minHeight: "120px",
+        borderWidth: "2px",
+        boxShadow: `0 0 25px ${color}40, inset 0 1px 0 ${color}20`,
+        minHeight: "140px",
       }}
     >
       {/* 背景动画效果 */}
@@ -362,13 +366,20 @@ function FuturisticStatusCard({
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-3">
           <div
-            className="p-2 rounded-lg"
+            className="p-3 rounded-xl relative"
             style={{
-              backgroundColor: `${color}20`,
-              boxShadow: `0 0 10px ${color}40`,
+              backgroundColor: `${color}15`,
+              border: `1px solid ${color}30`,
+              boxShadow: `0 0 15px ${color}50`,
             }}
           >
-            <Icon className="w-6 h-6" style={{ color }} />
+            <Icon className="w-7 h-7 neon-text" style={{ color }} />
+            <div
+              className="absolute inset-0 rounded-xl animate-pulse"
+              style={{
+                background: `linear-gradient(45deg, transparent, ${color}10, transparent)`,
+              }}
+            />
           </div>
           <div
             className="flex items-center text-xs font-mono"
@@ -381,10 +392,10 @@ function FuturisticStatusCard({
 
         <div className="text-right">
           <div
-            className="text-3xl font-bold mb-1 font-mono"
+            className="text-4xl font-bold mb-2 font-mono neon-text"
             style={{
               color,
-              textShadow: `0 0 10px ${color}60`,
+              textShadow: `0 0 15px ${color}80, 0 0 30px ${color}60`,
             }}
           >
             {value}
@@ -1306,16 +1317,19 @@ export default function SituationDisplay() {
         <ThreeErrorBoundary>
           <Canvas
             camera={{
-              position: [0, 25, 50],
-              fov: 60,
+              position: [0, 35, 60],
+              fov: 65,
               near: 0.1,
-              far: 1000,
+              far: 1200,
             }}
             gl={{
               antialias: true,
               alpha: true,
               powerPreference: "high-performance",
+              preserveDrawingBuffer: true,
+              logarithmicDepthBuffer: true,
             }}
+            shadows
           >
             <Suspense fallback={null}>
               <FuturisticCyberScene />
@@ -1323,14 +1337,17 @@ export default function SituationDisplay() {
                 enablePan={true}
                 enableZoom={true}
                 enableRotate={true}
-                minDistance={20}
-                maxDistance={150}
-                dampingFactor={0.05}
+                minDistance={25}
+                maxDistance={200}
+                dampingFactor={0.08}
                 enableDamping
                 minPolarAngle={0}
-                maxPolarAngle={Math.PI / 2}
+                maxPolarAngle={Math.PI / 2.2}
                 autoRotate
-                autoRotateSpeed={0.2}
+                autoRotateSpeed={0.15}
+                rotateSpeed={0.8}
+                panSpeed={1.2}
+                zoomSpeed={1.5}
               />
             </Suspense>
           </Canvas>

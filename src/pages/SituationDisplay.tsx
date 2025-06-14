@@ -15,7 +15,6 @@ import {
   Line,
   Sphere,
   Plane,
-  Environment,
   Cloud,
   Detailed,
   useHelper,
@@ -637,7 +636,7 @@ function OptimizedInfoPanel({
 function OptimizedMainScene() {
   const sceneRef = useRef<Group>(null);
   const { data: realTimeData } = useRealTimeData(generateSituationData, {
-    interval: 2000, // 降低更新频率以提高性能
+    interval: 2000, // 降低更新频率以��高性能
     enabled: true,
   });
 
@@ -848,7 +847,7 @@ function InfoPanel2D({
     {
       id: 4,
       name: "Web服务器集群",
-      status: "正常",
+      status: "正���",
       connections: 432,
       traffic: "3.1GB/s",
     },
@@ -1420,7 +1419,7 @@ export default function SituationDisplay() {
       >
         <ThreeErrorBoundary>
           <Canvas
-            shadows={false} // 禁用阴影���提高性能
+            shadows={false} // 禁用阴影以提高性能
             camera={{
               position: [0, 20, 40],
               fov: 60,
@@ -1433,7 +1432,7 @@ export default function SituationDisplay() {
               powerPreference: "high-performance",
               precision: "lowp", // 使用低精度以提高性能
             }}
-            dpr={[1, 1.5]} // 限制设备像素比
+            dpr={[1, 1.5]} // 限制设备���素比
             performance={{ min: 0.5 }} // 自动性能调节
           >
             <Suspense fallback={null}>

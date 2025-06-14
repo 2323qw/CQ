@@ -24,53 +24,68 @@ function Settings() {
 function AppLayout() {
   const { isAuthenticated } = useAuth();
 
-  if (!isAuthenticated) {
-    return (
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-matrix-bg text-white font-mono">
-      <Navigation />
       <Routes>
+        <Route path="/login" element={<Login />} />
         <Route
           path="/"
           element={
-            <ProtectedRoute>
-              <Index />
-            </ProtectedRoute>
+            isAuthenticated ? (
+              <ProtectedRoute>
+                <Navigation />
+                <Index />
+              </ProtectedRoute>
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
         <Route
           path="/alerts"
           element={
-            <ProtectedRoute>
-              <Alerts />
-            </ProtectedRoute>
+            isAuthenticated ? (
+              <ProtectedRoute>
+                <Navigation />
+                <Alerts />
+              </ProtectedRoute>
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
         <Route
           path="/reports"
           element={
-            <ProtectedRoute>
-              <Reports />
-            </ProtectedRoute>
+            isAuthenticated ? (
+              <ProtectedRoute>
+                <Navigation />
+                <Reports />
+              </ProtectedRoute>
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
         <Route
           path="/settings"
           element={
-            <ProtectedRoute>
-              <Settings />
-            </ProtectedRoute>
+            isAuthenticated ? (
+              <ProtectedRoute>
+                <Navigation />
+                <Settings />
+              </ProtectedRoute>
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
-        <Route path="/login" element={<Navigate to="/" replace />} />
-        <Route path="*" element={<NotFound />} />
+        <Route
+          path="*"
+          element={
+            isAuthenticated ? <NotFound /> : <Navigate to="/login" replace />
+          }
+        />
       </Routes>
     </div>
   );

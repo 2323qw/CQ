@@ -1,5 +1,6 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Shield,
   AlertTriangle,
@@ -8,6 +9,7 @@ import {
   Settings,
   User,
   Bell,
+  LogOut,
 } from "lucide-react";
 
 const navItems = [
@@ -19,6 +21,13 @@ const navItems = [
 
 export function Navigation() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <nav className="cyber-card w-64 h-screen fixed left-0 top-0 z-50 flex flex-col matrix-bg">
@@ -84,19 +93,28 @@ export function Navigation() {
 
       {/* User Profile */}
       <div className="p-4 border-t border-matrix-border">
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-3 mb-3">
           <div className="w-8 h-8 bg-neon-blue/20 rounded-full flex items-center justify-center border border-neon-blue/30">
             <User className="w-4 h-4 text-neon-blue" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-white truncate">
-              安全管理员
+              {user || "安全管理员"}
             </p>
             <p className="text-xs text-muted-foreground truncate">
               admin@cyberguard.com
             </p>
           </div>
         </div>
+
+        {/* 登出按钮 */}
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-muted-foreground hover:text-threat-critical hover:bg-threat-critical/10 rounded transition-colors"
+        >
+          <LogOut className="w-4 h-4" />
+          <span>退出登录</span>
+        </button>
       </div>
     </nav>
   );

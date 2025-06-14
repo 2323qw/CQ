@@ -267,7 +267,7 @@ const BusinessSharedMaterials = {
   }),
 };
 
-// 共享几何体管理器 - 优化版��
+// 共享几何体管理器 - 优化版本
 const OptimizedGeometries = {
   box: new BoxGeometry(1, 1, 1),
   boxLOD1: new BoxGeometry(1, 1, 1, 2, 2, 2), // 低细节
@@ -2164,7 +2164,6 @@ export default function SituationDisplay() {
                 autoRotate={false}
                 autoRotateSpeed={0.5}
               />
-              <Preload all />
             </Suspense>
           </Canvas>
         </ThreeErrorBoundary>

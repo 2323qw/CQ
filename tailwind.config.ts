@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-export default {
+const config: Config = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -52,15 +52,40 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
+        // 网络安全主题色彩
+        cyber: {
+          50: "#f0f9ff",
+          100: "#e0f2fe",
+          200: "#bae6fd",
+          300: "#7dd3fc",
+          400: "#38bdf8",
+          500: "#0ea5e9",
+          600: "#0284c7",
+          700: "#0369a1",
+          800: "#075985",
+          900: "#0c4a6e",
+          950: "#082f49",
+        },
+        neon: {
+          blue: "#00f5ff",
+          green: "#39ff14",
+          purple: "#bf00ff",
+          pink: "#ff1493",
+          orange: "#ff6600",
+          yellow: "#ffff00",
+        },
+        threat: {
+          critical: "#ff0040",
+          high: "#ff6600",
+          medium: "#ffcc00",
+          low: "#39ff14",
+          info: "#00f5ff",
+        },
+        matrix: {
+          bg: "#0d1117",
+          surface: "#161b22",
+          accent: "#21262d",
+          border: "#30363d",
         },
       },
       borderRadius: {
@@ -70,27 +95,56 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "pulse-glow": {
+          "0%, 100%": {
+            boxShadow:
+              "0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor",
           },
-          to: {
-            height: "0",
+          "50%": {
+            boxShadow:
+              "0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor",
           },
+        },
+        "scan-line": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+        "data-flow": {
+          "0%": { transform: "translateX(-100%) translateY(0)" },
+          "100%": { transform: "translateX(100%) translateY(-10px)" },
+        },
+        "matrix-rain": {
+          "0%": { transform: "translateY(-100%)" },
+          "100%": { transform: "translateY(100vh)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+        "scan-line": "scan-line 2s linear infinite",
+        "data-flow": "data-flow 3s linear infinite",
+        "matrix-rain": "matrix-rain 5s linear infinite",
+      },
+      fontFamily: {
+        mono: [
+          "JetBrains Mono",
+          "Fira Code",
+          "Consolas",
+          "Monaco",
+          "monospace",
+        ],
       },
     },
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+
+export default config;

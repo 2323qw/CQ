@@ -9,9 +9,11 @@ import {
   AlertTriangle,
   Loader,
 } from "lucide-react";
-import { ModelSelector } from "@/components/3d/ModelSelector";
+import { AdvancedCyberSecurityModel } from "@/components/3d/AdvancedCyberSecurityModel";
 import { ThreeErrorBoundary } from "@/components/3d/ErrorBoundary";
 import { SimpleShield } from "@/components/3d/SimpleShield";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, Stars } from "@react-three/drei";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -36,7 +38,7 @@ export default function Login() {
         localStorage.setItem("cyberguard_user", formData.username);
         navigate("/");
       } else {
-        setError("用户名或密码错误");
+        setError("用户名或密码��误");
       }
       setLoading(false);
     }, 1500);
@@ -83,13 +85,50 @@ export default function Login() {
                   <div className="text-center">
                     <Loader className="w-8 h-8 text-neon-blue animate-spin mx-auto mb-2" />
                     <p className="text-neon-blue font-mono text-sm">
-                      加载网络安全3D模型中...
+                      加载量子安全防护系统...
                     </p>
                   </div>
                 </div>
               }
             >
-              <ModelSelector />
+              <div className="w-full h-full">
+                <Canvas
+                  camera={{ position: [8, 6, 8], fov: 60 }}
+                  style={{ background: "transparent" }}
+                  dpr={[1, 2]}
+                  gl={{ antialias: true, alpha: true }}
+                >
+                  {/* 星空背景 */}
+                  <Stars
+                    radius={100}
+                    depth={50}
+                    count={3000}
+                    factor={4}
+                    saturation={0}
+                    fade
+                    speed={0.3}
+                  />
+
+                  {/* 相机控制 */}
+                  <OrbitControls
+                    enableZoom={true}
+                    enablePan={false}
+                    enableRotate={true}
+                    autoRotate={true}
+                    autoRotateSpeed={0.5}
+                    maxDistance={15}
+                    minDistance={5}
+                    maxPolarAngle={Math.PI / 1.8}
+                    minPolarAngle={Math.PI / 6}
+                  />
+
+                  {/* 高级网络安全模型 */}
+                  <AdvancedCyberSecurityModel />
+
+                  {/* 雾效 */}
+                  <fog attach="fog" args={["#0d1117", 8, 25]} />
+                </Canvas>
+              </div>
             </Suspense>
           </ThreeErrorBoundary>
         </div>
@@ -100,9 +139,9 @@ export default function Login() {
             <h1 className="text-4xl font-bold text-white glow-text mb-2">
               CyberGuard
             </h1>
-            <p className="text-lg text-neon-blue font-mono">网络安全监控系统</p>
+            <p className="text-lg text-neon-blue font-mono">量子安全防护系统</p>
             <p className="text-sm text-muted-foreground mt-2">
-              下一代智能安全防护平台
+              下一代量子级智能安全防护平台
             </p>
           </div>
         </div>
@@ -112,13 +151,13 @@ export default function Login() {
           <div className="cyber-card p-4 bg-matrix-surface/80 backdrop-blur-sm">
             <div className="flex items-center space-x-3 text-sm">
               <div className="w-3 h-3 bg-neon-green rounded-full animate-pulse"></div>
-              <span className="text-neon-green font-mono">系统在线</span>
+              <span className="text-neon-green font-mono">量子系统在线</span>
               <span className="text-muted-foreground">|</span>
-              <span className="text-neon-blue font-mono">安全连接</span>
+              <span className="text-neon-blue font-mono">量子加密</span>
             </div>
             <div className="mt-2 text-xs text-muted-foreground">
               <span>防护等级: </span>
-              <span className="text-threat-critical font-mono">MAXIMUM</span>
+              <span className="text-threat-critical font-mono">QUANTUM</span>
             </div>
           </div>
         </div>
@@ -160,7 +199,7 @@ export default function Login() {
             <h1 className="text-2xl font-bold text-white glow-text mb-1">
               CyberGuard
             </h1>
-            <p className="text-sm text-muted-foreground">网络安全监控系统</p>
+            <p className="text-sm text-muted-foreground">量子安全防护系统</p>
           </div>
 
           {/* 登录表单容器 */}
@@ -168,10 +207,10 @@ export default function Login() {
             {/* 表单标题 */}
             <div className="text-center mb-6">
               <h2 className="text-2xl font-semibold text-white mb-2">
-                系统登录
+                量子系统登录
               </h2>
               <p className="text-sm text-muted-foreground">
-                请输入您的凭据以访问安全控制台
+                请输入您的凭据以访问量子安全控制台
               </p>
             </div>
 
@@ -285,7 +324,7 @@ export default function Login() {
             </div>
           </div>
 
-          {/* 版��信息 */}
+          {/* 版权信息 */}
           <div className="mt-6 text-center">
             <p className="text-xs text-muted-foreground">
               © 2024 CyberGuard Security Platform. All rights reserved.

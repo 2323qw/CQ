@@ -10,16 +10,34 @@ export function useRealTimeData<T>(
   options: RealTimeDataOptions = {},
 ) {
   const { interval = 5000, enabled = true } = options;
-  const [data, setData] = useState<T>(dataGenerator);
+
+  // 验证dataGenerator是否为函数
+  if (typeof dataGenerator !== "function") {
+    throw new Error("useRealTimeData: dataGenerator must be a function");
+  }
+
+  const [data, setData] = useState<T>(() => {
+    try {
+      return dataGenerator();
+    } catch (error) {
+      console.error("Error in dataGenerator:", error);
+      return {} as T;
+    }
+  });
   const [isUpdating, setIsUpdating] = useState(false);
 
   const updateData = useCallback(() => {
-    if (!enabled) return;
+    if (!enabled || typeof dataGenerator !== "function") return;
 
     setIsUpdating(true);
     setTimeout(() => {
-      setData(dataGenerator());
-      setIsUpdating(false);
+      try {
+        setData(dataGenerator());
+      } catch (error) {
+        console.error("Error updating data:", error);
+      } finally {
+        setIsUpdating(false);
+      }
     }, 200); // 短暂延迟以显示更新状态
   }, [dataGenerator, enabled]);
 

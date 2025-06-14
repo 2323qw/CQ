@@ -185,151 +185,54 @@ function DataFlow({
 
 // 3D态势场景
 function SituationScene() {
-  const { data: realTimeData } = useRealTimeData(generateThreatMetrics, {
-    interval: 3000,
+  const { data: realTimeData } = useRealTimeData(generateSituationData, {
+    interval: 2000,
     enabled: true,
   });
 
-  // 模拟网络节点数据
-  const networkNodes = [
-    {
-      id: 1,
-      position: [3, 1, 2] as [number, number, number],
-      status: "online" as const,
-      type: "server" as const,
-      label: "Web服务器",
-    },
-    {
-      id: 2,
-      position: [-3, 2, 1] as [number, number, number],
-      status: "warning" as const,
-      type: "firewall" as const,
-      label: "防火墙",
-    },
-    {
-      id: 3,
-      position: [2, -1, -3] as [number, number, number],
-      status: "online" as const,
-      type: "router" as const,
-      label: "核心路由",
-    },
-    {
-      id: 4,
-      position: [-2, -2, 3] as [number, number, number],
-      status: "critical" as const,
-      type: "endpoint" as const,
-      label: "终端设备",
-    },
-    {
-      id: 5,
-      position: [0, 3, -2] as [number, number, number],
-      status: "online" as const,
-      type: "server" as const,
-      label: "数据库",
-    },
-    {
-      id: 6,
-      position: [4, 0, 0] as [number, number, number],
-      status: "online" as const,
-      type: "firewall" as const,
-      label: "边界防护",
-    },
-  ];
-
-  // 模拟威胁数据
-  const threats = [
-    {
-      id: 1,
-      position: [-1, 2, 2] as [number, number, number],
-      severity: "high" as const,
-      type: "DDoS攻击",
-    },
-    {
-      id: 2,
-      position: [1, -1, 1] as [number, number, number],
-      severity: "medium" as const,
-      type: "异常访问",
-    },
-    {
-      id: 3,
-      position: [-2, 0, -1] as [number, number, number],
-      severity: "low" as const,
-      type: "扫描行为",
-    },
-  ];
-
   return (
     <group>
-      {/* 环境光照 */}
-      <ambientLight intensity={0.3} />
-      <pointLight position={[10, 10, 10]} intensity={1} color="#ffffff" />
-      <pointLight position={[-10, -10, -10]} intensity={0.5} color="#00f5ff" />
-
-      {/* 中央量子核心 */}
-      <UltraCyberSecurityModel />
-
-      {/* 网络节点 */}
-      {networkNodes.map((node) => (
-        <NetworkNode
-          key={node.id}
-          position={node.position}
-          status={node.status}
-          nodeType={node.type}
-          label={node.label}
-        />
-      ))}
-
-      {/* 威胁指示器 */}
-      {threats.map((threat) => (
-        <ThreatIndicator
-          key={threat.id}
-          position={threat.position}
-          severity={threat.severity}
-          threatType={threat.type}
-        />
-      ))}
-
-      {/* 背景网格 */}
-      <gridHelper args={[20, 20, "#333333", "#1a1a1a"]} />
+      {/* 专业态势监控模型 */}
+      <SituationMonitoringModel realTimeData={realTimeData} />
     </group>
   );
 }
 
 // 状态面板组件
 function StatusPanel() {
-  const { data: realTimeData } = useRealTimeData(generateThreatMetrics, {
-    interval: 2000,
+  const { data: realTimeData } = useRealTimeData(generateSituationData, {
+    interval: 1500,
     enabled: true,
   });
 
   const statusItems = [
     {
-      label: "网络状态",
-      value: realTimeData?.networkStatus || "正常",
+      label: "活跃连接",
+      value: realTimeData?.activeConnections?.toLocaleString() || "1,247",
       icon: Globe,
-      color: "text-neon-green",
-      bgColor: "bg-neon-green/10",
+      color: "text-neon-blue",
+      bgColor: "bg-neon-blue/10",
     },
     {
-      label: "活跃威胁",
+      label: "实时威胁",
       value: realTimeData?.realTimeThreats?.toString() || "3",
       icon: AlertTriangle,
       color: "text-threat-high",
       bgColor: "bg-threat-high/10",
     },
     {
-      label: "在线节点",
-      value: `${realTimeData?.onlineNodes || 47}/${realTimeData?.totalNodes || 50}`,
-      icon: Server,
-      color: "text-neon-blue",
-      bgColor: "bg-neon-blue/10",
-    },
-    {
-      label: "系统负载",
-      value: `${realTimeData?.systemHealth || 68}%`,
+      label: "系统性能",
+      value: `CPU ${realTimeData?.cpuUsage || 68}%`,
       icon: Activity,
       color: "text-neon-orange",
       bgColor: "bg-neon-orange/10",
+    },
+    {
+      label: "防火墙",
+      value: realTimeData?.firewallStatus || "正常",
+      icon: Shield,
+      color: "text-neon-green",
+      bgColor: "bg-neon-green/10",
     },
   ];
 
@@ -364,35 +267,35 @@ function StatusPanel() {
         </div>
       </div>
 
-      {/* 威胁等级面板 */}
+      {/* 网络流量面板 */}
       <div className="cyber-card p-4 bg-matrix-surface/90 backdrop-blur-sm">
         <h4 className="text-sm font-semibold text-white mb-3 flex items-center space-x-2">
-          <Shield className="w-4 h-4 text-neon-green" />
-          <span>威胁等级分布</span>
+          <Zap className="w-4 h-4 text-neon-orange" />
+          <span>网络流量</span>
         </h4>
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-xs text-threat-critical">严重</span>
-            <span className="text-xs font-mono text-threat-critical">
-              {realTimeData?.threatLevels?.critical || 1}
+            <span className="text-xs text-neon-blue">入站流量</span>
+            <span className="text-xs font-mono text-neon-blue">
+              {realTimeData?.inboundTraffic || 85} MB/s
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-xs text-threat-high">高危</span>
-            <span className="text-xs font-mono text-threat-high">
-              {realTimeData?.threatLevels?.high || 2}
+            <span className="text-xs text-neon-orange">出站流量</span>
+            <span className="text-xs font-mono text-neon-orange">
+              {realTimeData?.outboundTraffic || 92} MB/s
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-xs text-threat-medium">中等</span>
-            <span className="text-xs font-mono text-threat-medium">
-              {realTimeData?.threatLevels?.medium || 5}
+            <span className="text-xs text-neon-green">带宽使用</span>
+            <span className="text-xs font-mono text-neon-green">
+              {realTimeData?.bandwidthUsage || 65}%
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-xs text-threat-low">低危</span>
-            <span className="text-xs font-mono text-threat-low">
-              {realTimeData?.threatLevels?.low || 12}
+            <span className="text-xs text-muted-foreground">数据包/秒</span>
+            <span className="text-xs font-mono text-white">
+              {realTimeData?.packetsPerSecond?.toLocaleString() || "55,247"}
             </span>
           </div>
         </div>
@@ -471,8 +374,8 @@ function ControlPanel() {
 
 // 信息面板组件
 function InfoPanel() {
-  const { data: realTimeData } = useRealTimeData(generateThreatMetrics, {
-    interval: 5000,
+  const { data: realTimeData } = useRealTimeData(generateSituationData, {
+    interval: 3000,
     enabled: true,
   });
   return (
@@ -485,30 +388,56 @@ function InfoPanel() {
 
         <div className="space-y-3 text-sm">
           <div className="border-l-2 border-neon-blue pl-3">
-            <div className="text-neon-blue font-semibold">网络拓扑</div>
+            <div className="text-neon-blue font-semibold">活跃连接监控</div>
             <div className="text-muted-foreground">
-              实时显示网络设备连接状态和数据流向
+              当前活跃连接：
+              {realTimeData?.activeConnections?.toLocaleString() || "1,247"}
+            </div>
+            <div className="text-xs text-neon-blue">
+              峰值：{realTimeData?.peakConnections?.toLocaleString() || "1,892"}
             </div>
           </div>
 
           <div className="border-l-2 border-threat-high pl-3">
-            <div className="text-threat-high font-semibold">威胁态势</div>
+            <div className="text-threat-high font-semibold">实时威胁</div>
             <div className="text-muted-foreground">
-              3D可视化展示当前检测到的安全威胁
+              检测到 {realTimeData?.realTimeThreats || 3} 个活跃威胁
             </div>
-          </div>
-
-          <div className="border-l-2 border-neon-green pl-3">
-            <div className="text-neon-green font-semibold">防护状态</div>
-            <div className="text-muted-foreground">
-              显示防火墙、入侵检测等安全组件状态
+            <div className="text-xs text-threat-high">
+              趋势：{realTimeData?.threatTrend || "稳定"}
             </div>
           </div>
 
           <div className="border-l-2 border-neon-orange pl-3">
-            <div className="text-neon-orange font-semibold">性能监控</div>
+            <div className="text-neon-orange font-semibold">系统性能</div>
             <div className="text-muted-foreground">
-              监控系统资源使用情况和网络流量
+              CPU: {realTimeData?.cpuUsage || 68}% | 内存:{" "}
+              {realTimeData?.memoryUsage || 72}%
+            </div>
+            <div className="text-xs text-neon-orange">
+              磁盘: {realTimeData?.diskUsage || 45}%
+            </div>
+          </div>
+
+          <div className="border-l-2 border-neon-green pl-3">
+            <div className="text-neon-green font-semibold">防火墙状态</div>
+            <div className="text-muted-foreground">
+              状态：{realTimeData?.firewallStatus || "正常"}
+            </div>
+            <div className="text-xs text-neon-green">
+              已拦截：
+              {realTimeData?.blockedAttacks?.toLocaleString() || "1,247"} 次攻击
+            </div>
+          </div>
+
+          <div className="border-l-2 border-neon-purple pl-3">
+            <div className="text-neon-purple font-semibold">网络流量</div>
+            <div className="text-muted-foreground">
+              入站: {realTimeData?.inboundTraffic || 85}MB/s | 出站:{" "}
+              {realTimeData?.outboundTraffic || 92}MB/s
+            </div>
+            <div className="text-xs text-neon-purple">
+              带宽使用率：{realTimeData?.bandwidthUsage || 65}%
             </div>
           </div>
         </div>

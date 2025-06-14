@@ -74,6 +74,51 @@ export function generateThreatMetrics() {
   };
 }
 
+// 生成态势监控专用数据
+export function generateSituationData() {
+  return {
+    // 活跃连接监控
+    activeConnections: Math.floor(Math.random() * 500) + 1000,
+    connectionGrowth: (Math.random() - 0.5) * 10, // -5% to +5%
+    peakConnections: Math.floor(Math.random() * 200) + 1800,
+
+    // 实时威胁
+    realTimeThreats: Math.floor(Math.random() * 15) + 3,
+    newThreats: Math.floor(Math.random() * 5),
+    threatTrend:
+      Math.random() > 0.7 ? "上升" : Math.random() > 0.4 ? "稳定" : "下降",
+
+    // 系统性能
+    cpuUsage: Math.floor(Math.random() * 40) + 40,
+    memoryUsage: Math.floor(Math.random() * 35) + 50,
+    diskUsage: Math.floor(Math.random() * 30) + 35,
+    networkLatency: Math.floor(Math.random() * 50) + 10,
+
+    // 防火墙连接
+    firewallStatus: Math.random() > 0.1 ? "正常" : "告警",
+    blockedAttacks: Math.floor(Math.random() * 200) + 800,
+    firewallRules: Math.floor(Math.random() * 50) + 250,
+    passThroughRate: Math.floor(Math.random() * 10) + 85,
+
+    // 网络流量
+    inboundTraffic: Math.floor(Math.random() * 50) + 60,
+    outboundTraffic: Math.floor(Math.random() * 40) + 70,
+    peakInbound: Math.floor(Math.random() * 30) + 120,
+    peakOutbound: Math.floor(Math.random() * 25) + 110,
+    bandwidthUsage: Math.floor(Math.random() * 20) + 65,
+
+    // 网络状态
+    networkStatus: Math.random() > 0.1 ? "正常" : "异常",
+    onlineNodes: Math.floor(Math.random() * 5) + 45,
+    totalNodes: 50,
+    packetsPerSecond: Math.floor(Math.random() * 10000) + 50000,
+
+    // 时间戳
+    lastUpdate: new Date().toLocaleTimeString("zh-CN"),
+    timestamp: Date.now(),
+  };
+}
+
 // 生成实时网络数据
 export function generateNetworkData() {
   const now = new Date();

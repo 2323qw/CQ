@@ -443,7 +443,7 @@ function FirewallStatusPanel() {
         </div>
 
         <div className="space-y-2">
-          <h4 className="text-sm font-semibold text-white">规则状态</h4>
+          <h4 className="text-sm font-semibold text-white">规则���态</h4>
           {firewallRules.map((rule, index) => (
             <div
               key={index}
@@ -560,9 +560,9 @@ function RealTimeLogStream() {
       </h3>
 
       <div className="space-y-2 max-h-64 overflow-y-auto">
-        {logs.map((log) => (
+        {logs.map((log, index) => (
           <div
-            key={log.id}
+            key={`${log.id}-${index}`} // 双重保险：使用ID和索引
             className="p-2 bg-matrix-accent/10 rounded text-sm font-mono border-l-2 border-matrix-border hover:bg-matrix-accent/20 transition-colors"
           >
             <div className="flex items-center justify-between">

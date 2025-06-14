@@ -1,4 +1,4 @@
-import { useState, useRef, Suspense, useEffect } from "react";
+import { useState, useRef, Suspense, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
   OrbitControls,
@@ -1092,7 +1092,7 @@ function EnhancedSituationScene3D() {
           trend: "stable",
           status: "online",
         },
-        { label: "失败登录", value: "23", trend: "down", status: "online" },
+        { label: "失��登录", value: "23", trend: "down", status: "online" },
         { label: "权限提升", value: "0", trend: "stable", status: "online" },
         { label: "异常行为", value: "2", trend: "down", status: "warning" },
         { label: "会话超时", value: "156", trend: "stable", status: "online" },
@@ -1403,7 +1403,7 @@ function SuperEnhancedTopControlBar() {
               </div>
             </div>
 
-            {/* ���图模式选择器 */}
+            {/* 视图模式选择器 */}
             <div className="flex items-center space-x-2 bg-matrix-accent/20 rounded-xl p-2 border-2 border-matrix-border">
               {viewModes.map((mode) => {
                 const Icon = mode.icon;

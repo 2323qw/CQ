@@ -551,7 +551,7 @@ function SimplifiedNetworkTopology() {
   );
 }
 
-// 优化的卫星���统
+// 优化的卫星系统
 function OptimizedSatelliteSystem() {
   const satelliteRef = useRef<Group>(null);
 
@@ -772,8 +772,507 @@ function OptimizedMainScene() {
   );
 }
 
+// 2D信息面板组件
+function InfoPanel2D({
+  isVisible,
+  onToggle,
+  panelMode,
+  setPanelMode,
+}: {
+  isVisible: boolean;
+  onToggle: () => void;
+  panelMode: string;
+  setPanelMode: (mode: string) => void;
+}) {
+  const { data: realTimeData } = useRealTimeData(generateSituationData, {
+    interval: 1000,
+    enabled: true,
+  });
+
+  const [selectedTab, setSelectedTab] = useState("overview");
+
+  const panelTabs = [
+    { id: "overview", name: "概览", icon: Monitor },
+    { id: "metrics", name: "指标", icon: BarChart3 },
+    { id: "network", name: "网络", icon: Network },
+    { id: "security", name: "安全", icon: Shield },
+    { id: "logs", name: "日志", icon: FileText },
+    { id: "map", name: "地图", icon: Map },
+  ];
+
+  // 生成模拟图表数据
+  const chartData = useMemo(() => {
+    const hours = Array.from({ length: 24 }, (_, i) => {
+      const hour = (new Date().getHours() - 23 + i) % 24;
+      return {
+        time: `${hour.toString().padStart(2, "0")}:00`,
+        cpu: 30 + Math.random() * 40,
+        memory: 40 + Math.random() * 35,
+        network: 20 + Math.random() * 60,
+        threats: Math.floor(Math.random() * 10),
+      };
+    });
+    return hours;
+  }, []);
+
+  const threatData = [
+    { name: "DDoS攻击", value: 35, color: "#ff4444" },
+    { name: "恶意软件", value: 25, color: "#ff8800" },
+    { name: "钓鱼攻击", value: 20, color: "#ffaa00" },
+    { name: "暴力破解", value: 15, color: "#aa4400" },
+    { name: "其他", value: 5, color: "#666666" },
+  ];
+
+  const networkNodes = [
+    {
+      id: 1,
+      name: "核心路由器",
+      status: "正常",
+      connections: 247,
+      traffic: "2.4GB/s",
+    },
+    {
+      id: 2,
+      name: "防火墙",
+      status: "正常",
+      connections: 156,
+      traffic: "1.8GB/s",
+    },
+    {
+      id: 3,
+      name: "负载均衡器",
+      status: "警告",
+      connections: 89,
+      traffic: "1.2GB/s",
+    },
+    {
+      id: 4,
+      name: "Web服务器集群",
+      status: "正常",
+      connections: 432,
+      traffic: "3.1GB/s",
+    },
+    {
+      id: 5,
+      name: "数据库服务器",
+      status: "正常",
+      connections: 78,
+      traffic: "890MB/s",
+    },
+  ];
+
+  const securityLogs = useMemo(() => {
+    const logs = [];
+    for (let i = 0; i < 50; i++) {
+      const now = new Date();
+      const logTime = new Date(now.getTime() - i * 30000);
+      logs.push({
+        id: i,
+        time: logTime.toLocaleTimeString(),
+        level: Math.random() > 0.7 ? "高" : Math.random() > 0.4 ? "中" : "低",
+        event: [
+          "DDoS攻击检测",
+          "异常登录尝试",
+          "恶意软件拦截",
+          "端口扫描检测",
+          "SQL注入尝试",
+          "文件完整性检查",
+          "系统性能警告",
+          "网络流量异常",
+        ][Math.floor(Math.random() * 8)],
+        source: `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+        action: Math.random() > 0.5 ? "已拦截" : "已记录",
+      });
+    }
+    return logs;
+  }, []);
+
+  const renderOverviewTab = () => (
+    <div className="p-4 space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-gray-800 rounded-lg p-4">
+          <h3 className="text-lg font-bold text-white mb-4">系统状态</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300">CPU使用率</span>
+              <span className="text-neon-blue font-mono">
+                {realTimeData?.cpuUsage || 45}%
+              </span>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2">
+              <div
+                className="bg-neon-blue h-2 rounded-full transition-all duration-300"
+                style={{ width: `${realTimeData?.cpuUsage || 45}%` }}
+              />
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300">内存使用率</span>
+              <span className="text-neon-green font-mono">
+                {realTimeData?.memoryUsage || 68}%
+              </span>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2">
+              <div
+                className="bg-neon-green h-2 rounded-full transition-all duration-300"
+                style={{ width: `${realTimeData?.memoryUsage || 68}%` }}
+              />
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300">网络使用率</span>
+              <span className="text-yellow-400 font-mono">
+                {realTimeData?.networkUsage || 34}%
+              </span>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2">
+              <div
+                className="bg-yellow-400 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${realTimeData?.networkUsage || 34}%` }}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gray-800 rounded-lg p-4">
+          <h3 className="text-lg font-bold text-white mb-4">安全概况</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300">实时威胁</span>
+              <span className="text-red-400 font-bold">
+                {realTimeData?.realTimeThreats || 3}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300">已拦截攻击</span>
+              <span className="text-green-400 font-bold">
+                {realTimeData?.blockedAttacks || 1247}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300">在线用户</span>
+              <span className="text-blue-400 font-bold">
+                {realTimeData?.onlineUsers || 8247}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300">活跃连接</span>
+              <span className="text-purple-400 font-bold">
+                {realTimeData?.activeConnections || 5432}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-gray-800 rounded-lg p-4">
+        <h3 className="text-lg font-bold text-white mb-4">24小时趋势</h3>
+        <div className="h-48">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <XAxis dataKey="time" stroke="#9CA3AF" fontSize={12} />
+              <YAxis stroke="#9CA3AF" fontSize={12} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#1F2937",
+                  border: "1px solid #374151",
+                  borderRadius: "8px",
+                }}
+              />
+              <RechartsLine
+                type="monotone"
+                dataKey="cpu"
+                stroke="#3B82F6"
+                strokeWidth={2}
+                name="CPU"
+              />
+              <RechartsLine
+                type="monotone"
+                dataKey="memory"
+                stroke="#10B981"
+                strokeWidth={2}
+                name="内存"
+              />
+              <RechartsLine
+                type="monotone"
+                dataKey="network"
+                stroke="#F59E0B"
+                strokeWidth={2}
+                name="网络"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderMetricsTab = () => (
+    <div className="p-4 space-y-4">
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-gray-800 rounded-lg p-4 text-center">
+          <Cpu className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+          <div className="text-2xl font-bold text-white">
+            {realTimeData?.cpuUsage || 45}%
+          </div>
+          <div className="text-sm text-gray-400">CPU使用率</div>
+        </div>
+        <div className="bg-gray-800 rounded-lg p-4 text-center">
+          <MemoryStick className="w-8 h-8 text-green-400 mx-auto mb-2" />
+          <div className="text-2xl font-bold text-white">
+            {realTimeData?.memoryUsage || 68}%
+          </div>
+          <div className="text-sm text-gray-400">内存使用率</div>
+        </div>
+        <div className="bg-gray-800 rounded-lg p-4 text-center">
+          <HardDrive className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
+          <div className="text-2xl font-bold text-white">
+            {realTimeData?.diskUsage || 72}%
+          </div>
+          <div className="text-sm text-gray-400">存储使用率</div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-gray-800 rounded-lg p-4">
+          <h3 className="text-lg font-bold text-white mb-4">威胁分布</h3>
+          <div className="h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <RechartsPieChart>
+                <Tooltip />
+                <RechartsPieChart
+                  data={threatData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={60}
+                >
+                  {threatData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </RechartsPieChart>
+              </RechartsPieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="bg-gray-800 rounded-lg p-4">
+          <h3 className="text-lg font-bold text-white mb-4">网络流量</h3>
+          <div className="h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <XAxis dataKey="time" stroke="#9CA3AF" fontSize={12} />
+                <YAxis stroke="#9CA3AF" fontSize={12} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#1F2937",
+                    border: "1px solid #374151",
+                    borderRadius: "8px",
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="network"
+                  stroke="#8B5CF6"
+                  fill="#8B5CF6"
+                  fillOpacity={0.3}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderNetworkTab = () => (
+    <div className="p-4">
+      <h3 className="text-lg font-bold text-white mb-4">网络节点状态</h3>
+      <div className="space-y-3">
+        {networkNodes.map((node) => (
+          <div
+            key={node.id}
+            className="bg-gray-800 rounded-lg p-4 flex items-center justify-between"
+          >
+            <div className="flex items-center space-x-3">
+              <div
+                className={`w-3 h-3 rounded-full ${
+                  node.status === "正常"
+                    ? "bg-green-400"
+                    : node.status === "警告"
+                      ? "bg-yellow-400"
+                      : "bg-red-400"
+                }`}
+              />
+              <div>
+                <div className="text-white font-medium">{node.name}</div>
+                <div className="text-sm text-gray-400">
+                  连接数: {node.connections}
+                </div>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-white font-mono">{node.traffic}</div>
+              <div
+                className={`text-sm ${
+                  node.status === "正常"
+                    ? "text-green-400"
+                    : node.status === "警告"
+                      ? "text-yellow-400"
+                      : "text-red-400"
+                }`}
+              >
+                {node.status}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderSecurityTab = () => (
+    <div className="p-4">
+      <h3 className="text-lg font-bold text-white mb-4">安全事件</h3>
+      <div className="space-y-2 max-h-96 overflow-y-auto">
+        {securityLogs.slice(0, 20).map((log) => (
+          <div key={log.id} className="bg-gray-800 rounded p-3 text-sm">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-gray-400 font-mono">{log.time}</span>
+              <span
+                className={`px-2 py-1 rounded text-xs ${
+                  log.level === "高"
+                    ? "bg-red-500 text-white"
+                    : log.level === "中"
+                      ? "bg-yellow-500 text-black"
+                      : "bg-green-500 text-white"
+                }`}
+              >
+                {log.level}
+              </span>
+            </div>
+            <div className="text-white">{log.event}</div>
+            <div className="flex justify-between text-xs text-gray-400 mt-1">
+              <span>来源: {log.source}</span>
+              <span>{log.action}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderLogsTab = () => (
+    <div className="p-4">
+      <h3 className="text-lg font-bold text-white mb-4">系统日志</h3>
+      <div className="bg-gray-900 rounded-lg p-4 font-mono text-sm text-green-400 h-96 overflow-y-auto">
+        {securityLogs.map((log) => (
+          <div key={log.id} className="mb-1">
+            [{log.time}] {log.level.toUpperCase()}: {log.event} - {log.source} (
+            {log.action})
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderMapTab = () => (
+    <div className="p-4">
+      <h3 className="text-lg font-bold text-white mb-4">网络拓扑图</h3>
+      <div className="bg-gray-800 rounded-lg p-4 h-96 flex items-center justify-center">
+        <div className="text-center text-gray-400">
+          <Map className="w-16 h-16 mx-auto mb-4" />
+          <div>网络拓扑图视图</div>
+          <div className="text-sm mt-2">显示网络设备连接关系</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderTabContent = () => {
+    switch (selectedTab) {
+      case "overview":
+        return renderOverviewTab();
+      case "metrics":
+        return renderMetricsTab();
+      case "network":
+        return renderNetworkTab();
+      case "security":
+        return renderSecurityTab();
+      case "logs":
+        return renderLogsTab();
+      case "map":
+        return renderMapTab();
+      default:
+        return renderOverviewTab();
+    }
+  };
+
+  return (
+    <div
+      className={`fixed right-0 top-16 bottom-0 bg-gray-900 border-l border-gray-700 transform transition-transform duration-300 z-40 ${
+        isVisible ? "translate-x-0" : "translate-x-full"
+      }`}
+      style={{ width: "480px" }}
+    >
+      {/* 面板头部 */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-700">
+        <h2 className="text-xl font-bold text-white">2D信息面板</h2>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => onToggle()}
+            className="p-2 hover:bg-gray-700 rounded-lg transition-colors text-gray-300"
+          >
+            <Minimize2 className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => onToggle()}
+            className="p-2 hover:bg-gray-700 rounded-lg transition-colors text-gray-300"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* 标签栏 */}
+      <div className="flex border-b border-gray-700 overflow-x-auto">
+        {panelTabs.map((tab) => {
+          const IconComponent = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setSelectedTab(tab.id)}
+              className={`flex items-center space-x-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
+                selectedTab === tab.id
+                  ? "text-blue-400 border-b-2 border-blue-400 bg-gray-800"
+                  : "text-gray-400 hover:text-white hover:bg-gray-800"
+              }`}
+            >
+              <IconComponent className="w-4 h-4" />
+              <span>{tab.name}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 内容区域 */}
+      <div
+        className="overflow-y-auto"
+        style={{ height: "calc(100vh - 160px)" }}
+      >
+        {renderTabContent()}
+      </div>
+    </div>
+  );
+}
+
 // 优化的顶部控制栏
-function OptimizedTopControlBar() {
+function OptimizedTopControlBar({
+  onToggle2DPanel,
+  is2DPanelVisible,
+}: {
+  onToggle2DPanel: () => void;
+  is2DPanelVisible: boolean;
+}) {
   const navigate = useNavigate();
   const [isPlaying, setIsPlaying] = useState(true);
   const [viewMode, setViewMode] = useState("overview");

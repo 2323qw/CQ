@@ -9,7 +9,7 @@ import {
   AlertTriangle,
   Loader,
 } from "lucide-react";
-import { CyberSecurityScene } from "@/components/3d/CyberSecurityScene";
+import { ModelSelector } from "@/components/3d/ModelSelector";
 import { ThreeErrorBoundary } from "@/components/3d/ErrorBoundary";
 import { SimpleShield } from "@/components/3d/SimpleShield";
 
@@ -83,13 +83,13 @@ export default function Login() {
                   <div className="text-center">
                     <Loader className="w-8 h-8 text-neon-blue animate-spin mx-auto mb-2" />
                     <p className="text-neon-blue font-mono text-sm">
-                      加载网络安全3D���型中...
+                      加载网络安全3D模型中...
                     </p>
                   </div>
                 </div>
               }
             >
-              <CyberSecurityScene />
+              <ModelSelector />
             </Suspense>
           </ThreeErrorBoundary>
         </div>
@@ -165,7 +165,7 @@ export default function Login() {
 
           {/* 登录表单容器 */}
           <div className="cyber-card p-8 relative border-2 border-neon-blue/20">
-            {/* 表单��题 */}
+            {/* 表单标题 */}
             <div className="text-center mb-6">
               <h2 className="text-2xl font-semibold text-white mb-2">
                 系统登录
@@ -285,7 +285,7 @@ export default function Login() {
             </div>
           </div>
 
-          {/* 版权信息 */}
+          {/* 版��信息 */}
           <div className="mt-6 text-center">
             <p className="text-xs text-muted-foreground">
               © 2024 CyberGuard Security Platform. All rights reserved.

@@ -21,7 +21,6 @@ import {
   Instances,
   Instance,
   useTexture,
-  Preload,
 } from "@react-three/drei";
 import {
   Monitor,
@@ -2092,7 +2091,7 @@ function BusinessLoadingScreen() {
           加载企业态势感知平台
         </div>
         <div className="text-gray-600 text-sm">
-          正在启动企业��安全监控系统...
+          正在启动企业级安全监控系统...
         </div>
       </div>
     </div>
@@ -2145,7 +2144,7 @@ export default function SituationDisplay() {
               powerPreference: "high-performance",
               precision: "highp", // 企业级精度
             }}
-            dpr={[1, 2]} // 企业级设备像���比
+            dpr={[1, 2]} // 企业级设备像素比
             performance={{ min: 0.7 }} // 企业级性能要求
           >
             <Suspense fallback={null}>
@@ -2184,7 +2183,7 @@ export default function SituationDisplay() {
         <button
           onClick={toggle2DPanel}
           className="fixed right-4 top-1/2 transform -translate-y-1/2 z-50 bg-white hover:bg-gray-50 text-gray-700 p-3 rounded-l-lg shadow-xl border border-gray-200 transition-all duration-300"
-          title="打开企业控制面板"
+          title="��开企业控制面板"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>

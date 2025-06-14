@@ -75,7 +75,30 @@ import {
   Search,
   CloudLightning,
   Loader,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  PieChart,
+  Map,
+  List,
+  X,
+  Minimize2,
 } from "lucide-react";
+import {
+  LineChart,
+  Line as RechartsLine,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart as RechartsPieChart,
+  Cell,
+  AreaChart,
+  Area,
+  BarChart as RechartsBarChart,
+  Bar,
+} from "recharts";
 import { useNavigate } from "react-router-dom";
 import {
   Vector3,
@@ -528,7 +551,7 @@ function SimplifiedNetworkTopology() {
   );
 }
 
-// 优化的卫星系统
+// 优化的卫星���统
 function OptimizedSatelliteSystem() {
   const satelliteRef = useRef<Group>(null);
 

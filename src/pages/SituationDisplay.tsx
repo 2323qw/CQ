@@ -1090,7 +1090,11 @@ function BusinessOptimizedMainScene() {
         return (
           <mesh key={i} position={[x, 1, z]} frustumCulled castShadow>
             <cylinderGeometry args={[0.15, 0.15, 2, 12]} />
-            <primitive object={BusinessSharedMaterials.light} />
+            <meshStandardMaterial
+              color={BUSINESS_COLORS.primary}
+              transparent
+              opacity={0.8}
+            />
           </mesh>
         );
       })}

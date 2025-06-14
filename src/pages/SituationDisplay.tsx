@@ -20,7 +20,10 @@ import {
 import { UltraCyberSecurityModel } from "@/components/3d/UltraCyberSecurityModel";
 import { ThreeErrorBoundary } from "@/components/3d/ErrorBoundary";
 import { SimpleShield } from "@/components/3d/SimpleShield";
-import { useRealTimeData } from "@/hooks/useRealTimeData";
+import {
+  useRealTimeData,
+  generateThreatMetrics,
+} from "@/hooks/useRealTimeData";
 
 // 3D网络节点组件
 function NetworkNode({
@@ -182,7 +185,10 @@ function DataFlow({
 
 // 3D态势场景
 function SituationScene() {
-  const { data: realTimeData } = useRealTimeData();
+  const { data: realTimeData } = useRealTimeData(generateThreatMetrics, {
+    interval: 3000,
+    enabled: true,
+  });
 
   // 模拟网络节点数据
   const networkNodes = [
@@ -291,7 +297,10 @@ function SituationScene() {
 
 // 状态面板组件
 function StatusPanel() {
-  const { data: realTimeData } = useRealTimeData();
+  const { data: realTimeData } = useRealTimeData(generateThreatMetrics, {
+    interval: 2000,
+    enabled: true,
+  });
 
   const statusItems = [
     {
@@ -303,7 +312,7 @@ function StatusPanel() {
     },
     {
       label: "活跃威胁",
-      value: realTimeData?.threatsDetected?.toString() || "3",
+      value: realTimeData?.realTimeThreats?.toString() || "3",
       icon: AlertTriangle,
       color: "text-threat-high",
       bgColor: "bg-threat-high/10",
@@ -317,7 +326,7 @@ function StatusPanel() {
     },
     {
       label: "系统负载",
-      value: realTimeData?.systemLoad || "68%",
+      value: `${realTimeData?.systemHealth || 68}%`,
       icon: Activity,
       color: "text-neon-orange",
       bgColor: "bg-neon-orange/10",

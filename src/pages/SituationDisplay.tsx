@@ -1105,12 +1105,14 @@ function AdvancedNeuralPanel({
   ];
 
   return (
-    <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-auto">
+    <div className="fixed left-4 top-1/2 transform -translate-y-1/2 pointer-events-auto z-30">
       <div
         className="quantum-card p-6"
         style={{
-          width: "400px",
-          maxHeight: "600px",
+          width: "min(25vw, 400px)", // 响应式宽度：最大25%视口宽度，最大400px
+          minWidth: "320px", // 确保最小可用宽度
+          maxHeight: "70vh", // 响应式高度：最大70%视口高度
+          minHeight: "500px", // 确保最小可用高度
         }}
       >
         <div className="flex items-center justify-between mb-6">
@@ -1383,7 +1385,7 @@ function AdvancedThreatPanel({
         typeEn: "Quantum Interference Attack",
         level: 9,
         frequency: "14.2THz",
-        source: "深空未知信号",
+        source: "深空未知信��",
         sourceEn: "Deep Space Unknown Signal",
         timestamp: "14:23:45",
         status: "active",
@@ -1679,7 +1681,7 @@ function AdvancedThreatPanel({
                 </div>
               </div>
 
-              {/* 详细信���展开 */}
+              {/* 详细信息展开 */}
               {showDetails && (
                 <div className="mt-3 pt-3 border-t border-matrix-border space-y-2">
                   <div className="flex justify-between text-xs">
@@ -1783,7 +1785,7 @@ function AdvancedThreatPanel({
               </span>
             </div>
             <div className="flex justify-between">
-              <span>• 神经防火墙</span>
+              <span>• ��经防火墙</span>
               <span className="text-neon-green">正常运行</span>
             </div>
             <div className="flex justify-between">
@@ -1943,7 +1945,7 @@ function Advanced2DPanel({
       }`}
       style={{
         width: "min(35vw, 600px)", // 响应式宽度：最大35%视口宽度，最大600px
-        minWidth: "480px", // 确保最小���用宽度
+        minWidth: "480px", // 确保最小可用宽度
         borderColor: DISPLAY_COLORS.corporate.accent,
         backgroundColor: "rgba(10, 14, 26, 0.95)",
       }}

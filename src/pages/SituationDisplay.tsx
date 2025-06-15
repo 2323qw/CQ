@@ -60,7 +60,7 @@ import {
   Filter,
   Download,
   Upload,
-  Refresh,
+  RefreshCw,
   Power,
   Signal,
   Battery,
@@ -1496,7 +1496,7 @@ function OptimizedTopControlBar({
                 className="quantum-button p-2"
                 title="刷新"
               >
-                <Refresh className="w-4 h-4" />
+                <RefreshCw className="w-4 h-4" />
               </button>
             </div>
 

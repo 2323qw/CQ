@@ -1679,7 +1679,7 @@ function AdvancedThreatPanel({
                 </div>
               </div>
 
-              {/* 详细信息展开 */}
+              {/* 详细信���展开 */}
               {showDetails && (
                 <div className="mt-3 pt-3 border-t border-matrix-border space-y-2">
                   <div className="flex justify-between text-xs">
@@ -1942,7 +1942,8 @@ function Advanced2DPanel({
         isVisible ? "translate-x-0" : "translate-x-full"
       }`}
       style={{
-        width: "700px",
+        width: "min(35vw, 600px)", // 响应式宽度：最大35%视口宽度，最大600px
+        minWidth: "480px", // 确保最小���用宽度
         borderColor: DISPLAY_COLORS.corporate.accent,
         backgroundColor: "rgba(10, 14, 26, 0.95)",
       }}

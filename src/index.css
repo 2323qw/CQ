@@ -1,9 +1,9 @@
+/* 导入增强科幻主题样式 */
+@import "./styles/enhanced-theme.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* 导入增强科幻主题样式 */
-@import "./styles/enhanced-theme.css";
 
 :root {
   --background: 13 17 23;

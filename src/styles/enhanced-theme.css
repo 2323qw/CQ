@@ -690,10 +690,329 @@
   }
 }
 
+/* 3D态势大屏专用样式增强 */
+.matrix-background {
+  position: relative;
+  background:
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(0, 245, 255, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(191, 0, 255, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 40% 40%,
+      rgba(57, 255, 20, 0.03) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      135deg,
+      var(--deep-space-bg) 0%,
+      var(--nebula-bg) 25%,
+      var(--void-bg) 50%,
+      var(--nebula-bg) 75%,
+      var(--deep-space-bg) 100%
+    );
+}
+
+.matrix-background::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 245, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 245, 255, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: matrix-grid-flow 20s linear infinite;
+  pointer-events: none;
+}
+
+/* 状态卡片悬停缩放效果 */
+.hover\:scale-102:hover {
+  transform: scale(1.02);
+}
+
+.hover\:scale-105:hover {
+  transform: scale(1.05);
+}
+
+/* 量子波动动画 */
+.quantum-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.quantum-ripple::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(191, 0, 255, 0.4) 0%,
+    transparent 70%
+  );
+  transform: translate(-50%, -50%);
+  animation: quantum-ripple-animation 3s ease-out infinite;
+}
+
+/* 神经脉冲效果 */
+.neural-pulse-ring {
+  position: relative;
+}
+
+.neural-pulse-ring::before,
+.neural-pulse-ring::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--neon-green);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: neural-pulse-expand 2s ease-out infinite;
+}
+
+.neural-pulse-ring::after {
+  animation-delay: 1s;
+}
+
+/* 3D控制面板特效 */
+.panel-slide-in {
+  animation: panel-slide-in 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.panel-slide-out {
+  animation: panel-slide-out 0.5s cubic-bezier(0.55, 0.06, 0.68, 0.19);
+}
+
+/* 状态指示器增强 */
+.status-indicator {
+  position: relative;
+  display: inline-block;
+}
+
+.status-indicator::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
+  border-radius: 50%;
+  background: inherit;
+  opacity: 0.3;
+  transform: translate(-50%, -50%);
+  animation: status-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* 威胁等级颜色增强 */
+.threat-level-critical {
+  background: linear-gradient(135deg, #ff0040, #ff3366);
+  box-shadow: 0 0 20px rgba(255, 0, 64, 0.6);
+}
+
+.threat-level-high {
+  background: linear-gradient(135deg, #ff6600, #ff8800);
+  box-shadow: 0 0 20px rgba(255, 102, 0, 0.6);
+}
+
+.threat-level-medium {
+  background: linear-gradient(135deg, #ffcc00, #ffdd33);
+  box-shadow: 0 0 20px rgba(255, 204, 0, 0.6);
+}
+
+.threat-level-low {
+  background: linear-gradient(135deg, #39ff14, #55ff33);
+  box-shadow: 0 0 20px rgba(57, 255, 20, 0.6);
+}
+
+/* 数据流动线条 */
+.data-flow-line {
+  position: relative;
+  overflow: hidden;
+}
+
+.data-flow-line::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 245, 255, 0.8),
+    transparent
+  );
+  animation: data-flow-sweep 2s linear infinite;
+}
+
+/* 全息闪烁增强 */
+.hologram-enhanced {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    transparent 25%,
+    rgba(0, 245, 255, 0.1) 25%,
+    rgba(0, 245, 255, 0.1) 50%,
+    transparent 50%,
+    transparent 75%,
+    rgba(0, 245, 255, 0.1) 75%
+  );
+  background-size: 30px 30px;
+  animation: hologram-enhanced-flicker 0.15s linear infinite;
+}
+
+.hologram-enhanced::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 245, 255, 0.4),
+    transparent
+  );
+  animation: hologram-scan 4s linear infinite;
+  pointer-events: none;
+}
+
+/* 高级动画关键帧 */
+@keyframes matrix-grid-flow {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
+}
+
+@keyframes quantum-ripple-animation {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    width: 300px;
+    height: 300px;
+    opacity: 0;
+  }
+}
+
+@keyframes neural-pulse-expand {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes panel-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes panel-slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes status-ping {
+  75%,
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes data-flow-sweep {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes hologram-enhanced-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+  75% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes hologram-scan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* 性能优化的3D容器 */
+.canvas-container {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* 高DPI显示优化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .quantum-card,
+  .neural-card {
+    border-width: 1px;
+  }
+
+  .neon-text-blue,
+  .neon-text-green,
+  .neon-text-purple {
+    text-shadow:
+      0 0 3px currentColor,
+      0 0 6px currentColor,
+      0 0 9px currentColor,
+      0 0 12px currentColor;
+  }
+}
+
 /* 打印样式优化 */
 @media print {
   .quantum-bg,
-  .neural-bg {
+  .neural-bg,
+  .matrix-background {
     background: white !important;
   }
 
@@ -708,5 +1027,9 @@
   .neural-card {
     border: 2px solid black !important;
     box-shadow: none !important;
+  }
+
+  .matrix-background::before {
+    display: none !important;
   }
 }

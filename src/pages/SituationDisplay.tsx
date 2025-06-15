@@ -113,6 +113,7 @@ import {
   AreaChart,
   Area,
   PieChart,
+  Pie,
   Cell,
   ComposedChart,
   Bar,
@@ -154,7 +155,7 @@ import {
 // 视图模式类型定义
 type ViewMode = "3d" | "2d" | "split-horizontal" | "split-vertical" | "quad";
 
-// 组件层级定义
+// 组件��级定义
 const Z_INDEX = {
   background: 0,
   canvas: 10,
@@ -498,7 +499,7 @@ function NetworkTopologyView({
         })}
       </svg>
 
-      {/* 2D视图控制面�� */}
+      {/* 2D视图控制面板 */}
       <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
         <div className="bg-black/80 backdrop-blur-sm rounded-lg px-4 py-2">
           <h3 className="text-white font-bold">网络拓扑图</h3>
@@ -1508,7 +1509,7 @@ function AdvancedLogsTab() {
     {
       time: "14:23:48",
       level: "ERROR",
-      message: "量���信号干扰检测",
+      message: "量子信号干扰检测",
       source: "Quantum Detector",
     },
   ];
@@ -1825,7 +1826,7 @@ export default function SituationDisplay() {
         onConfigChange={handleConfigChange}
       />
 
-      {/* 面板切换按钮（仅在未显示控制面板时显示） */}
+      {/* 面板切换按钮（仅在未���示控制面板时显示） */}
       {!is2DPanelVisible && (
         <button
           onClick={toggle2DPanel}

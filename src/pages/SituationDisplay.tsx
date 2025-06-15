@@ -669,7 +669,7 @@ function AdvancedInfoOverlay({
         onNodeSelect={onNodeSelect}
       />
 
-      {/* 右侧高级量子威胁分析面板 */}
+      {/* ��侧高级量子威胁分析面板 */}
       <AdvancedThreatPanel
         realTimeData={realTimeData}
         alertLevel={alertLevel}
@@ -1995,9 +1995,9 @@ function Advanced2DPanel({
         ))}
       </div>
 
-      {/* 内容区域 */}
+      {/* 内容区域 - 优化响应式设计 */}
       <div
-        className="p-6 overflow-y-auto"
+        className="p-4 sm:p-6 overflow-y-auto overflow-x-hidden"
         style={{
           height: "calc(100vh - 140px)",
           backgroundColor: "rgba(15, 23, 42, 0.6)",
@@ -2760,7 +2760,7 @@ export default function SituationDisplay() {
         </button>
       )}
 
-      {/* 增强版底部状态栏 - 优化响应式布局 */}
+      {/* 增强版底部状态栏 - 优化响���式布局 */}
       <div
         className={`absolute bottom-0 border-t backdrop-blur-md transition-all duration-500`}
         style={{

@@ -982,7 +982,7 @@ function generateThreatData() {
 function MiniMapComponent() {
   return (
     <div className="w-full h-full bg-matrix-deep/50 rounded-lg p-2 relative">
-      {/* 简化的��络拓扑图 */}
+      {/* 简化的网络拓扑图 */}
       <svg className="w-full h-full">
         {/* 中央节点 */}
         <circle
@@ -2675,12 +2675,13 @@ export default function SituationDisplay() {
         onConfigChange={handleConfigChange}
       />
 
-      {/* 3D未来场景容器 */}
+      {/* 3D未来场景容器 - 优化比例和响应式设计 */}
       <div
         className={`absolute inset-0 transition-all duration-500 canvas-container`}
         style={{
           top: "80px",
-          right: is2DPanelVisible ? "700px" : "0",
+          left: "420px", // 为左侧面板预留空间
+          right: is2DPanelVisible ? "min(35vw, 600px)" : "0", // 响应式右侧面板宽度
         }}
       >
         <ThreeErrorBoundary>

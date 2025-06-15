@@ -1766,7 +1766,7 @@ function AdvancedThreatPanel({
             className="text-sm font-medium mb-2"
             style={{ color: DISPLAY_COLORS.ui.text.secondary }}
           >
-            量子防护系统状���
+            量子防护系统状态
           </div>
           <div
             className="text-xs space-y-1 font-mono"
@@ -1970,9 +1970,9 @@ function Advanced2DPanel({
         </button>
       </div>
 
-      {/* 标签页 */}
+      {/* 标签页 - 优化响应式设计 */}
       <div
-        className="flex border-b overflow-x-auto"
+        className="flex border-b overflow-x-auto scrollbar-hide"
         style={{
           backgroundColor: "rgba(30, 41, 55, 0.7)",
           borderColor: DISPLAY_COLORS.ui.border.primary,
@@ -1982,14 +1982,15 @@ function Advanced2DPanel({
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-shrink-0 flex items-center justify-center space-x-3 py-4 px-6 text-sm font-medium font-rajdhani transition-all duration-300 ${
+            className={`flex-shrink-0 flex items-center justify-center space-x-2 py-3 px-4 text-sm font-medium font-rajdhani transition-all duration-300 ${
               activeTab === tab.id
                 ? "quantum-button"
                 : "text-muted-foreground hover:text-white"
             }`}
+            style={{ minWidth: "fit-content" }}
           >
-            <tab.icon className="w-5 h-5" />
-            <span>{tab.label}</span>
+            <tab.icon className="w-4 h-4" />
+            <span className="hidden sm:inline">{tab.label}</span>
           </button>
         ))}
       </div>

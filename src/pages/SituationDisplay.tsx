@@ -854,7 +854,7 @@ function AdvancedStatusCard({
             />
           </div>
 
-          {/* 详细信息预览 */}
+          {/* 详���信息预览 */}
           {isSelected && details && (
             <div className="mt-2 grid grid-cols-3 gap-1 text-xs">
               {Object.entries(details).map(([key, val]) => (
@@ -1148,20 +1148,21 @@ function AdvancedNeuralPanel({
           </div>
         </div>
 
-        {/* 标签页导航 */}
-        <div className="flex space-x-1 mb-6">
+        {/* 标签页导航 - 优化响应式设计 */}
+        <div className="flex border-b mb-4 overflow-x-auto scrollbar-hide">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`flex-shrink-0 flex items-center space-x-1.5 py-2.5 px-3 text-xs sm:text-sm font-medium font-rajdhani border-b-2 transition-all duration-300 ${
                 activeTab === tab.id
-                  ? "quantum-button"
-                  : "text-muted-foreground hover:text-white"
+                  ? "border-neon-blue text-neon-blue"
+                  : "border-transparent text-muted-foreground hover:text-white"
               }`}
+              style={{ minWidth: "fit-content" }}
             >
-              <tab.icon className="w-4 h-4" />
-              <span>{tab.label}</span>
+              <tab.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">{tab.label}</span>
             </button>
           ))}
         </div>
@@ -1514,7 +1515,7 @@ function AdvancedThreatPanel({
             <button
               onClick={() => setShowDetails(!showDetails)}
               className={`neural-button p-2 ${showDetails ? "bg-neon-purple/20" : ""}`}
-              title="详细信息"
+              title="详细信���"
             >
               <Info className="w-4 h-4" />
             </button>
@@ -2086,7 +2087,7 @@ function AdvancedOverviewTab({ realTimeData }: { realTimeData: any }) {
       </div>
 
       <div className="quantum-card p-6">
-        <h4 className="text-lg font-bold mb-4 neon-text-blue">实时性能监控</h4>
+        <h4 className="text-lg font-bold mb-4 neon-text-blue">实时性能��控</h4>
         <div style={{ width: "100%", height: "200px" }}>
           <ResponsiveContainer>
             <ComposedChart data={generateTrendData()}>

@@ -48,6 +48,7 @@ import {
   getStatusColor,
   getDataFlowColor,
   getTechLevelColor,
+  getPerformanceColor,
 } from "@/lib/situationDisplayColors";
 
 /**
@@ -313,7 +314,7 @@ export function EnhancedQuantumTower() {
 
   return (
     <group ref={towerRef} position={quantumTower.position}>
-      {/* 塔楼主体 - 多层结构 */}
+      {/* 塔楼主��� - 多层结构 */}
       {Array.from({ length: quantumTower.floors }, (_, i) => {
         const floorY = (i * quantumTower.height) / quantumTower.floors;
         const floorRadius = quantumTower.radius * (1 - i * 0.06);
@@ -459,7 +460,7 @@ export function EnhancedQuantumTower() {
 }
 
 /**
- * 增强版全息数据显示
+ * ���强版全息数据������
  */
 function EnhancedHolographicDisplay() {
   const displayRef = useRef<Group>(null);
@@ -1005,7 +1006,7 @@ function NodeParticleSystem({
     const sizes = new Float32Array(particleCount);
 
     for (let i = 0; i < particleCount; i++) {
-      // 根据节点类型调整粒子分布
+      // 根据节点���型调整粒子分布
       let radius = 3;
       if (type === "neural-core") radius = 4;
       if (type === "quantum-edge") radius = 3.5;
@@ -1202,7 +1203,7 @@ function EnhancedDataPipeline({ pipe, index }: { pipe: any; index: number }) {
         opacity={0.3}
       />
 
-      {/* 管��内层能量流 */}
+      {/* 管道内层能量流 */}
       <Line
         points={[
           pipeGeometry.start,
@@ -1788,7 +1789,7 @@ function EnhancedLightingSystem() {
         shadow-mapSize-height={4096}
       />
 
-      {/* 量子光�� */}
+      {/* 量子光源 */}
       <pointLight
         position={[0, 30, 0]}
         intensity={1.2}

@@ -1120,7 +1120,10 @@ function AdvancedNeuralPanel({
         </div>
 
         {/* 内容区域 - 优化滚动和响应式设计 */}
-        <div className="overflow-y-auto overflow-x-hidden" style={{ maxHeight: "calc(70vh - 200px)" }}>
+        <div
+          className="overflow-y-auto overflow-x-hidden"
+          style={{ maxHeight: "calc(70vh - 200px)" }}
+        >
           {activeTab === "metrics" && (
             <div className="space-y-3 sm:space-y-4">
               {neuralMetrics.map((metric) => (
@@ -1473,7 +1476,9 @@ function AdvancedThreatPanel({
             <div
               className="w-3 h-3 rounded-full animate-pulse"
               style={{
-                backgroundColor: getThreatColor(realTimeData?.realTimeThreats || 5),
+                backgroundColor: getThreatColor(
+                  realTimeData?.realTimeThreats || 5,
+                ),
                 boxShadow: `0 0 8px ${getThreatColor(realTimeData?.realTimeThreats || 5)}60`,
               }}
             />
@@ -1579,7 +1584,7 @@ function AdvancedThreatPanel({
                           : threat.status === "investigating"
                             ? "调查中"
                             : "监控中"}
-                  </span>
+                  </div>
                 </div>
               </div>
 
@@ -2079,9 +2084,7 @@ function AdvancedControlsTab({
               <span className="block mb-2">渲染质量</span>
               <select
                 value={sceneConfig.quality}
-                onChange={(e) =>
-                  onConfigChange({ quality: e.target.value })
-                }
+                onChange={(e) => onConfigChange({ quality: e.target.value })}
                 className="w-full neural-select"
               >
                 <option value="low">低质量</option>
@@ -2091,7 +2094,9 @@ function AdvancedControlsTab({
               </select>
             </div>
             <div>
-              <span className="block mb-2">星星数量: {sceneConfig.starCount}</span>
+              <span className="block mb-2">
+                星星数量: {sceneConfig.starCount}
+              </span>
               <input
                 type="range"
                 min="1000"
@@ -2143,7 +2148,7 @@ function AdvancedLogsTab() {
       <h3 className="text-xl font-bold font-orbitron neon-text-green">
         系统日志
       </h3>
-      
+
       <div className="space-y-2">
         {logs.map((log, index) => (
           <div key={index} className="neural-card p-3">
@@ -2283,9 +2288,7 @@ function OptimizedTopControlBar({
 
         <div className="flex items-center space-x-4">
           <button
-            onClick={() =>
-              onConfigChange({ isPaused: !sceneConfig.isPaused })
-            }
+            onClick={() => onConfigChange({ isPaused: !sceneConfig.isPaused })}
             className={`neural-button px-4 py-2 ${
               sceneConfig.isPaused ? "bg-neon-orange/20" : "bg-neon-green/20"
             }`}
@@ -2379,7 +2382,7 @@ export default function SituationDisplay() {
         style={{
           top: "80px",
           left: "420px", // 为左侧面板预留空间
-          right: is2DPanelVisible ? "min(35vw, 600px)" : "0", // 响应式右侧面板宽度
+          right: is2DPanelVisible ? "min(35vw, 600px)" : "0", // ��应式右侧面板宽度
         }}
       >
         <ThreeErrorBoundary>
@@ -2616,7 +2619,7 @@ function OptimizedLoadingScreen() {
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse"></div>
-            <span className="text-neon-green font-mono">神经网���</span>
+            <span className="text-neon-green font-mono">神经网络</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 rounded-full bg-neon-blue animate-pulse"></div>

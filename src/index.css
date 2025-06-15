@@ -1,6 +1,9 @@
 /* 导入增强科幻主题样式 */
 @import "./styles/enhanced-theme.css";
 
+/* 导入3D态势监控优化样式 */
+@import "./styles/situation-display.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -151,7 +154,7 @@
     animation: data-flow 2s linear infinite;
   }
 
-  /* 3D登录界面动画 */
+  /* 3D登��界面动画 */
   @keyframes float {
     0%,
     100% {

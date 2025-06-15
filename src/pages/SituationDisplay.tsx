@@ -1385,7 +1385,7 @@ function AdvancedThreatPanel({
         typeEn: "Quantum Interference Attack",
         level: 9,
         frequency: "14.2THz",
-        source: "深空未知信��",
+        source: "深空未知信号",
         sourceEn: "Deep Space Unknown Signal",
         timestamp: "14:23:45",
         status: "active",
@@ -1766,7 +1766,7 @@ function AdvancedThreatPanel({
             className="text-sm font-medium mb-2"
             style={{ color: DISPLAY_COLORS.ui.text.secondary }}
           >
-            量子防护系统状态
+            量子防护系统状���
           </div>
           <div
             className="text-xs space-y-1 font-mono"
@@ -1785,7 +1785,7 @@ function AdvancedThreatPanel({
               </span>
             </div>
             <div className="flex justify-between">
-              <span>• ��经防火墙</span>
+              <span>• 神经防火墙</span>
               <span className="text-neon-green">正常运行</span>
             </div>
             <div className="flex justify-between">
@@ -2759,13 +2759,14 @@ export default function SituationDisplay() {
         </button>
       )}
 
-      {/* 增强版底部状态栏 */}
+      {/* 增强版底部状态栏 - 优化响应式布局 */}
       <div
-        className={`absolute bottom-0 left-0 border-t backdrop-blur-md transition-all duration-500`}
+        className={`absolute bottom-0 border-t backdrop-blur-md transition-all duration-500`}
         style={{
           backgroundColor: "rgba(15, 23, 42, 0.9)",
           borderColor: DISPLAY_COLORS.ui.border.primary,
-          right: is2DPanelVisible ? "700px" : "0",
+          left: "420px", // 为左侧面板预留空间
+          right: is2DPanelVisible ? "min(35vw, 600px)" : "0", // 与主容器保持一致
           height: "60px",
           boxShadow: `0 0 20px ${DISPLAY_COLORS.corporate.accent}20`,
         }}

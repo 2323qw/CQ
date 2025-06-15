@@ -854,7 +854,7 @@ function AdvancedStatusCard({
             />
           </div>
 
-          {/* 详���信息预览 */}
+          {/* 详细信息预览 */}
           {isSelected && details && (
             <div className="mt-2 grid grid-cols-3 gap-1 text-xs">
               {Object.entries(details).map(([key, val]) => (
@@ -1515,7 +1515,7 @@ function AdvancedThreatPanel({
             <button
               onClick={() => setShowDetails(!showDetails)}
               className={`neural-button p-2 ${showDetails ? "bg-neon-purple/20" : ""}`}
-              title="详细信���"
+              title="详细信息"
             >
               <Info className="w-4 h-4" />
             </button>
@@ -1585,16 +1585,28 @@ function AdvancedThreatPanel({
           </div>
         </div>
 
-        {/* 威胁列表 */}
-        <div className="space-y-3 max-h-80 overflow-y-auto">
-          {quantumThreats.map((threat, index) => (
-            <div
-              key={index}
-              className="neural-card p-4 hover:scale-102 transition-transform cursor-pointer"
-              style={{
-                borderColor: getThreatColor(threat.level),
-                backgroundColor: `${getThreatColor(threat.level)}05`,
-              }}
+        {/* 内容区域 - 优化滚动和响应式设计 */}
+        <div className="overflow-y-auto overflow-x-hidden" style={{ maxHeight: "calc(70vh - 200px)" }}>
+          {activeTab === "metrics" && (
+            <div className="space-y-3 sm:space-y-4">
+              {neuralMetrics.map((metric) => (
+                <div
+                  key={metric.id}
+                  onClick={() =>
+                    onNodeSelect(selectedNode === metric.id ? null : metric.id)
+                  }
+                  className={`neural-card p-3 sm:p-4 transition-all duration-300 cursor-pointer hover:scale-[1.01] ${
+                    selectedNode === metric.id
+                      ? "border-neon-blue bg-neon-blue/10"
+                      : ""
+                  }`}
+                  style={{
+                    borderColor:
+                      selectedNode === metric.id
+                        ? DISPLAY_COLORS.neon.blue
+                        : `${metric.color}40`,
+                  }}
+                >
             >
               <div className="flex justify-between items-start mb-3">
                 <div className="flex-1">
@@ -2087,7 +2099,7 @@ function AdvancedOverviewTab({ realTimeData }: { realTimeData: any }) {
       </div>
 
       <div className="quantum-card p-6">
-        <h4 className="text-lg font-bold mb-4 neon-text-blue">实时性能��控</h4>
+        <h4 className="text-lg font-bold mb-4 neon-text-blue">实时性能监控</h4>
         <div style={{ width: "100%", height: "200px" }}>
           <ResponsiveContainer>
             <ComposedChart data={generateTrendData()}>
@@ -2734,7 +2746,7 @@ export default function SituationDisplay() {
         </ThreeErrorBoundary>
       </div>
 
-      {/* 高级信息覆盖层 */}
+      {/* 高级信息覆盖��� */}
       <AdvancedInfoOverlay
         sceneConfig={sceneConfig}
         onConfigChange={handleConfigChange}

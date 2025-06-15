@@ -171,7 +171,7 @@ function AdvancedCyberScene({
       const systemLoad = realTimeData?.cpuUsage || 45;
       const threatLevel = realTimeData?.realTimeThreats || 3;
 
-      // 动态环境响应
+      // 动态环境��应
       if (sceneConfig.dynamicEnvironment) {
         // 高负载时场景微震动
         if (systemLoad > 85) {
@@ -669,7 +669,7 @@ function AdvancedInfoOverlay({
         onNodeSelect={onNodeSelect}
       />
 
-      {/* ��侧高级量子威胁分析面板 */}
+      {/* 右侧高级量子威胁分析面板 */}
       <AdvancedThreatPanel
         realTimeData={realTimeData}
         alertLevel={alertLevel}
@@ -2029,7 +2029,7 @@ function AdvancedOverviewTab({ realTimeData }: { realTimeData: any }) {
         系统总览
       </h3>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         <div className="quantum-card p-4">
           <div className="flex items-center space-x-3 mb-3">
             <Cpu className="w-6 h-6 text-neon-blue" />
@@ -2368,7 +2368,7 @@ function AdvancedLogsTab() {
             <option value="all">全部级别</option>
             <option value="info">信息</option>
             <option value="warn">警告</option>
-            <option value="error">错误</option>
+            <option value="error">错���</option>
           </select>
           <button
             onClick={() => setAutoScroll(!autoScroll)}
@@ -2760,7 +2760,7 @@ export default function SituationDisplay() {
         </button>
       )}
 
-      {/* 增强版底部状态栏 - 优化响���式布局 */}
+      {/* 增强版底部状态栏 - 优化响应式布局 */}
       <div
         className={`absolute bottom-0 border-t backdrop-blur-md transition-all duration-500`}
         style={{

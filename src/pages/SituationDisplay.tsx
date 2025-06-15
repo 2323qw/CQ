@@ -367,7 +367,7 @@ function AdvancedInfoOverlay({
       },
       {
         id: "nodes",
-        title: "神经网络节点",
+        title: "神��网络节点",
         subtitle: "Neural Network Nodes",
         value: `${nodes}/50`,
         unit: "活跃节点",
@@ -1607,7 +1607,6 @@ function AdvancedThreatPanel({
                         : `${metric.color}40`,
                   }}
                 >
-            >
               <div className="flex justify-between items-start mb-3">
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-1">
@@ -2746,7 +2745,7 @@ export default function SituationDisplay() {
         </ThreeErrorBoundary>
       </div>
 
-      {/* 高级信息覆盖��� */}
+      {/* 高级信息覆盖层 */}
       <AdvancedInfoOverlay
         sceneConfig={sceneConfig}
         onConfigChange={handleConfigChange}
@@ -2849,7 +2848,7 @@ function OptimizedLoadingScreen() {
 
   const loadingSteps = [
     "初始化量子引擎",
-    "建立神经连接",
+    "建立神经��接",
     "加载威胁数据库",
     "启动防护屏障",
     "同步时空坐标",

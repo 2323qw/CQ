@@ -41,6 +41,30 @@ import {
   Square,
   Circle,
   Octagon,
+  Play,
+  Pause,
+  RotateCcw,
+  Maximize2,
+  Minimize2,
+  Settings,
+  Monitor,
+  Volume2,
+  VolumeX,
+  Info,
+  Clock,
+  Gauge,
+  Fingerprint,
+  Lock,
+  Unlock,
+  Search,
+  Filter,
+  Download,
+  Upload,
+  Refresh,
+  Power,
+  Signal,
+  Battery,
+  Thermometer,
 } from "lucide-react";
 import {
   LineChart,
@@ -75,15 +99,9 @@ import {
   SCENE_CONFIG,
   getThreatColor,
   getPerformanceColor,
+  getDataFlowColor,
+  getTechLevelColor,
 } from "@/lib/situationDisplayColors";
-import {
-  CentralMonitoringTower,
-  DataNodeCluster,
-  DataFlowPipelines,
-  ProtectionShields,
-  EnvironmentalParticles,
-  FuturisticEnvironment,
-} from "@/components/3d/FuturisticCyberComponents";
 import {
   EnhancedQuantumTower,
   EnhancedNeuralCluster,
@@ -93,10 +111,10 @@ import {
 } from "@/components/3d/EnhancedFuturisticComponents";
 
 /**
- * 未来感网络监控中心主场景
- * Futuristic Cyber Monitoring Center Main Scene
+ * 增强版3D态势监控场景
+ * Enhanced 3D Situation Monitoring Scene
  */
-function FuturisticCyberScene() {
+function EnhancedCyberScene({ sceneConfig }: { sceneConfig: any }) {
   const sceneRef = useRef<Group>(null);
   const { data: realTimeData } = useRealTimeData(generateSituationData, {
     interval: 2000,
@@ -105,24 +123,28 @@ function FuturisticCyberScene() {
 
   useFrame((state) => {
     if (sceneRef.current) {
-      // 根据系统负载调���整体场景
+      const time = state.clock.getElapsedTime();
+
+      // 根据系统负载调整整体场景
       const systemLoad = realTimeData?.cpuUsage || 45;
+      const threatLevel = realTimeData?.realTimeThreats || 3;
+
+      // 高负载时场景微微震动
       if (systemLoad > 85) {
-        // 高负载时场景微微震动
-        sceneRef.current.position.x =
-          Math.sin(state.clock.getElapsedTime() * 10) * 0.02;
-        sceneRef.current.position.z =
-          Math.cos(state.clock.getElapsedTime() * 8) * 0.02;
+        sceneRef.current.position.x = Math.sin(time * 10) * 0.02;
+        sceneRef.current.position.z = Math.cos(time * 8) * 0.02;
       } else {
         sceneRef.current.position.x = 0;
         sceneRef.current.position.z = 0;
       }
 
       // 威胁等级影响环境光效
-      const threatLevel = realTimeData?.realTimeThreats || 3;
-      if (threatLevel > 10) {
+      if (threatLevel > 7) {
         sceneRef.current.rotation.y += 0.001;
       }
+
+      // 场景呼吸效果
+      sceneRef.current.scale.setScalar(1 + Math.sin(time * 0.5) * 0.01);
     }
   });
 
@@ -145,269 +167,439 @@ function FuturisticCyberScene() {
 
       {/* 深空星域背景 - 增强版 */}
       <Stars
-        radius={600}
-        depth={100}
-        count={4000}
-        factor={3}
-        saturation={0.2}
+        radius={800}
+        depth={150}
+        count={sceneConfig.starCount}
+        factor={4}
+        saturation={0.3}
         fade
-        speed={0.015}
+        speed={0.01}
       />
     </group>
   );
 }
 
 /**
- * 未来感信息覆盖层
- * Futuristic Information Overlay
+ * 优化版信息覆盖层
+ * Optimized Information Overlay
  */
-function FuturisticInfoOverlay() {
+function OptimizedInfoOverlay({
+  sceneConfig,
+  onConfigChange,
+}: {
+  sceneConfig: any;
+  onConfigChange: (config: any) => void;
+}) {
   const { data: realTimeData } = useRealTimeData(generateSituationData, {
     interval: 1000,
     enabled: true,
   });
 
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [showDetailedStats, setShowDetailedStats] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const cyberStats = useMemo(() => {
+  const advancedStats = useMemo(() => {
     const threats = realTimeData?.realTimeThreats || 3;
     const connections = realTimeData?.activeConnections || 8247;
     const bandwidth = realTimeData?.bandwidthUsage || 45;
     const nodes = realTimeData?.onlineNodes || 47;
+    const cpuUsage = realTimeData?.cpuUsage || 68;
+    const memoryUsage = realTimeData?.memoryUsage || 78;
+    const networkLatency = realTimeData?.networkLatency || 23;
 
     return [
       {
-        title: "威胁监控",
+        title: "量子威胁监控",
+        subtitle: "Quantum Threat Detection",
         value: threats,
+        unit: "个威胁",
         icon: Brain,
         color: getThreatColor(threats),
         change: "+3",
         trend: "up" as const,
         metric: "Neural Threats",
+        percentage: Math.min((threats / 10) * 100, 100),
+        status: threats > 7 ? "critical" : threats > 4 ? "warning" : "normal",
       },
       {
-        title: "数据流量",
+        title: "数据流量分析",
+        subtitle: "Data Flow Analysis",
         value: `${Math.floor(connections / 1000)}K`,
+        unit: "数据包/秒",
         icon: Hexagon,
-        color: DISPLAY_COLORS.network.access,
+        color: getDataFlowColor(bandwidth),
         change: "+2.5K",
         trend: "up" as const,
         metric: "Data Streams",
+        percentage: Math.min((bandwidth / 100) * 100, 100),
+        status: bandwidth > 85 ? "warning" : "normal",
       },
       {
-        title: "节点状态",
+        title: "神经网络节点",
+        subtitle: "Neural Network Nodes",
         value: `${nodes}/50`,
+        unit: "活跃节点",
         icon: Octagon,
         color: DISPLAY_COLORS.status.active,
         change: "+2",
         trend: "up" as const,
         metric: "Active Nodes",
+        percentage: (nodes / 50) * 100,
+        status: nodes > 45 ? "normal" : nodes > 35 ? "warning" : "critical",
       },
       {
-        title: "系统效率",
-        value: `${100 - bandwidth}%`,
+        title: "系统运行效率",
+        subtitle: "System Efficiency",
+        value: `${100 - Math.max(cpuUsage, memoryUsage)}%`,
+        unit: "运行效率",
         icon: Triangle,
-        color: getPerformanceColor(100 - bandwidth),
+        color: getPerformanceColor(100 - Math.max(cpuUsage, memoryUsage)),
         change: "+5%",
         trend: "up" as const,
         metric: "Efficiency",
+        percentage: 100 - Math.max(cpuUsage, memoryUsage),
+        status: cpuUsage > 85 || memoryUsage > 85 ? "critical" : "normal",
       },
     ];
   }, [realTimeData]);
 
+  const systemHealth = useMemo(() => {
+    const cpu = realTimeData?.cpuUsage || 68;
+    const memory = realTimeData?.memoryUsage || 78;
+    const network = realTimeData?.networkLatency || 23;
+    const threats = realTimeData?.realTimeThreats || 3;
+
+    const healthScore = Math.round(
+      (100 - cpu) * 0.3 +
+        (100 - memory) * 0.3 +
+        (100 - network) * 0.2 +
+        (10 - threats) * 10 * 0.2,
+    );
+
+    return {
+      score: healthScore,
+      status:
+        healthScore > 80
+          ? "excellent"
+          : healthScore > 60
+            ? "good"
+            : healthScore > 40
+              ? "warning"
+              : "critical",
+      color:
+        healthScore > 80
+          ? DISPLAY_COLORS.status.active
+          : healthScore > 60
+            ? DISPLAY_COLORS.network.access
+            : healthScore > 40
+              ? DISPLAY_COLORS.status.warning
+              : DISPLAY_COLORS.status.critical,
+    };
+  }, [realTimeData]);
+
   return (
     <div className="absolute inset-0 pointer-events-none z-30">
-      {/* 未来感顶部控制面板 */}
-      <div className="absolute top-20 left-4 right-4 pointer-events-auto">
-        <div
-          className="rounded-xl shadow-2xl p-5 border backdrop-blur-md"
-          style={{
-            backgroundColor: "rgba(15, 23, 42, 0.85)",
-            borderColor: DISPLAY_COLORS.corporate.accent,
-            borderRadius: DISPLAY_THEME.borderRadius.xlarge,
-            borderWidth: "2px",
-            boxShadow: `0 0 30px ${DISPLAY_COLORS.corporate.accent}40`,
-          }}
-        >
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center space-x-3">
-              <div
-                className="w-12 h-12 rounded-lg flex items-center justify-center relative"
-                style={{
-                  background: `linear-gradient(45deg, ${DISPLAY_COLORS.corporate.primary}, ${DISPLAY_COLORS.corporate.accent})`,
-                  boxShadow: `0 0 20px ${DISPLAY_COLORS.corporate.accent}60`,
-                }}
-              >
-                <Brain className="w-6 h-6 text-white" />
+      {/* 优化版顶部控制面板 */}
+      <div className="absolute top-4 left-4 right-4 pointer-events-auto">
+        <div className="quantum-card p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
                 <div
-                  className="absolute inset-0 rounded-lg animate-pulse"
+                  className="w-14 h-14 rounded-xl flex items-center justify-center relative quantum-effect"
                   style={{
-                    background: `linear-gradient(45deg, transparent, ${DISPLAY_COLORS.corporate.accent}30, transparent)`,
+                    background: `linear-gradient(45deg, ${DISPLAY_COLORS.corporate.primary}, ${DISPLAY_COLORS.corporate.accent})`,
+                    boxShadow: `0 0 30px ${DISPLAY_COLORS.corporate.accent}60`,
                   }}
-                />
+                >
+                  <Brain className="w-8 h-8 text-white" />
+                  <div
+                    className="absolute inset-0 rounded-xl animate-pulse"
+                    style={{
+                      background: `linear-gradient(45deg, transparent, ${DISPLAY_COLORS.corporate.accent}40, transparent)`,
+                    }}
+                  />
+                </div>
+                {/* 系统健康状态指示器 */}
+                <div
+                  className="absolute -top-1 -right-1 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold"
+                  style={{
+                    backgroundColor: systemHealth.color,
+                    color: "white",
+                    boxShadow: `0 0 10px ${systemHealth.color}60`,
+                  }}
+                >
+                  {systemHealth.score}
+                </div>
               </div>
               <div>
-                <h2
-                  className="text-2xl font-bold"
-                  style={{
-                    color: DISPLAY_COLORS.ui.text.primary,
-                    textShadow: `0 0 10px ${DISPLAY_COLORS.corporate.accent}60`,
-                  }}
-                >
-                  CyberGuard 神经网络监控中心
-                </h2>
-                <p
-                  className="text-sm"
-                  style={{ color: DISPLAY_COLORS.ui.text.secondary }}
-                >
-                  Neural Network Cyber Monitoring Center
-                </p>
+                <h1 className="text-3xl font-bold neon-text-blue mb-2 font-orbitron">
+                  CyberGuard Quantum 态势监控中心
+                </h1>
+                <div className="flex items-center space-x-4 text-sm">
+                  <span className="text-neon-green font-rajdhani">
+                    Quantum Neural Network Monitoring Center
+                  </span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse"></div>
+                    <span className="text-neon-green font-mono">
+                      神经网络运行正常
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Gauge className="w-4 h-4 text-neon-blue" />
+                    <span className="text-neon-blue font-mono">
+                      系统健康度: {systemHealth.score}%
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div
-                  className="w-3 h-3 rounded-full animate-pulse"
-                  style={{
-                    backgroundColor: DISPLAY_COLORS.status.active,
-                    boxShadow: `0 0 10px ${DISPLAY_COLORS.status.active}`,
-                  }}
-                ></div>
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: DISPLAY_COLORS.ui.text.secondary }}
-                >
-                  神经网络运行正常
-                </span>
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 quantum-card p-3 bg-matrix-deep/80">
+                <Clock className="w-5 h-5 text-neon-cyan" />
+                <div className="text-right">
+                  <div className="text-sm font-mono text-neon-cyan">
+                    {currentTime.toLocaleTimeString("zh-CN")}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {currentTime.toLocaleDateString("zh-CN")}
+                  </div>
+                </div>
               </div>
-              <div
-                className="text-sm px-4 py-2 rounded-lg border backdrop-blur-sm"
-                style={{
-                  color: DISPLAY_COLORS.ui.text.secondary,
-                  backgroundColor: "rgba(30, 41, 59, 0.7)",
-                  borderColor: DISPLAY_COLORS.ui.border.primary,
-                  fontFamily: "monospace",
-                }}
+
+              <button
+                onClick={() => setShowDetailedStats(!showDetailedStats)}
+                className="neural-button p-3"
               >
-                {currentTime.toLocaleString("zh-CN")}
-              </div>
+                <BarChart3 className="w-5 h-5" />
+              </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-5">
-            {cyberStats.map((stat, index) => (
-              <FuturisticStatusCard key={index} {...stat} />
+          {/* 主要状态卡片 */}
+          <div className="grid grid-cols-4 gap-6">
+            {advancedStats.map((stat, index) => (
+              <EnhancedStatusCard key={index} {...stat} />
             ))}
           </div>
+
+          {/* 详细统计信息 */}
+          {showDetailedStats && (
+            <div className="mt-6 grid grid-cols-6 gap-4">
+              <DetailedMetricCard
+                title="CPU使用率"
+                value={realTimeData?.cpuUsage || 68}
+                unit="%"
+                icon={Cpu}
+                color={getPerformanceColor(realTimeData?.cpuUsage || 68)}
+              />
+              <DetailedMetricCard
+                title="内存使用"
+                value={realTimeData?.memoryUsage || 78}
+                unit="%"
+                icon={Database}
+                color={getPerformanceColor(realTimeData?.memoryUsage || 78)}
+              />
+              <DetailedMetricCard
+                title="网络延迟"
+                value={realTimeData?.networkLatency || 23}
+                unit="ms"
+                icon={Wifi}
+                color={DISPLAY_COLORS.network.access}
+              />
+              <DetailedMetricCard
+                title="温度监控"
+                value={42}
+                unit="°C"
+                icon={Thermometer}
+                color={DISPLAY_COLORS.status.normal}
+              />
+              <DetailedMetricCard
+                title="功耗监控"
+                value={85}
+                unit="W"
+                icon={Battery}
+                color={DISPLAY_COLORS.network.distribution}
+              />
+              <DetailedMetricCard
+                title="信号强度"
+                value={96}
+                unit="%"
+                icon={Signal}
+                color={DISPLAY_COLORS.status.active}
+              />
+            </div>
+          )}
         </div>
       </div>
 
-      {/* 左侧神经网络监控 */}
-      <NeuralNetworkPanel realTimeData={realTimeData} />
+      {/* 左侧增强神经网络监控面板 */}
+      <EnhancedNeuralPanel realTimeData={realTimeData} />
 
-      {/* 右侧量子威胁分析 */}
-      <QuantumThreatPanel realTimeData={realTimeData} />
+      {/* 右侧增强量子威胁分析面板 */}
+      <EnhancedThreatPanel realTimeData={realTimeData} />
     </div>
   );
 }
 
 /**
- * 未来感状态卡片
+ * 增强版状态卡片
  */
-function FuturisticStatusCard({
+function EnhancedStatusCard({
   title,
+  subtitle,
   value,
+  unit,
   icon: Icon,
   color,
   change,
   trend,
   metric,
+  percentage,
+  status,
 }: {
   title: string;
+  subtitle: string;
   value: string | number;
+  unit: string;
   icon: any;
   color: string;
   change: string;
   trend: "up" | "down";
   metric: string;
+  percentage: number;
+  status: "normal" | "warning" | "critical" | "excellent";
 }) {
   const TrendIcon = trend === "up" ? TrendingUp : TrendingDown;
   const trendColor =
     trend === "up"
       ? DISPLAY_COLORS.status.active
-      : DISPLAY_COLORS.corporate.accent;
+      : DISPLAY_COLORS.status.warning;
+
+  const statusColor = {
+    excellent: DISPLAY_COLORS.status.active,
+    normal: DISPLAY_COLORS.network.access,
+    warning: DISPLAY_COLORS.status.warning,
+    critical: DISPLAY_COLORS.status.critical,
+  }[status];
 
   return (
     <div
-      className="rounded-xl p-5 border backdrop-blur-md hover:shadow-2xl transition-all duration-500 relative overflow-hidden cyber-card-enhanced"
+      className="quantum-card p-5 relative overflow-hidden transition-all duration-500 hover:scale-105"
       style={{
-        backgroundColor: "rgba(17, 24, 39, 0.9)",
         borderColor: color,
-        borderWidth: "2px",
-        boxShadow: `0 0 25px ${color}40, inset 0 1px 0 ${color}20`,
-        minHeight: "140px",
+        minHeight: "160px",
       }}
     >
-      {/* 背景动画效果 */}
+      {/* 状态指示光带 */}
       <div
-        className="absolute inset-0 opacity-10"
+        className="absolute top-0 left-0 right-0 h-1"
         style={{
-          background: `linear-gradient(45deg, transparent, ${color}20, transparent)`,
-          animation: "pulse 3s infinite",
+          background: `linear-gradient(90deg, ${color}, ${color}80, ${color})`,
+          boxShadow: `0 0 10px ${color}60`,
         }}
       />
 
-      <div className="relative z-10">
-        <div className="flex items-center justify-between mb-3">
+      <div className="relative z-10 h-full flex flex-col">
+        <div className="flex items-center justify-between mb-4">
           <div
-            className="p-3 rounded-xl relative"
+            className="p-3 rounded-xl relative group"
             style={{
               backgroundColor: `${color}15`,
-              border: `1px solid ${color}30`,
-              boxShadow: `0 0 15px ${color}50`,
+              border: `2px solid ${color}40`,
+              boxShadow: `0 0 20px ${color}30`,
             }}
           >
-            <Icon className="w-7 h-7 neon-text" style={{ color }} />
+            <Icon
+              className="w-8 h-8 neon-text transition-transform group-hover:scale-110"
+              style={{ color }}
+            />
             <div
-              className="absolute inset-0 rounded-xl animate-pulse"
+              className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"
               style={{
-                background: `linear-gradient(45deg, transparent, ${color}10, transparent)`,
+                background: `linear-gradient(45deg, transparent, ${color}20, transparent)`,
+                animation: "pulse 2s infinite",
               }}
             />
           </div>
-          <div
-            className="flex items-center text-xs font-mono"
-            style={{ color: trendColor }}
-          >
-            <TrendIcon className="w-3 h-3 mr-1" />
-            <span>{change}</span>
+
+          <div className="flex items-center space-x-2">
+            <div
+              className="flex items-center text-xs font-mono px-2 py-1 rounded-full"
+              style={{
+                color: trendColor,
+                backgroundColor: `${trendColor}20`,
+                border: `1px solid ${trendColor}40`,
+              }}
+            >
+              <TrendIcon className="w-3 h-3 mr-1" />
+              <span>{change}</span>
+            </div>
+            <div
+              className="w-3 h-3 rounded-full animate-pulse"
+              style={{
+                backgroundColor: statusColor,
+                boxShadow: `0 0 8px ${statusColor}60`,
+              }}
+            />
           </div>
         </div>
 
-        <div className="text-right">
-          <div
-            className="text-4xl font-bold mb-2 font-mono neon-text"
-            style={{
-              color,
-              textShadow: `0 0 15px ${color}80, 0 0 30px ${color}60`,
-            }}
-          >
-            {value}
+        <div className="flex-1 flex flex-col justify-end">
+          <div className="text-right mb-3">
+            <div
+              className="text-4xl font-bold mb-1 font-orbitron neon-text"
+              style={{
+                color,
+                textShadow: `0 0 20px ${color}80, 0 0 40px ${color}60`,
+              }}
+            >
+              {value}
+            </div>
+            <div className="text-xs text-muted-foreground font-mono mb-1">
+              {unit}
+            </div>
           </div>
-          <div
-            className="text-sm mb-1 font-medium"
-            style={{ color: DISPLAY_COLORS.ui.text.secondary }}
-          >
-            {title}
+
+          <div className="mb-3">
+            <div
+              className="text-base font-bold mb-1"
+              style={{ color: DISPLAY_COLORS.ui.text.primary }}
+            >
+              {title}
+            </div>
+            <div
+              className="text-xs font-rajdhani opacity-80"
+              style={{ color: DISPLAY_COLORS.ui.text.secondary }}
+            >
+              {subtitle}
+            </div>
           </div>
+
+          {/* 进度条 */}
           <div
-            className="text-xs font-mono opacity-80"
+            className="quantum-progress mb-2"
+            style={{ borderColor: `${color}40` }}
+          >
+            <div
+              className="quantum-progress-fill"
+              style={{
+                width: `${Math.min(percentage, 100)}%`,
+                background: `linear-gradient(90deg, ${color}, ${color}80)`,
+                boxShadow: `0 0 15px ${color}60`,
+              }}
+            />
+          </div>
+
+          <div
+            className="text-xs font-mono text-center opacity-60"
             style={{ color: DISPLAY_COLORS.ui.text.muted }}
           >
             {metric}
@@ -419,152 +611,251 @@ function FuturisticStatusCard({
 }
 
 /**
- * 神经网络监控面板
+ * 详细指标卡片
  */
-function NeuralNetworkPanel({ realTimeData }: { realTimeData: any }) {
+function DetailedMetricCard({
+  title,
+  value,
+  unit,
+  icon: Icon,
+  color,
+}: {
+  title: string;
+  value: number;
+  unit: string;
+  icon: any;
+  color: string;
+}) {
+  return (
+    <div
+      className="neural-card p-4 text-center transition-all duration-300 hover:scale-105"
+      style={{ borderColor: `${color}30` }}
+    >
+      <Icon className="w-6 h-6 mx-auto mb-2 neon-text" style={{ color }} />
+      <div
+        className="text-lg font-bold font-mono neon-text mb-1"
+        style={{ color }}
+      >
+        {value}
+        {unit}
+      </div>
+      <div className="text-xs text-muted-foreground font-rajdhani">{title}</div>
+    </div>
+  );
+}
+
+/**
+ * 增强版神经网络监控面板
+ */
+function EnhancedNeuralPanel({ realTimeData }: { realTimeData: any }) {
+  const [activeTab, setActiveTab] = useState("metrics");
+
   const neuralMetrics = useMemo(
     () => [
       {
-        label: "神经传输",
+        label: "神经传输延迟",
+        subLabel: "Neural Transmission",
         value: realTimeData?.networkLatency || 23,
         color: DISPLAY_COLORS.network.access,
         unit: "ms",
         max: 100,
+        status: "normal",
       },
       {
-        label: "处理负载",
+        label: "处理器负载",
+        subLabel: "CPU Processing Load",
         value: realTimeData?.cpuUsage || 68,
         color: getPerformanceColor(realTimeData?.cpuUsage || 68),
         unit: "%",
         max: 100,
+        status: realTimeData?.cpuUsage > 85 ? "critical" : "normal",
       },
       {
-        label: "量子带宽",
+        label: "量子带宽使用",
+        subLabel: "Quantum Bandwidth",
         value: realTimeData?.bandwidthUsage || 45,
         color: DISPLAY_COLORS.network.distribution,
         unit: "%",
         max: 100,
+        status: "normal",
       },
       {
-        label: "脑波同步",
+        label: "神经同步率",
+        subLabel: "Neural Sync Rate",
         value: realTimeData?.memoryUsage || 78,
         color: getPerformanceColor(realTimeData?.memoryUsage || 78),
         unit: "%",
         max: 100,
+        status: realTimeData?.memoryUsage > 85 ? "warning" : "normal",
       },
     ],
     [realTimeData],
   );
 
+  const tabs = [
+    { id: "metrics", label: "指标", icon: Gauge },
+    { id: "network", label: "网络", icon: Network },
+    { id: "security", label: "安全", icon: Shield },
+  ];
+
   return (
     <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-auto">
       <div
-        className="rounded-xl shadow-xl p-5 border backdrop-blur-md"
+        className="quantum-card p-6"
         style={{
-          backgroundColor: "rgba(15, 23, 42, 0.85)",
-          borderColor: DISPLAY_COLORS.corporate.accent,
-          borderRadius: DISPLAY_THEME.borderRadius.xlarge,
-          width: "340px",
-          maxHeight: "420px",
-          boxShadow: `0 0 25px ${DISPLAY_COLORS.corporate.accent}40`,
+          width: "380px",
+          maxHeight: "500px",
         }}
       >
-        <div className="flex items-center mb-5">
-          <Brain
-            className="w-6 h-6 mr-3"
-            style={{
-              color: DISPLAY_COLORS.corporate.accent,
-              filter: `drop-shadow(0 0 5px ${DISPLAY_COLORS.corporate.accent})`,
-            }}
-          />
-          <h3
-            className="text-lg font-bold"
-            style={{
-              color: DISPLAY_COLORS.ui.text.primary,
-              textShadow: `0 0 5px ${DISPLAY_COLORS.corporate.accent}40`,
-            }}
-          >
-            神经网络监控
-          </h3>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-3">
+            <Brain
+              className="w-7 h-7 neon-text"
+              style={{
+                color: DISPLAY_COLORS.corporate.accent,
+                filter: `drop-shadow(0 0 8px ${DISPLAY_COLORS.corporate.accent})`,
+              }}
+            />
+            <div>
+              <h3 className="text-lg font-bold font-orbitron neon-text-blue">
+                神经网络监控
+              </h3>
+              <p className="text-xs text-muted-foreground font-rajdhani">
+                Neural Network Monitoring
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-1">
+            <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse"></div>
+            <span className="text-xs text-neon-green font-mono">在线</span>
+          </div>
         </div>
 
-        <div className="space-y-4">
-          {neuralMetrics.map((metric, index) => (
-            <div key={index}>
-              <div className="flex justify-between items-center text-sm mb-2">
-                <div className="flex-1">
-                  <span
-                    className="font-medium block"
-                    style={{ color: DISPLAY_COLORS.ui.text.secondary }}
-                  >
-                    {metric.label}
-                  </span>
-                  <span
-                    className="text-xs font-mono"
-                    style={{ color: DISPLAY_COLORS.ui.text.muted }}
-                  >
-                    Neural {metric.label}
-                  </span>
-                </div>
-                <span
-                  className="font-bold text-xl font-mono"
-                  style={{
-                    color: metric.color,
-                    textShadow: `0 0 5px ${metric.color}60`,
-                  }}
-                >
-                  {metric.value}
-                  {metric.unit}
-                </span>
-              </div>
-
-              {/* 未来感进度条 */}
-              <div
-                className="w-full rounded-full h-3 relative overflow-hidden"
-                style={{
-                  backgroundColor: "rgba(30, 41, 59, 0.7)",
-                  border: `1px solid ${metric.color}30`,
-                }}
-              >
-                <div
-                  className="h-full rounded-full transition-all duration-1000 ease-out relative"
-                  style={{
-                    width: `${Math.min(metric.value, metric.max)}%`,
-                    background: `linear-gradient(90deg, ${metric.color}60, ${metric.color})`,
-                    boxShadow: `0 0 10px ${metric.color}60`,
-                  }}
-                >
-                  <div
-                    className="absolute inset-0 animate-pulse"
-                    style={{
-                      background: `linear-gradient(90deg, transparent, ${metric.color}40, transparent)`,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
+        {/* 标签页导航 */}
+        <div className="flex space-x-1 mb-6">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                activeTab === tab.id
+                  ? "quantum-button"
+                  : "text-muted-foreground hover:text-white"
+              }`}
+            >
+              <tab.icon className="w-4 h-4" />
+              <span>{tab.label}</span>
+            </button>
           ))}
         </div>
 
+        {/* 标签页内容 */}
+        {activeTab === "metrics" && (
+          <div className="space-y-5">
+            {neuralMetrics.map((metric, index) => (
+              <div key={index}>
+                <div className="flex justify-between items-center text-sm mb-3">
+                  <div className="flex-1">
+                    <span
+                      className="font-medium block"
+                      style={{ color: DISPLAY_COLORS.ui.text.primary }}
+                    >
+                      {metric.label}
+                    </span>
+                    <span
+                      className="text-xs font-rajdhani opacity-80"
+                      style={{ color: DISPLAY_COLORS.ui.text.muted }}
+                    >
+                      {metric.subLabel}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span
+                      className="font-bold text-xl font-orbitron neon-text"
+                      style={{
+                        color: metric.color,
+                        textShadow: `0 0 8px ${metric.color}60`,
+                      }}
+                    >
+                      {metric.value}
+                    </span>
+                    <span
+                      className="text-xs ml-1"
+                      style={{ color: metric.color }}
+                    >
+                      {metric.unit}
+                    </span>
+                  </div>
+                </div>
+
+                {/* 增强进度条 */}
+                <div
+                  className="neural-progress"
+                  style={{ borderColor: `${metric.color}40` }}
+                >
+                  <div
+                    className="neural-progress-fill"
+                    style={{
+                      width: `${Math.min(metric.value, metric.max)}%`,
+                      background: `linear-gradient(90deg, ${metric.color}, ${metric.color}80)`,
+                      boxShadow: `0 0 15px ${metric.color}60`,
+                    }}
+                  />
+                </div>
+
+                <div className="flex justify-between items-center mt-2 text-xs">
+                  <span style={{ color: DISPLAY_COLORS.ui.text.muted }}>
+                    0 {metric.unit}
+                  </span>
+                  <span
+                    className={`px-2 py-1 rounded-full font-mono ${
+                      metric.status === "critical"
+                        ? "text-neon-red bg-neon-red/20"
+                        : metric.status === "warning"
+                          ? "text-neon-orange bg-neon-orange/20"
+                          : "text-neon-green bg-neon-green/20"
+                    }`}
+                  >
+                    {metric.status === "critical"
+                      ? "危险"
+                      : metric.status === "warning"
+                        ? "警告"
+                        : "正常"}
+                  </span>
+                  <span style={{ color: DISPLAY_COLORS.ui.text.muted }}>
+                    {metric.max} {metric.unit}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === "network" && <NetworkTabContent />}
+        {activeTab === "security" && <SecurityTabContent />}
+
+        {/* 底部状态 */}
         <div
-          className="mt-5 p-4 rounded-lg border backdrop-blur-sm"
+          className="mt-6 p-4 rounded-lg border neural-effect"
           style={{
             backgroundColor: "rgba(30, 41, 59, 0.6)",
             borderColor: DISPLAY_COLORS.status.active,
-            boxShadow: `0 0 15px ${DISPLAY_COLORS.status.active}30`,
+            boxShadow: `0 0 15px ${DISPLAY_COLORS.status.active}20`,
           }}
         >
-          <div
-            className="text-sm font-medium mb-1"
-            style={{ color: DISPLAY_COLORS.status.active }}
-          >
-            神经网络状态
-          </div>
-          <div
-            className="text-xs font-mono"
-            style={{ color: DISPLAY_COLORS.ui.text.muted }}
-          >
-            所有神经元节点正常运行
+          <div className="flex items-center justify-between">
+            <div
+              className="text-sm font-medium"
+              style={{ color: DISPLAY_COLORS.status.active }}
+            >
+              神经网络状态
+            </div>
+            <div
+              className="text-xs font-mono"
+              style={{ color: DISPLAY_COLORS.ui.text.muted }}
+            >
+              所有神经元节点正常运行
+            </div>
           </div>
         </div>
       </div>
@@ -572,122 +863,301 @@ function NeuralNetworkPanel({ realTimeData }: { realTimeData: any }) {
   );
 }
 
+function NetworkTabContent() {
+  return (
+    <div className="space-y-4">
+      <div className="text-center py-8">
+        <Network className="w-12 h-12 mx-auto mb-4 text-neon-blue opacity-60" />
+        <p className="text-muted-foreground">网络拓扑分析</p>
+      </div>
+    </div>
+  );
+}
+
+function SecurityTabContent() {
+  return (
+    <div className="space-y-4">
+      <div className="text-center py-8">
+        <Shield className="w-12 h-12 mx-auto mb-4 text-neon-green opacity-60" />
+        <p className="text-muted-foreground">安全状态监控</p>
+      </div>
+    </div>
+  );
+}
+
 /**
- * 量子威胁分析面板
+ * 增强版量子威胁分析面板
  */
-function QuantumThreatPanel({ realTimeData }: { realTimeData: any }) {
+function EnhancedThreatPanel({ realTimeData }: { realTimeData: any }) {
+  const [activeFilter, setActiveFilter] = useState("all");
+
   const quantumThreats = useMemo(
     () => [
       {
-        type: "量子干扰",
+        id: "QT-001",
+        type: "量子干扰攻击",
+        typeEn: "Quantum Interference",
         level: 9,
         frequency: "14.2THz",
-        source: "深空未知",
+        source: "深空未知信号",
+        sourceEn: "Deep Space Unknown",
+        timestamp: "14:23:45",
+        status: "active",
+        impact: "高",
       },
       {
-        type: "神经病毒",
+        id: "NT-002",
+        type: "神经病毒入侵",
+        typeEn: "Neural Virus Intrusion",
         level: 7,
         frequency: "8.7GHz",
-        source: "AI实体",
+        source: "AI实体网络",
+        sourceEn: "AI Entity Network",
+        timestamp: "14:22:12",
+        status: "contained",
+        impact: "中",
       },
       {
-        type: "时空异常",
+        id: "SA-003",
+        type: "时空异常探测",
+        typeEn: "Spacetime Anomaly",
         level: 5,
         frequency: "2.1MHz",
-        source: "维度裂缝",
+        source: "维度裂缝监测",
+        sourceEn: "Dimensional Rift",
+        timestamp: "14:20:38",
+        status: "monitoring",
+        impact: "低",
       },
       {
-        type: "意识入侵",
+        id: "CI-004",
+        type: "意识入侵尝试",
+        typeEn: "Consciousness Intrusion",
         level: 6,
         frequency: "40Hz",
-        source: "超级AI",
+        source: "超级AI实体",
+        sourceEn: "Super AI Entity",
+        timestamp: "14:19:55",
+        status: "blocked",
+        impact: "中",
       },
     ],
-    [],
+    [activeFilter],
   );
+
+  const filterOptions = [
+    { id: "all", label: "全部", count: quantumThreats.length },
+    {
+      id: "critical",
+      label: "严重",
+      count: quantumThreats.filter((t) => t.level >= 8).length,
+    },
+    {
+      id: "active",
+      label: "活跃",
+      count: quantumThreats.filter((t) => t.status === "active").length,
+    },
+  ];
 
   return (
     <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-auto">
       <div
-        className="rounded-xl shadow-xl p-5 border backdrop-blur-md"
+        className="quantum-card p-6"
         style={{
-          backgroundColor: "rgba(15, 23, 42, 0.85)",
-          borderColor: DISPLAY_COLORS.security.high,
-          borderRadius: DISPLAY_THEME.borderRadius.xlarge,
-          width: "340px",
-          maxHeight: "420px",
-          boxShadow: `0 0 25px ${DISPLAY_COLORS.security.high}40`,
+          width: "380px",
+          maxHeight: "500px",
         }}
       >
-        <div className="flex items-center mb-5">
-          <Zap
-            className="w-6 h-6 mr-3"
-            style={{
-              color: DISPLAY_COLORS.security.high,
-              filter: `drop-shadow(0 0 5px ${DISPLAY_COLORS.security.high})`,
-            }}
-          />
-          <h3
-            className="text-lg font-bold"
-            style={{
-              color: DISPLAY_COLORS.ui.text.primary,
-              textShadow: `0 0 5px ${DISPLAY_COLORS.security.high}40`,
-            }}
-          >
-            量子威胁分析
-          </h3>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-3">
+            <Zap
+              className="w-7 h-7 neon-text"
+              style={{
+                color: DISPLAY_COLORS.security.high,
+                filter: `drop-shadow(0 0 8px ${DISPLAY_COLORS.security.high})`,
+              }}
+            />
+            <div>
+              <h3 className="text-lg font-bold font-orbitron neon-text-purple">
+                量子威胁分析
+              </h3>
+              <p className="text-xs text-muted-foreground font-rajdhani">
+                Quantum Threat Analysis
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <AlertTriangle className="w-4 h-4 text-neon-orange" />
+            <span className="text-neon-orange font-mono text-sm">
+              {quantumThreats.filter((t) => t.level >= 7).length}
+            </span>
+          </div>
         </div>
 
-        <div className="space-y-3">
+        {/* 威胁过滤器 */}
+        <div className="flex space-x-1 mb-6">
+          {filterOptions.map((option) => (
+            <button
+              key={option.id}
+              onClick={() => setActiveFilter(option.id)}
+              className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                activeFilter === option.id
+                  ? "quantum-button"
+                  : "text-muted-foreground hover:text-white bg-matrix-accent/30"
+              }`}
+            >
+              <span>{option.label}</span>
+              <span
+                className="px-1.5 py-0.5 rounded-full bg-matrix-surface text-xs"
+                style={{
+                  color:
+                    activeFilter === option.id
+                      ? DISPLAY_COLORS.corporate.accent
+                      : DISPLAY_COLORS.ui.text.muted,
+                }}
+              >
+                {option.count}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* 威胁列表 */}
+        <div className="space-y-3 max-h-80 overflow-y-auto">
           {quantumThreats.map((threat, index) => (
             <div
               key={index}
-              className="p-3 rounded-lg border backdrop-blur-sm"
+              className="neural-card p-4 hover:scale-102 transition-transform cursor-pointer"
               style={{
-                backgroundColor: "rgba(30, 41, 59, 0.6)",
                 borderColor: getThreatColor(threat.level),
-                boxShadow: `0 0 10px ${getThreatColor(threat.level)}30`,
+                backgroundColor: `${getThreatColor(threat.level)}05`,
               }}
             >
-              <div className="flex justify-between items-center mb-2">
-                <span
-                  className="font-medium text-sm"
-                  style={{ color: DISPLAY_COLORS.ui.text.secondary }}
-                >
-                  {threat.type}
-                </span>
-                <span
-                  className="px-2 py-1 rounded-full text-xs font-bold font-mono"
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <span
+                      className="text-sm font-bold"
+                      style={{ color: DISPLAY_COLORS.ui.text.primary }}
+                    >
+                      {threat.type}
+                    </span>
+                    <span
+                      className="text-xs font-mono px-2 py-1 rounded-full border"
+                      style={{
+                        color: getThreatColor(threat.level),
+                        backgroundColor: `${getThreatColor(threat.level)}20`,
+                        borderColor: getThreatColor(threat.level),
+                      }}
+                    >
+                      L{threat.level}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground font-rajdhani mb-2">
+                    {threat.typeEn}
+                  </p>
+                </div>
+                <div
+                  className={`w-3 h-3 rounded-full animate-pulse ${
+                    threat.status === "active"
+                      ? "bg-neon-red"
+                      : threat.status === "contained"
+                        ? "bg-neon-orange"
+                        : threat.status === "blocked"
+                          ? "bg-neon-green"
+                          : "bg-neon-blue"
+                  }`}
                   style={{
-                    color: getThreatColor(threat.level),
-                    backgroundColor: "rgba(30, 41, 59, 0.8)",
-                    border: `1px solid ${getThreatColor(threat.level)}`,
-                    boxShadow: `0 0 5px ${getThreatColor(threat.level)}40`,
+                    boxShadow:
+                      threat.status === "active"
+                        ? `0 0 8px ${DISPLAY_COLORS.neon.red}`
+                        : threat.status === "contained"
+                          ? `0 0 8px ${DISPLAY_COLORS.neon.orange}`
+                          : threat.status === "blocked"
+                            ? `0 0 8px ${DISPLAY_COLORS.neon.green}`
+                            : `0 0 8px ${DISPLAY_COLORS.neon.blue}`,
                   }}
-                >
-                  L{threat.level}
-                </span>
+                />
               </div>
-              <div className="flex justify-between items-center text-xs">
-                <span
-                  className="font-mono"
-                  style={{ color: DISPLAY_COLORS.ui.text.muted }}
-                >
-                  {threat.frequency}
-                </span>
-                <span
-                  className="font-medium"
-                  style={{ color: getThreatColor(threat.level) }}
-                >
-                  {threat.source}
-                </span>
+
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div>
+                  <span className="text-muted-foreground block">频率</span>
+                  <span
+                    className="font-mono"
+                    style={{ color: DISPLAY_COLORS.network.access }}
+                  >
+                    {threat.frequency}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block">时间</span>
+                  <span
+                    className="font-mono"
+                    style={{ color: DISPLAY_COLORS.ui.text.secondary }}
+                  >
+                    {threat.timestamp}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block">来源</span>
+                  <span
+                    className="font-medium"
+                    style={{ color: getThreatColor(threat.level) }}
+                  >
+                    {threat.source}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block">影响</span>
+                  <span
+                    className={`font-bold ${
+                      threat.impact === "高"
+                        ? "text-neon-red"
+                        : threat.impact === "中"
+                          ? "text-neon-orange"
+                          : "text-neon-green"
+                    }`}
+                  >
+                    {threat.impact}
+                  </span>
+                </div>
+              </div>
+
+              {/* 威胁ID */}
+              <div className="mt-3 pt-3 border-t border-matrix-border">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-mono text-muted-foreground">
+                    ID: {threat.id}
+                  </span>
+                  <span
+                    className={`text-xs font-mono px-2 py-1 rounded ${
+                      threat.status === "active"
+                        ? "bg-neon-red/20 text-neon-red"
+                        : threat.status === "contained"
+                          ? "bg-neon-orange/20 text-neon-orange"
+                          : threat.status === "blocked"
+                            ? "bg-neon-green/20 text-neon-green"
+                            : "bg-neon-blue/20 text-neon-blue"
+                    }`}
+                  >
+                    {threat.status === "active"
+                      ? "活跃"
+                      : threat.status === "contained"
+                        ? "控制"
+                        : threat.status === "blocked"
+                          ? "阻止"
+                          : "监控"}
+                  </span>
+                </div>
               </div>
             </div>
           ))}
         </div>
 
+        {/* 底部量子防护状态 */}
         <div
-          className="mt-5 p-4 rounded-lg border backdrop-blur-sm"
+          className="mt-6 p-4 rounded-lg border quantum-effect"
           style={{
             backgroundColor: "rgba(30, 41, 59, 0.6)",
             borderColor: DISPLAY_COLORS.ui.border.primary,
@@ -697,15 +1167,24 @@ function QuantumThreatPanel({ realTimeData }: { realTimeData: any }) {
             className="text-sm font-medium mb-2"
             style={{ color: DISPLAY_COLORS.ui.text.secondary }}
           >
-            量子防护状态
+            量子防护系统状态
           </div>
           <div
             className="text-xs space-y-1 font-mono"
             style={{ color: DISPLAY_COLORS.ui.text.muted }}
           >
-            <div>• 量子加密屏障：已激活</div>
-            <div>• 神经防火墙：正常运行</div>
-            <div>• 时空稳定器：监控中</div>
+            <div className="flex justify-between">
+              <span>• 量子加密屏障</span>
+              <span className="text-neon-green">已激活</span>
+            </div>
+            <div className="flex justify-between">
+              <span>• 神经防火墙</span>
+              <span className="text-neon-green">正常运行</span>
+            </div>
+            <div className="flex justify-between">
+              <span>• 时空稳定器</span>
+              <span className="text-neon-blue">监控中</span>
+            </div>
           </div>
         </div>
       </div>
@@ -714,9 +1193,9 @@ function QuantumThreatPanel({ realTimeData }: { realTimeData: any }) {
 }
 
 /**
- * 未来感2D控制面板
+ * 优化版2D控制面板
  */
-function Futuristic2DPanel({
+function Optimized2DPanel({
   isVisible,
   onToggle,
 }: {
@@ -728,72 +1207,53 @@ function Futuristic2DPanel({
     enabled: true,
   });
 
-  const [activeTab, setActiveTab] = useState("neural");
+  const [activeTab, setActiveTab] = useState("overview");
 
   const tabs = [
-    { id: "neural", label: "神经", icon: Brain },
-    { id: "quantum", label: "量子", icon: Zap },
-    { id: "matrix", label: "矩阵", icon: Hexagon },
-    { id: "flow", label: "数据流", icon: Triangle },
-    { id: "threats", label: "威胁", icon: AlertTriangle },
+    { id: "overview", label: "总览", icon: Activity },
+    { id: "network", label: "网络", icon: Network },
+    { id: "security", label: "安全", icon: Shield },
+    { id: "analysis", label: "分析", icon: BarChart3 },
     { id: "logs", label: "日志", icon: FileText },
+    { id: "settings", label: "设置", icon: Settings },
   ];
 
   return (
     <div
-      className={`fixed right-0 top-16 bottom-0 border-l transform transition-transform duration-300 z-40 shadow-2xl backdrop-blur-md ${
+      className={`fixed right-0 top-0 bottom-0 border-l transform transition-transform duration-500 z-40 quantum-card ${
         isVisible ? "translate-x-0" : "translate-x-full"
       }`}
       style={{
-        width: "500px",
-        backgroundColor: "rgba(15, 23, 42, 0.9)",
+        width: "600px",
         borderColor: DISPLAY_COLORS.corporate.accent,
-        borderWidth: "2px",
-        boxShadow: `0 0 30px ${DISPLAY_COLORS.corporate.accent}40`,
+        backgroundColor: "rgba(10, 14, 26, 0.95)",
       }}
     >
-      {/* 未来感头部 */}
+      {/* 优化版头部 */}
       <div
-        className="flex items-center justify-between p-4 border-b backdrop-blur-sm"
+        className="flex items-center justify-between p-6 border-b neural-effect"
         style={{
-          background: `linear-gradient(90deg, ${DISPLAY_COLORS.corporate.primary}20, ${DISPLAY_COLORS.corporate.accent}20)`,
           borderColor: DISPLAY_COLORS.corporate.accent,
         }}
       >
         <div>
-          <h2
-            className="text-xl font-bold font-mono"
-            style={{
-              color: DISPLAY_COLORS.ui.text.primary,
-              textShadow: `0 0 10px ${DISPLAY_COLORS.corporate.accent}60`,
-            }}
-          >
+          <h2 className="text-2xl font-bold font-orbitron neon-text-blue">
             量子控制台
           </h2>
-          <p
-            className="text-sm font-mono"
-            style={{ color: DISPLAY_COLORS.ui.text.secondary }}
-          >
+          <p className="text-sm font-rajdhani text-muted-foreground">
             Quantum Control Interface
           </p>
         </div>
-        <button
-          onClick={onToggle}
-          className="p-2 rounded-lg transition-colors hover:bg-black/30"
-          style={{
-            border: `1px solid ${DISPLAY_COLORS.corporate.accent}`,
-            color: DISPLAY_COLORS.ui.text.primary,
-          }}
-        >
+        <button onClick={onToggle} className="quantum-button p-3">
           <X className="w-5 h-5" />
         </button>
       </div>
 
-      {/* 未来感标签页 */}
+      {/* 优化版标签页 */}
       <div
         className="flex border-b overflow-x-auto"
         style={{
-          backgroundColor: "rgba(30, 41, 59, 0.7)",
+          backgroundColor: "rgba(30, 41, 55, 0.7)",
           borderColor: DISPLAY_COLORS.ui.border.primary,
         }}
       >
@@ -801,27 +1261,13 @@ function Futuristic2DPanel({
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-shrink-0 flex items-center justify-center space-x-2 py-3 px-4 text-sm font-medium font-mono transition-all duration-300 ${
-              activeTab === tab.id ? "border-b-2" : ""
+            className={`flex-shrink-0 flex items-center justify-center space-x-3 py-4 px-6 text-sm font-medium font-rajdhani transition-all duration-300 ${
+              activeTab === tab.id
+                ? "quantum-button"
+                : "text-muted-foreground hover:text-white"
             }`}
-            style={{
-              color:
-                activeTab === tab.id
-                  ? DISPLAY_COLORS.corporate.accent
-                  : DISPLAY_COLORS.ui.text.secondary,
-              borderColor:
-                activeTab === tab.id
-                  ? DISPLAY_COLORS.corporate.accent
-                  : "transparent",
-              backgroundColor:
-                activeTab === tab.id ? "rgba(15, 23, 42, 0.8)" : "transparent",
-              boxShadow:
-                activeTab === tab.id
-                  ? `0 0 10px ${DISPLAY_COLORS.corporate.accent}30`
-                  : "none",
-            }}
           >
-            <tab.icon className="w-4 h-4" />
+            <tab.icon className="w-5 h-5" />
             <span>{tab.label}</span>
           </button>
         ))}
@@ -829,72 +1275,50 @@ function Futuristic2DPanel({
 
       {/* 内容区域 */}
       <div
-        className="p-4 overflow-y-auto"
+        className="p-6 overflow-y-auto"
         style={{
-          height: "calc(100vh - 160px)",
+          height: "calc(100vh - 140px)",
           backgroundColor: "rgba(15, 23, 42, 0.6)",
         }}
       >
-        {activeTab === "neural" && <NeuralTab realTimeData={realTimeData} />}
-        {activeTab === "quantum" && <QuantumTab />}
-        {activeTab === "matrix" && <MatrixTab />}
-        {activeTab === "flow" && <DataFlowTab />}
-        {activeTab === "threats" && <ThreatsTab />}
-        {activeTab === "logs" && <LogsTab />}
+        {activeTab === "overview" && (
+          <OverviewTabContent realTimeData={realTimeData} />
+        )}
+        {activeTab === "network" && <NetworkTabContent />}
+        {activeTab === "security" && <SecurityTabContent />}
+        {activeTab === "analysis" && <AnalysisTabContent />}
+        {activeTab === "logs" && <LogsTabContent />}
+        {activeTab === "settings" && <SettingsTabContent />}
       </div>
     </div>
   );
 }
 
-// 标签页组件
-function NeuralTab({ realTimeData }: { realTimeData: any }) {
+function OverviewTabContent({ realTimeData }: { realTimeData: any }) {
   return (
-    <div className="space-y-4">
-      <h3
-        className="text-lg font-bold font-mono"
-        style={{ color: DISPLAY_COLORS.ui.text.primary }}
-      >
-        神经网络状态
+    <div className="space-y-6">
+      <h3 className="text-xl font-bold font-orbitron neon-text-blue">
+        系统总览
       </h3>
-      <div className="grid grid-cols-2 gap-3">
-        <div
-          className="rounded-lg p-3 border backdrop-blur-sm"
-          style={{
-            backgroundColor: "rgba(30, 41, 59, 0.6)",
-            borderColor: DISPLAY_COLORS.corporate.accent,
-          }}
-        >
-          <div
-            className="text-sm mb-1 font-mono"
-            style={{ color: DISPLAY_COLORS.corporate.accent }}
-          >
-            神经元
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="quantum-card p-4">
+          <div className="flex items-center space-x-3 mb-3">
+            <Cpu className="w-6 h-6 text-neon-blue" />
+            <span className="font-medium">处理器状态</span>
           </div>
-          <div
-            className="text-xl font-bold font-mono"
-            style={{ color: DISPLAY_COLORS.ui.text.primary }}
-          >
-            {realTimeData?.onlineNodes || 47}
+          <div className="text-2xl font-bold font-mono neon-text-blue">
+            {realTimeData?.cpuUsage || 68}%
           </div>
         </div>
-        <div
-          className="rounded-lg p-3 border backdrop-blur-sm"
-          style={{
-            backgroundColor: "rgba(30, 41, 59, 0.6)",
-            borderColor: DISPLAY_COLORS.status.active,
-          }}
-        >
-          <div
-            className="text-sm mb-1 font-mono"
-            style={{ color: DISPLAY_COLORS.status.active }}
-          >
-            同步率
+
+        <div className="quantum-card p-4">
+          <div className="flex items-center space-x-3 mb-3">
+            <Database className="w-6 h-6 text-neon-green" />
+            <span className="font-medium">内存使用</span>
           </div>
-          <div
-            className="text-xl font-bold font-mono"
-            style={{ color: DISPLAY_COLORS.ui.text.primary }}
-          >
-            98.7%
+          <div className="text-2xl font-bold font-mono neon-text-green">
+            {realTimeData?.memoryUsage || 78}%
           </div>
         </div>
       </div>
@@ -902,195 +1326,24 @@ function NeuralTab({ realTimeData }: { realTimeData: any }) {
   );
 }
 
-function QuantumTab() {
+function AnalysisTabContent() {
   return (
-    <div className="space-y-4">
-      <h3
-        className="text-lg font-bold font-mono"
-        style={{ color: DISPLAY_COLORS.ui.text.primary }}
-      >
-        量子状态
+    <div className="space-y-6">
+      <h3 className="text-xl font-bold font-orbitron neon-text-purple">
+        数据分析
       </h3>
-      <div className="space-y-2">
-        {[
-          { param: "量子纠缠度", value: "99.2%", status: "stable" },
-          { param: "相位一致性", value: "97.8%", status: "stable" },
-          { param: "波函数坍缩", value: "0.3%", status: "normal" },
-          { param: "信息熵", value: "2.45bit", status: "optimal" },
-        ].map((item, index) => (
-          <div
-            key={index}
-            className="rounded-lg p-3 border backdrop-blur-sm font-mono"
-            style={{
-              backgroundColor: "rgba(30, 41, 59, 0.6)",
-              borderColor: DISPLAY_COLORS.ui.border.primary,
-            }}
-          >
-            <div className="flex justify-between items-center">
-              <span
-                className="text-sm"
-                style={{ color: DISPLAY_COLORS.ui.text.secondary }}
-              >
-                {item.param}
-              </span>
-              <span
-                className="text-sm font-bold"
-                style={{ color: DISPLAY_COLORS.corporate.accent }}
-              >
-                {item.value}
-              </span>
-            </div>
-          </div>
-        ))}
+      <div className="text-center py-12">
+        <BarChart3 className="w-16 h-16 mx-auto mb-4 text-neon-purple opacity-60" />
+        <p className="text-muted-foreground">数据分析模块</p>
       </div>
     </div>
   );
 }
 
-function MatrixTab() {
+function LogsTabContent() {
   return (
-    <div className="space-y-4">
-      <h3
-        className="text-lg font-bold font-mono"
-        style={{ color: DISPLAY_COLORS.ui.text.primary }}
-      >
-        数据矩阵
-      </h3>
-      <div
-        className="bg-black rounded-lg p-4 font-mono text-sm overflow-hidden"
-        style={{
-          border: `1px solid ${DISPLAY_COLORS.status.active}`,
-          boxShadow: `0 0 10px ${DISPLAY_COLORS.status.active}30`,
-        }}
-      >
-        <div className="space-y-1">
-          {Array.from({ length: 15 }, (_, i) => (
-            <div
-              key={i}
-              className="text-xs opacity-80"
-              style={{
-                color: DISPLAY_COLORS.status.active,
-                animationDelay: `${i * 0.1}s`,
-                animation: "fadeIn 1s ease-in-out infinite alternate",
-              }}
-            >
-              {Array.from({ length: 50 }, () =>
-                Math.random() > 0.5 ? "1" : "0",
-              ).join("")}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DataFlowTab() {
-  return (
-    <div className="space-y-4">
-      <h3
-        className="text-lg font-bold font-mono"
-        style={{ color: DISPLAY_COLORS.ui.text.primary }}
-      >
-        数据流监控
-      </h3>
-      <div className="space-y-2">
-        {[
-          { stream: "核心数据流A", rate: "2.4GB/s", latency: "0.3ms" },
-          { stream: "核心数据流B", rate: "1.8GB/s", latency: "0.5ms" },
-          { stream: "边缘数据流", rate: "0.9GB/s", latency: "1.2ms" },
-          { stream: "量子通道", rate: "5.7TB/s", latency: "0.1ms" },
-        ].map((stream, index) => (
-          <div
-            key={index}
-            className="rounded-lg p-3 border backdrop-blur-sm"
-            style={{
-              backgroundColor: "rgba(30, 41, 59, 0.6)",
-              borderColor: DISPLAY_COLORS.network.access,
-            }}
-          >
-            <div
-              className="font-medium text-sm mb-1"
-              style={{ color: DISPLAY_COLORS.ui.text.secondary }}
-            >
-              {stream.stream}
-            </div>
-            <div className="flex justify-between text-xs font-mono">
-              <span style={{ color: DISPLAY_COLORS.network.access }}>
-                {stream.rate}
-              </span>
-              <span style={{ color: DISPLAY_COLORS.ui.text.muted }}>
-                {stream.latency}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ThreatsTab() {
-  return (
-    <div className="space-y-4">
-      <h3
-        className="text-lg font-bold font-mono"
-        style={{ color: DISPLAY_COLORS.ui.text.primary }}
-      >
-        威胁分析
-      </h3>
-      <div className="space-y-2">
-        {[
-          { threat: "AI自主意识觉醒", level: 9, type: "神经" },
-          { threat: "量子病毒传播", level: 7, type: "量子" },
-          { threat: "维度数据泄露", level: 5, type: "时空" },
-          { threat: "意识网络入侵", level: 8, type: "心灵" },
-        ].map((threat, index) => (
-          <div
-            key={index}
-            className="rounded-lg p-3 border backdrop-blur-sm"
-            style={{
-              backgroundColor: "rgba(30, 41, 59, 0.6)",
-              borderColor: getThreatColor(threat.level),
-            }}
-          >
-            <div className="flex justify-between items-center mb-1">
-              <span
-                className="text-sm font-medium"
-                style={{ color: DISPLAY_COLORS.ui.text.secondary }}
-              >
-                {threat.threat}
-              </span>
-              <span
-                className="text-xs font-bold font-mono px-2 py-1 rounded"
-                style={{
-                  color: getThreatColor(threat.level),
-                  backgroundColor: "rgba(0,0,0,0.5)",
-                }}
-              >
-                L{threat.level}
-              </span>
-            </div>
-            <div
-              className="text-xs font-mono"
-              style={{ color: DISPLAY_COLORS.ui.text.muted }}
-            >
-              类型: {threat.type}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function LogsTab() {
-  return (
-    <div className="space-y-4">
-      <h3
-        className="text-lg font-bold font-mono"
-        style={{ color: DISPLAY_COLORS.ui.text.primary }}
-      >
+    <div className="space-y-6">
+      <h3 className="text-xl font-bold font-orbitron neon-text-green">
         系统日志
       </h3>
       <div
@@ -1116,74 +1369,83 @@ function LogsTab() {
   );
 }
 
+function SettingsTabContent() {
+  return (
+    <div className="space-y-6">
+      <h3 className="text-xl font-bold font-orbitron neon-text-orange">
+        系统设置
+      </h3>
+      <div className="text-center py-12">
+        <Settings className="w-16 h-16 mx-auto mb-4 text-neon-orange opacity-60" />
+        <p className="text-muted-foreground">系统配置面板</p>
+      </div>
+    </div>
+  );
+}
+
 /**
- * 未来感顶部控制栏
+ * 优化版顶部控制栏
  */
-function FuturisticTopControlBar({
+function OptimizedTopControlBar({
   onToggle2DPanel,
   is2DPanelVisible,
+  sceneConfig,
+  onConfigChange,
 }: {
   onToggle2DPanel: () => void;
   is2DPanelVisible: boolean;
+  sceneConfig: any;
+  onConfigChange: (config: any) => void;
 }) {
   const navigate = useNavigate();
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
 
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
+  const handleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
 
   return (
     <div
-      className="absolute top-0 left-0 right-0 z-50 border-b shadow-lg backdrop-blur-md"
+      className="absolute top-0 left-0 right-0 z-50 border-b backdrop-blur-md quantum-card"
       style={{
-        backgroundColor: "rgba(15, 23, 42, 0.9)",
+        height: "72px",
         borderColor: DISPLAY_COLORS.corporate.accent,
-        height: "64px",
-        boxShadow: `0 0 20px ${DISPLAY_COLORS.corporate.accent}40`,
       }}
     >
-      <div className="p-3">
+      <div className="p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-4">
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center space-x-2 px-3 py-1.5 rounded-lg transition-all duration-300 hover:shadow-lg"
-              style={{
-                backgroundColor: "rgba(30, 41, 59, 0.7)",
-                color: DISPLAY_COLORS.ui.text.secondary,
-                border: `1px solid ${DISPLAY_COLORS.ui.border.primary}`,
-              }}
+              className="neural-button px-4 py-2"
             >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="text-sm font-mono">返回</span>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              <span className="text-sm font-rajdhani">返回</span>
             </button>
 
             <div className="flex items-center space-x-3">
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center"
+                className="w-10 h-10 rounded-xl flex items-center justify-center quantum-effect"
                 style={{
                   background: `linear-gradient(45deg, ${DISPLAY_COLORS.corporate.primary}, ${DISPLAY_COLORS.corporate.accent})`,
-                  boxShadow: `0 0 15px ${DISPLAY_COLORS.corporate.accent}60`,
+                  boxShadow: `0 0 20px ${DISPLAY_COLORS.corporate.accent}60`,
                 }}
               >
-                <Brain className="w-4 h-4 text-white" />
+                <Brain className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1
-                  className="text-lg font-bold font-mono"
-                  style={{
-                    color: DISPLAY_COLORS.ui.text.primary,
-                    textShadow: `0 0 5px ${DISPLAY_COLORS.corporate.accent}40`,
-                  }}
-                >
+                <h1 className="text-xl font-bold font-orbitron neon-text-blue">
                   CyberGuard 神经监控中心
                 </h1>
-                <p
-                  className="text-xs font-mono"
-                  style={{ color: DISPLAY_COLORS.ui.text.secondary }}
-                >
+                <p className="text-xs font-rajdhani text-muted-foreground">
                   Neural Cyber Monitoring Center
                 </p>
               </div>
@@ -1191,35 +1453,59 @@ function FuturisticTopControlBar({
           </div>
 
           <div className="flex items-center space-x-3">
-            <div
-              className="px-3 py-1.5 rounded-lg border text-sm font-mono backdrop-blur-sm"
-              style={{
-                backgroundColor: "rgba(30, 41, 59, 0.7)",
-                borderColor: DISPLAY_COLORS.ui.border.primary,
-                color: DISPLAY_COLORS.ui.text.secondary,
-              }}
-            >
-              {currentTime.toLocaleString("zh-CN")}
+            {/* 控制按钮组 */}
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setIsPaused(!isPaused)}
+                className="quantum-button p-2"
+                title={isPaused ? "恢复" : "暂停"}
+              >
+                {isPaused ? (
+                  <Play className="w-4 h-4" />
+                ) : (
+                  <Pause className="w-4 h-4" />
+                )}
+              </button>
+
+              <button
+                onClick={() => setIsMuted(!isMuted)}
+                className="quantum-button p-2"
+                title={isMuted ? "取消静音" : "静音"}
+              >
+                {isMuted ? (
+                  <VolumeX className="w-4 h-4" />
+                ) : (
+                  <Volume2 className="w-4 h-4" />
+                )}
+              </button>
+
+              <button
+                onClick={handleFullscreen}
+                className="quantum-button p-2"
+                title={isFullscreen ? "退出全屏" : "全屏"}
+              >
+                {isFullscreen ? (
+                  <Minimize2 className="w-4 h-4" />
+                ) : (
+                  <Maximize2 className="w-4 h-4" />
+                )}
+              </button>
+
+              <button
+                onClick={() => window.location.reload()}
+                className="quantum-button p-2"
+                title="刷新"
+              >
+                <Refresh className="w-4 h-4" />
+              </button>
             </div>
 
             <button
               onClick={onToggle2DPanel}
-              className="p-2 rounded-lg transition-all duration-300"
-              style={{
-                backgroundColor: is2DPanelVisible
-                  ? DISPLAY_COLORS.corporate.primary
-                  : "rgba(30, 41, 59, 0.7)",
-                color: is2DPanelVisible
-                  ? "white"
-                  : DISPLAY_COLORS.ui.text.secondary,
-                border: `1px solid ${DISPLAY_COLORS.corporate.accent}`,
-                boxShadow: is2DPanelVisible
-                  ? `0 0 15px ${DISPLAY_COLORS.corporate.accent}60`
-                  : "none",
-              }}
+              className={`quantum-button p-3 ${is2DPanelVisible ? "bg-neon-blue/20" : ""}`}
               title="切换量子控制台"
             >
-              <Layers className="w-4 h-4" />
+              <Layers className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -1229,45 +1515,105 @@ function FuturisticTopControlBar({
 }
 
 /**
- * 未来感加载屏幕
+ * 优化版加载屏幕
  */
-function FuturisticLoadingScreen() {
+function OptimizedLoadingScreen() {
+  const [progress, setProgress] = useState(0);
+  const [currentStep, setCurrentStep] = useState("初始化系统");
+
+  const loadingSteps = [
+    "初始化系统",
+    "启动量子引擎",
+    "建立神经连接",
+    "加载威胁数据库",
+    "启动防护屏障",
+    "完成启动序列",
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((prev) => {
+        const newProgress = prev + Math.random() * 15;
+        const stepIndex = Math.floor((newProgress / 100) * loadingSteps.length);
+        if (stepIndex < loadingSteps.length) {
+          setCurrentStep(loadingSteps[stepIndex]);
+        }
+        return Math.min(newProgress, 100);
+      });
+    }, 200);
+
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div
       className="absolute inset-0 flex items-center justify-center z-50"
       style={{ backgroundColor: DISPLAY_COLORS.ui.background.primary }}
     >
-      <div className="text-center">
-        <div
-          className="w-20 h-20 rounded-full flex items-center justify-center mb-6 mx-auto relative"
-          style={{
-            background: `linear-gradient(45deg, ${DISPLAY_COLORS.corporate.primary}, ${DISPLAY_COLORS.corporate.accent})`,
-            boxShadow: `0 0 30px ${DISPLAY_COLORS.corporate.accent}60`,
-          }}
-        >
-          <Brain className="w-10 h-10 text-white animate-pulse" />
+      <div className="text-center max-w-md mx-auto">
+        <div className="relative mb-8">
           <div
-            className="absolute inset-0 rounded-full animate-spin"
+            className="w-24 h-24 rounded-xl flex items-center justify-center mx-auto relative quantum-effect"
             style={{
-              border: `2px solid transparent`,
-              borderTop: `2px solid ${DISPLAY_COLORS.corporate.accent}`,
+              background: `linear-gradient(45deg, ${DISPLAY_COLORS.corporate.primary}, ${DISPLAY_COLORS.corporate.accent})`,
+              boxShadow: `0 0 40px ${DISPLAY_COLORS.corporate.accent}60`,
             }}
-          />
+          >
+            <Brain className="w-12 h-12 text-white animate-pulse" />
+            <div
+              className="absolute inset-0 rounded-xl animate-spin"
+              style={{
+                border: `3px solid transparent`,
+                borderTop: `3px solid ${DISPLAY_COLORS.corporate.accent}`,
+              }}
+            />
+          </div>
         </div>
-        <div
-          className="text-2xl font-bold mb-3 font-mono"
-          style={{
-            color: DISPLAY_COLORS.ui.text.primary,
-            textShadow: `0 0 10px ${DISPLAY_COLORS.corporate.accent}60`,
-          }}
-        >
-          正在启动神经网络监控中心
+
+        <div className="mb-6">
+          <div className="text-3xl font-bold mb-3 font-orbitron neon-text-blue">
+            正在启动神经网络监控中心
+          </div>
+          <div className="text-sm font-rajdhani text-muted-foreground animate-pulse">
+            Neural Network Initialization...
+          </div>
         </div>
-        <div
-          className="text-sm font-mono animate-pulse"
-          style={{ color: DISPLAY_COLORS.ui.text.secondary }}
-        >
-          Neural Network Initialization...
+
+        {/* 进度条 */}
+        <div className="mb-4">
+          <div
+            className="quantum-progress h-3"
+            style={{ borderColor: `${DISPLAY_COLORS.corporate.accent}40` }}
+          >
+            <div
+              className="quantum-progress-fill h-full"
+              style={{
+                width: `${progress}%`,
+                background: `linear-gradient(90deg, ${DISPLAY_COLORS.corporate.primary}, ${DISPLAY_COLORS.corporate.accent})`,
+                boxShadow: `0 0 20px ${DISPLAY_COLORS.corporate.accent}60`,
+              }}
+            />
+          </div>
+          <div className="flex justify-between mt-2 text-xs font-mono">
+            <span className="text-muted-foreground">{currentStep}</span>
+            <span className="text-neon-blue">{Math.round(progress)}%</span>
+          </div>
+        </div>
+
+        {/* 状态指示器 */}
+        <div className="flex justify-center space-x-6 text-xs">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse"></div>
+            <span className="text-neon-green font-mono">量子引擎</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 rounded-full bg-neon-blue animate-pulse"></div>
+            <span className="text-neon-blue font-mono">神经网络</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 rounded-full bg-neon-purple animate-pulse"></div>
+            <span className="text-neon-purple font-mono">防护系统</span>
+          </div>
         </div>
       </div>
     </div>
@@ -1275,15 +1621,22 @@ function FuturisticLoadingScreen() {
 }
 
 /**
- * 主组件 - 未来感网络监控中心
- * Main Component - Futuristic Cyber Monitoring Center
+ * 主组件 - 优化版未来感网络监控中心
+ * Main Component - Optimized Futuristic Cyber Monitoring Center
  */
 export default function SituationDisplay() {
   const [isLoading, setIsLoading] = useState(true);
   const [is2DPanelVisible, setIs2DPanelVisible] = useState(false);
+  const [sceneConfig, setSceneConfig] = useState({
+    starCount: 4000,
+    autoRotate: true,
+    rotateSpeed: 0.15,
+    quality: "high",
+    effectsEnabled: true,
+  });
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 3000);
+    const timer = setTimeout(() => setIsLoading(false), 4000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -1291,36 +1644,42 @@ export default function SituationDisplay() {
     setIs2DPanelVisible((prev) => !prev);
   }, []);
 
+  const handleConfigChange = useCallback((newConfig: any) => {
+    setSceneConfig((prev) => ({ ...prev, ...newConfig }));
+  }, []);
+
   if (isLoading) {
-    return <FuturisticLoadingScreen />;
+    return <OptimizedLoadingScreen />;
   }
 
   return (
     <div
-      className="h-screen w-full relative overflow-hidden"
+      className="h-screen w-full relative overflow-hidden matrix-background"
       style={{ backgroundColor: DISPLAY_COLORS.ui.background.primary }}
     >
-      {/* 未来感顶部控制栏 */}
-      <FuturisticTopControlBar
+      {/* 优化版顶部控制栏 */}
+      <OptimizedTopControlBar
         onToggle2DPanel={toggle2DPanel}
         is2DPanelVisible={is2DPanelVisible}
+        sceneConfig={sceneConfig}
+        onConfigChange={handleConfigChange}
       />
 
       {/* 3D未来场景容器 */}
       <div
         className={`absolute inset-0 transition-all duration-500`}
         style={{
-          top: "64px",
-          right: is2DPanelVisible ? "500px" : "0",
+          top: "72px",
+          right: is2DPanelVisible ? "600px" : "0",
         }}
       >
         <ThreeErrorBoundary>
           <Canvas
             camera={{
-              position: [0, 35, 60],
-              fov: 65,
+              position: [0, 40, 70],
+              fov: 70,
               near: 0.1,
-              far: 1200,
+              far: 1500,
             }}
             gl={{
               antialias: true,
@@ -1330,21 +1689,22 @@ export default function SituationDisplay() {
               logarithmicDepthBuffer: true,
             }}
             shadows
+            dpr={[1, 2]}
           >
             <Suspense fallback={null}>
-              <FuturisticCyberScene />
+              <EnhancedCyberScene sceneConfig={sceneConfig} />
               <OrbitControls
                 enablePan={true}
                 enableZoom={true}
                 enableRotate={true}
-                minDistance={25}
-                maxDistance={200}
+                minDistance={30}
+                maxDistance={250}
                 dampingFactor={0.08}
                 enableDamping
                 minPolarAngle={0}
-                maxPolarAngle={Math.PI / 2.2}
-                autoRotate
-                autoRotateSpeed={0.15}
+                maxPolarAngle={Math.PI / 2.1}
+                autoRotate={sceneConfig.autoRotate}
+                autoRotateSpeed={sceneConfig.rotateSpeed}
                 rotateSpeed={0.8}
                 panSpeed={1.2}
                 zoomSpeed={1.5}
@@ -1354,61 +1714,74 @@ export default function SituationDisplay() {
         </ThreeErrorBoundary>
       </div>
 
-      {/* 未来感信息覆盖层 */}
-      <FuturisticInfoOverlay />
-
-      {/* 2D未来控制面板 */}
-      <Futuristic2DPanel
-        isVisible={is2DPanelVisible}
-        onToggle={toggle2DPanel}
+      {/* 优化版信息覆盖层 */}
+      <OptimizedInfoOverlay
+        sceneConfig={sceneConfig}
+        onConfigChange={handleConfigChange}
       />
+
+      {/* 优化版2D控制面板 */}
+      <Optimized2DPanel isVisible={is2DPanelVisible} onToggle={toggle2DPanel} />
 
       {/* 面板切换按钮 */}
       {!is2DPanelVisible && (
         <button
           onClick={toggle2DPanel}
-          className="fixed right-4 top-1/2 transform -translate-y-1/2 z-50 p-3 rounded-l-lg shadow-xl border transition-all duration-500 hover:shadow-2xl backdrop-blur-sm"
-          style={{
-            backgroundColor: "rgba(15, 23, 42, 0.9)",
-            borderColor: DISPLAY_COLORS.corporate.accent,
-            color: DISPLAY_COLORS.ui.text.primary,
-            boxShadow: `0 0 20px ${DISPLAY_COLORS.corporate.accent}40`,
-          }}
+          className="fixed right-6 top-1/2 transform -translate-y-1/2 z-50 quantum-button p-4 rounded-l-xl"
           title="打开量子控制台"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-6 h-6" />
         </button>
       )}
 
       {/* 底部状态栏 */}
       <div
-        className={`absolute bottom-0 left-0 border-t p-2 transition-all duration-500 backdrop-blur-md`}
+        className={`absolute bottom-0 left-0 border-t backdrop-blur-md transition-all duration-500`}
         style={{
           backgroundColor: "rgba(15, 23, 42, 0.9)",
           borderColor: DISPLAY_COLORS.ui.border.primary,
-          right: is2DPanelVisible ? "500px" : "0",
-          height: "40px",
-          boxShadow: `0 0 15px ${DISPLAY_COLORS.corporate.accent}20`,
+          right: is2DPanelVisible ? "600px" : "0",
+          height: "48px",
+          boxShadow: `0 0 20px ${DISPLAY_COLORS.corporate.accent}20`,
         }}
       >
-        <div className="flex justify-between items-center text-sm font-mono">
-          <span
-            className="font-medium"
-            style={{ color: DISPLAY_COLORS.ui.text.secondary }}
-          >
-            CyberGuard 神经网络监控中心 v3.0
-          </span>
-          <div className="flex items-center space-x-2">
-            <div
-              className="w-2 h-2 rounded-full animate-pulse"
-              style={{
-                backgroundColor: DISPLAY_COLORS.status.active,
-                boxShadow: `0 0 5px ${DISPLAY_COLORS.status.active}`,
-              }}
-            ></div>
-            <span style={{ color: DISPLAY_COLORS.ui.text.secondary }}>
-              神经网络运行正常
+        <div className="flex justify-between items-center h-full px-6 text-sm font-rajdhani">
+          <div className="flex items-center space-x-6">
+            <span className="font-medium text-white">
+              CyberGuard 神经网络监控中心 v4.0
             </span>
+            <div className="flex items-center space-x-2">
+              <Power className="w-4 h-4 text-neon-green" />
+              <span className="text-neon-green">系统运行正常</span>
+            </div>
+          </div>
+          <div className="flex items-center space-x-4 text-xs">
+            <div className="flex items-center space-x-2">
+              <div
+                className="w-2 h-2 rounded-full animate-pulse"
+                style={{
+                  backgroundColor: DISPLAY_COLORS.status.active,
+                  boxShadow: `0 0 8px ${DISPLAY_COLORS.status.active}`,
+                }}
+              ></div>
+              <span style={{ color: DISPLAY_COLORS.status.active }}>
+                量子引擎在线
+              </span>
+            </div>
+            <div className="text-muted-foreground">|</div>
+            <div className="flex items-center space-x-2">
+              <Brain className="w-3 h-3 text-neon-blue" />
+              <span style={{ color: DISPLAY_COLORS.network.access }}>
+                神经网络活跃
+              </span>
+            </div>
+            <div className="text-muted-foreground">|</div>
+            <div className="flex items-center space-x-2">
+              <Shield className="w-3 h-3 text-neon-purple" />
+              <span style={{ color: DISPLAY_COLORS.security.safe }}>
+                防护系统激活
+              </span>
+            </div>
           </div>
         </div>
       </div>

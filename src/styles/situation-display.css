@@ -1,0 +1,416 @@
+/* SituationDisplay 3D视图优化样式 */
+
+/* 防重叠和层级管理 */
+.view-container {
+  position: relative;
+  isolation: isolate;
+}
+
+.split-view {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.split-view::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 视图模式选择器样式 */
+.view-mode-selector {
+  display: flex;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.9);
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  backdrop-filter: blur(12px);
+}
+
+.view-mode-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #9ca3af;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.view-mode-button:hover {
+  color: white;
+  background: rgba(55, 65, 81, 0.5);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.view-mode-button.active {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+.view-mode-button.active::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 7px;
+  background: linear-gradient(
+    45deg,
+    rgba(59, 130, 246, 0.1),
+    rgba(59, 130, 246, 0.05),
+    rgba(59, 130, 246, 0.1)
+  );
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* 2D网络拓扑视图样式 */
+.network-topology {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  position: relative;
+}
+
+.network-node {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.4));
+}
+
+.network-node:hover {
+  filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.8));
+  transform: scale(1.1);
+}
+
+.network-node.selected {
+  filter: drop-shadow(0 0 16px rgba(234, 179, 8, 0.8));
+}
+
+.network-connection {
+  stroke-dasharray: 0;
+  transition: all 0.3s ease;
+  animation: dataFlow 3s linear infinite;
+}
+
+@keyframes dataFlow {
+  0% {
+    stroke-dasharray: 0 10;
+  }
+  50% {
+    stroke-dasharray: 5 5;
+  }
+  100% {
+    stroke-dasharray: 10 0;
+  }
+}
+
+/* 统计图表样式增强 */
+.stats-chart-container {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  border: 1px solid rgba(75, 85, 99, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-chart-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(59, 130, 246, 0.1),
+    transparent
+  );
+  animation: scanLine 4s ease-in-out infinite;
+}
+
+@keyframes scanLine {
+  0% {
+    left: -100%;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* 侧边面板优化 */
+.side-panel {
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.95) 0%,
+    rgba(30, 41, 59, 0.95) 100%
+  );
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 12px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  position: fixed;
+  top: 88px;
+  bottom: 68px;
+  width: 300px;
+  overflow: hidden;
+  transform: translateZ(0); /* 启用硬件加速 */
+}
+
+.side-panel.left {
+  left: 8px;
+}
+
+.side-panel.right {
+  right: 8px;
+}
+
+.side-panel-header {
+  background: linear-gradient(
+    90deg,
+    rgba(59, 130, 246, 0.1),
+    rgba(59, 130, 246, 0.05)
+  );
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+  padding: 16px;
+}
+
+.side-panel-content {
+  padding: 16px;
+  overflow-y: auto;
+  height: calc(100% - 80px);
+}
+
+/* 量子控制台样式增强 */
+.quantum-console {
+  background: linear-gradient(
+    135deg,
+    rgba(10, 14, 26, 0.98) 0%,
+    rgba(15, 23, 42, 0.98) 100%
+  );
+  border-left: 1px solid rgba(59, 130, 246, 0.4);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(20px);
+}
+
+.quantum-console-tabs {
+  background: linear-gradient(
+    90deg,
+    rgba(30, 41, 55, 0.8),
+    rgba(15, 23, 42, 0.8)
+  );
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.quantum-console-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.quantum-tab {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.quantum-tab:hover {
+  color: white;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.quantum-tab.active {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  border-bottom-color: #3b82f6;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .side-panel {
+    width: 280px;
+  }
+
+  .quantum-console {
+    min-width: 400px;
+    width: 40vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .side-panel {
+    width: 260px;
+    top: 96px;
+    bottom: 76px;
+  }
+
+  .quantum-console {
+    min-width: 350px;
+    width: 45vw;
+  }
+
+  .view-mode-selector {
+    padding: 6px;
+    gap: 4px;
+  }
+
+  .view-mode-button {
+    padding: 6px 8px;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .side-panel {
+    display: none; /* 在小屏幕上隐藏侧边面板 */
+  }
+
+  .quantum-console {
+    min-width: 300px;
+    width: 50vw;
+  }
+}
+
+/* 分屏模式特殊样式 */
+.split-container {
+  position: relative;
+  isolation: isolate;
+}
+
+.split-horizontal {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.split-vertical {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+}
+
+.quad-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+}
+
+.split-panel {
+  background: #111827;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(75, 85, 99, 0.3);
+}
+
+.split-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(59, 130, 246, 0.05) 50%,
+    transparent 70%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.split-panel:hover::before {
+  opacity: 1;
+}
+
+/* 性能优化 */
+.hardware-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.gpu-optimized {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* 可访问性增强 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+  .view-mode-button {
+    border-color: #ffffff;
+  }
+
+  .view-mode-button.active {
+    background: #0066ff;
+    color: #ffffff;
+  }
+
+  .side-panel {
+    border-color: #ffffff;
+    background: #000000;
+  }
+}
+
+/* 打印样式 */
+@media print {
+  .side-panel,
+  .quantum-console,
+  .view-mode-selector {
+    display: none !important;
+  }
+}

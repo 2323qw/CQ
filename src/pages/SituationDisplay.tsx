@@ -171,7 +171,7 @@ function AdvancedCyberScene({
       const systemLoad = realTimeData?.cpuUsage || 45;
       const threatLevel = realTimeData?.realTimeThreats || 3;
 
-      // 动态环境��应
+      // 动态环境响应
       if (sceneConfig.dynamicEnvironment) {
         // 高负载时场景微震动
         if (systemLoad > 85) {
@@ -631,8 +631,8 @@ function AdvancedInfoOverlay({
                 />
               </div>
 
-              {/* 实时图表 */}
-              <div className="grid grid-cols-2 gap-6">
+              {/* 实时图表 - 响应式布局 */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                 <RealTimeChart
                   title="系统性能趋势"
                   data={generateTrendData()}
@@ -2368,7 +2368,7 @@ function AdvancedLogsTab() {
             <option value="all">全部级别</option>
             <option value="info">信息</option>
             <option value="warn">警告</option>
-            <option value="error">错���</option>
+            <option value="error">错误</option>
           </select>
           <button
             onClick={() => setAutoScroll(!autoScroll)}

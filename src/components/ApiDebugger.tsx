@@ -17,6 +17,7 @@ interface ApiTestResult {
 export function ApiDebugger() {
   const [tests, setTests] = useState<ApiTestResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
+  const [safeMode, setSafeMode] = useState(false);
 
   const API_BASE_URL = "http://jq41030xx76.vicp.fun";
 
@@ -35,6 +36,23 @@ export function ApiDebugger() {
   const runApiTests = async () => {
     setIsRunning(true);
     setTests([]);
+
+    // 如果是安全模式，不进行实际的网络请求
+    if (safeMode) {
+      for (const test of testEndpoints) {
+        const testResult: ApiTestResult = {
+          endpoint: test.endpoint,
+          method: test.method,
+          status: "cors",
+          error: "安全模式：跳过实际网络请求以避免CORS错误",
+          duration: 0,
+        };
+        setTests((prev) => [...prev, testResult]);
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+      setIsRunning(false);
+      return;
+    }
 
     for (const test of testEndpoints) {
       const testResult: ApiTestResult = {
@@ -146,7 +164,7 @@ export function ApiDebugger() {
         }
       }
 
-      // 更新测试结果 - 无论成功还是失败都会到这里
+      // 更新测试结果 - 无��成功还是失败都会到这里
       setTests((prev) =>
         prev.map((t) =>
           t.endpoint === test.endpoint && t.method === test.method
@@ -215,20 +233,39 @@ export function ApiDebugger() {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>API连接诊断工具</span>
-          <Button
-            onClick={runApiTests}
-            disabled={isRunning}
-            className="bg-neon-blue hover:bg-neon-blue/80"
-          >
-            {isRunning ? (
-              <>
-                <Loader className="w-4 h-4 mr-2 animate-spin" />
-                诊断中...
-              </>
-            ) : (
-              "开始诊断"
-            )}
-          </Button>
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="safeMode"
+                checked={safeMode}
+                onChange={(e) => setSafeMode(e.target.checked)}
+                className="rounded border-matrix-border"
+              />
+              <label
+                htmlFor="safeMode"
+                className="text-sm text-muted-foreground"
+              >
+                安全模式
+              </label>
+            </div>
+            <Button
+              onClick={runApiTests}
+              disabled={isRunning}
+              className="bg-neon-blue hover:bg-neon-blue/80"
+            >
+              {isRunning ? (
+                <>
+                  <Loader className="w-4 h-4 mr-2 animate-spin" />
+                  {safeMode ? "模拟中..." : "诊断中..."}
+                </>
+              ) : safeMode ? (
+                "模拟测试"
+              ) : (
+                "开始诊断"
+              )}
+            </Button>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -248,8 +285,13 @@ export function ApiDebugger() {
             </p>
             <div className="p-3 bg-matrix-accent/20 rounded-lg">
               <div className="font-semibold text-white text-xs mb-1">说明:</div>
-              <div className="text-xs">
-                此工具检测API连接问题。CORS错误是正常的，说明服务器可访问但需要配置跨域头。
+              <div className="text-xs space-y-1">
+                <div>
+                  此工具检测API连接问题。CORS错误是正常的，说明服务器可访问但需要配置跨域头。
+                </div>
+                <div className="text-orange-300">
+                  如果遇到控制台错误，请启用"安全模式"来避免实际的网络请求。
+                </div>
               </div>
             </div>
           </div>

@@ -194,15 +194,26 @@ class HttpClient {
         ...this.authManager.getAuthHeaders(),
         ...options.headers,
       },
+      // 添加超时设置
+      signal: AbortSignal.timeout(10000), // 10秒超时
     };
 
     try {
       const response = await fetch(url, config);
-      const data = await response.json();
+
+      // 检查响应是否为有效的JSON
+      let data;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        data = await response.text();
+      }
 
       if (!response.ok) {
         return {
-          error: data.detail || `HTTP error! status: ${response.status}`,
+          error:
+            data?.detail || data || `HTTP error! status: ${response.status}`,
           code: response.status,
         };
       }
@@ -212,8 +223,30 @@ class HttpClient {
         code: response.status,
       };
     } catch (error) {
+      console.error(`API Request failed for ${url}:`, error);
+
+      // 更详细的错误处理
+      if (error instanceof Error) {
+        if (error.name === "AbortError") {
+          return {
+            error: "请求超时，请检查网络连接",
+            code: 0,
+          };
+        } else if (error.message.includes("Failed to fetch")) {
+          return {
+            error: "无法连接到API服务器，请检查网络连接或稍后重试",
+            code: 0,
+          };
+        } else {
+          return {
+            error: error.message,
+            code: 0,
+          };
+        }
+      }
+
       return {
-        error: error instanceof Error ? error.message : "Network error",
+        error: "网络连接错误",
         code: 0,
       };
     }

@@ -13,6 +13,7 @@ import ThreatIntelligence from "@/pages/ThreatIntelligence";
 import AssetManagement from "@/pages/AssetManagement";
 import ApiKeys from "@/pages/ApiKeys";
 import SituationDisplay from "@/pages/SituationDisplay";
+import SystemMonitor from "@/pages/SystemMonitor";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
 

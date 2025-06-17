@@ -28,6 +28,8 @@ export function ApiDebugger() {
       name: "登录预检请求",
     },
     { endpoint: "/api/v1/metrics/current/", method: "GET", name: "当前指标" },
+    // 添加一个图片请求来测试基本连通性（通常不会被CORS阻止）
+    { endpoint: "/favicon.ico", method: "GET", name: "基础连通性测试" },
   ];
 
   const runApiTests = async () => {
@@ -233,7 +235,7 @@ export function ApiDebugger() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-muted-foreground space-y-2">
             <p>
               目标服务器:{" "}
               <code className="bg-matrix-surface px-2 py-1 rounded text-neon-blue">
@@ -246,6 +248,12 @@ export function ApiDebugger() {
                 {window.location.origin}
               </code>
             </p>
+            <div className="p-3 bg-matrix-accent/20 rounded-lg">
+              <div className="font-semibold text-white text-xs mb-1">说明:</div>
+              <div className="text-xs">
+                此工具检测API连接问题。CORS错误是正常的，说明服务器可访问但需要配置跨域头。
+              </div>
+            </div>
           </div>
 
           {tests.length > 0 && (
@@ -346,7 +354,7 @@ export function ApiDebugger() {
 
           {tests.length > 0 && !isRunning && (
             <div className="mt-6 p-4 bg-matrix-surface/30 rounded-lg">
-              <h4 className="font-semibold text-white mb-3">诊��总结</h4>
+              <h4 className="font-semibold text-white mb-3">诊断总结</h4>
               <div className="space-y-2 text-sm">
                 {tests.every((t) => t.status === "cors") && (
                   <div className="text-orange-400">

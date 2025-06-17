@@ -15,6 +15,7 @@ import {
   BarChart3,
   Server,
   Cloud,
+  Bug,
 } from "lucide-react";
 import { UltraCyberSecurityModel } from "@/components/3d/UltraCyberSecurityModel";
 import { BasicCyberSecurityModel } from "@/components/3d/BasicCyberSecurityModel";
@@ -58,7 +59,7 @@ const TEST_USERS = [
   {
     username: "operator",
     password: "operator123",
-    role: "系统操作员",
+    role: "系统操作��",
     icon: Settings,
     description: "系统操作员，负责日常运维",
     color: "text-neon-orange",
@@ -74,6 +75,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showTestUsers, setShowTestUsers] = useState(false);
+  const [showApiDebug, setShowApiDebug] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -85,15 +87,30 @@ export default function Login() {
     setError("");
 
     try {
-      // 首先检查是否为测试用户
+      // 首先尝试真实API登录
+      console.log("Attempting API login for:", formData.username);
+      const result = await login({
+        username: formData.username,
+        password: formData.password,
+      });
+
+      if (result.success) {
+        // API登录成功，跳转到主页面
+        console.log("API login successful");
+        navigate("/", { replace: true });
+        return;
+      }
+
+      // API登录失败，检查是否为测试用户
+      console.log("API login failed, checking test users:", result.error);
       const testUser = TEST_USERS.find(
         (u) =>
           u.username === formData.username && u.password === formData.password,
       );
 
       if (testUser) {
-        // 测试用��直接登录，不需要API调用
-        console.log("Using test user:", testUser.username);
+        // 测试用户直接登录，不需要API调用
+        console.log("Falling back to test user:", testUser.username);
 
         // 创建模拟的API响应
         const mockUser = {
@@ -121,31 +138,39 @@ export default function Login() {
         return;
       }
 
-      // 不是测试用户，尝试真实API登录
-      console.log("Attempting API login for:", formData.username);
-      const result = await login({
-        username: formData.username,
-        password: formData.password,
-      });
-
-      if (result.success) {
-        // API登录成功，跳转到主页面
-        console.log("API login successful");
-        navigate("/", { replace: true });
-      } else {
-        // API登录失败，显示错误信息
-        console.log("API login failed:", result.error);
-        setError(
-          result.error ||
-            "API登录失败。请使用下方测试账号进行演示，或检查API服务器连接状态。",
-        );
-      }
+      // 既不是有效的API用户，也不是测试用户
+      setError(
+        `登录失败: ${result.error || "用户名或密码错误"}。如需演示，请使用下方测试账号。`,
+      );
     } catch (error) {
       console.error("Login error:", error);
 
-      // 网络错误时的友好提示
+      // 网络错误时也检查是否为测试用户
+      const testUser = TEST_USERS.find(
+        (u) =>
+          u.username === formData.username && u.password === formData.password,
+      );
+
+      if (testUser) {
+        console.log("Network error, using test user:", testUser.username);
+        // 使用测试用户登录逻辑（同上）
+        const mockToken = `test_token_${testUser.username}_${Date.now()}`;
+        localStorage.setItem("access_token", mockToken);
+        localStorage.setItem("cyberguard_user_role", testUser.role);
+        localStorage.setItem("cyberguard_user_color", testUser.color);
+
+        const authManager = (await import("@/services/api")).authManager;
+        authManager.setToken(mockToken);
+
+        navigate("/", { replace: true });
+        return;
+      }
+
+      // 网络错误且不是测试用户
       if (error instanceof Error && error.message.includes("Failed to fetch")) {
-        setError("无法连接到API服务器。请使用下方测试账号进行演示。");
+        setError(
+          "无法连接到API服务器。网络连接问题或CORS配置问题。请使用下方测试账号进行演示。",
+        );
       } else {
         setError("登录过程中发生错误，请使用测试账号或稍后重试。");
       }
@@ -177,7 +202,7 @@ export default function Login() {
         {/* 3D背景渐变 */}
         <div className="absolute inset-0 bg-gradient-to-br from-matrix-bg via-matrix-surface to-matrix-accent"></div>
 
-        {/* 矩阵雨效果 */}
+        {/* 矩���雨效果 */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {Array.from({ length: 20 }).map((_, i) => (
             <div
@@ -203,7 +228,7 @@ export default function Login() {
                   <div className="text-center">
                     <Loader className="w-8 h-8 text-neon-blue animate-spin mx-auto mb-2" />
                     <p className="text-neon-blue font-mono text-sm">
-                      加载态势感知监控��统...
+                      加载态势感知监控系统...
                     </p>
                   </div>
                 </div>
@@ -240,7 +265,7 @@ export default function Login() {
                     minPolarAngle={Math.PI / 6}
                   />
 
-                  {/* 超级丰富网络安全模型 */}
+                  {/* 超级丰富网络��全模型 */}
                   <UltraCyberSecurityModel />
 
                   {/* 雾效 */}
@@ -495,6 +520,34 @@ export default function Login() {
               <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-neon-blue/50 to-transparent animate-scan-line" />
               <div className="absolute bottom-0 right-0 w-px h-full bg-gradient-to-t from-transparent via-neon-green/30 to-transparent" />
             </div>
+          </div>
+
+          {/* API调试区域 */}
+          <div className="mt-6 pt-4 border-t border-matrix-border">
+            <button
+              onClick={() => setShowApiDebug(!showApiDebug)}
+              className="flex items-center space-x-2 text-xs text-muted-foreground hover:text-neon-blue transition-colors mx-auto"
+            >
+              <Bug className="w-4 h-4" />
+              <span>{showApiDebug ? "隐藏" : "显示"}API调试工具</span>
+            </button>
+
+            {showApiDebug && (
+              <div className="mt-4">
+                <Suspense
+                  fallback={
+                    <div className="text-center p-4">加载调试工具...</div>
+                  }
+                >
+                  {(() => {
+                    const ApiDebugger = React.lazy(
+                      () => import("@/components/ApiDebugger"),
+                    );
+                    return <ApiDebugger />;
+                  })()}
+                </Suspense>
+              </div>
+            )}
           </div>
 
           {/* 版权信息 */}

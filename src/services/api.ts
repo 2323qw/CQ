@@ -197,6 +197,8 @@ class HttpClient {
     const url = `${API_BASE_URL}${endpoint}`;
     const config: RequestInit = {
       ...options,
+      mode: "cors", // 明确设置CORS模式
+      credentials: "omit", // 暂时不发送凭据以避免预检请求问题
       headers: {
         ...this.authManager.getAuthHeaders(),
         ...options.headers,
@@ -319,6 +321,15 @@ export class ApiService {
   async login(
     credentials: LoginCredentials,
   ): Promise<ApiResponse<AuthTokenResponse>> {
+    console.log(
+      "Attempting login to:",
+      `${API_BASE_URL}${API_PREFIX}/auth/auth/login`,
+    );
+    console.log("Login credentials:", {
+      username: credentials.username,
+      password: "***",
+    });
+
     const formData = new FormData();
     formData.append("username", credentials.username);
     formData.append("password", credentials.password);
@@ -328,6 +339,12 @@ export class ApiService {
       `${API_PREFIX}/auth/auth/login`,
       formData,
     );
+
+    console.log("Login response:", {
+      code: response.code,
+      hasData: !!response.data,
+      error: response.error,
+    });
 
     if (response.data && response.data.access_token) {
       this.auth.setToken(response.data.access_token);

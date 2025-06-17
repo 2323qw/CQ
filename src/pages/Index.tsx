@@ -2,6 +2,7 @@ import { ThreatMetrics } from "@/components/dashboard/ThreatMetrics";
 import { NetworkChart } from "@/components/dashboard/NetworkChart";
 import { NetworkAnalysis } from "@/components/dashboard/NetworkAnalysis";
 import { AlertsList } from "@/components/dashboard/AlertsList";
+import { ApiStatus } from "@/components/ApiStatus";
 
 export default function Index() {
   return (
@@ -14,7 +15,7 @@ export default function Index() {
             网络安全监控仪表板
           </h1>
           <p className="text-muted-foreground">
-            实���监控网络威胁，保护您的数字资产安全
+            实���监控网络威胁，保护您的数字��产安全
           </p>
         </div>
 

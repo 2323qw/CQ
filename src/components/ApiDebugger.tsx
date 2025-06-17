@@ -45,48 +45,50 @@ export function ApiDebugger() {
 
       setTests((prev) => [...prev, testResult]);
 
+      const startTime = Date.now();
+      let duration = 0;
+      let status: ApiTestResult["status"] = "error";
+      let errorMessage = "";
+      let responseData: any = null;
+      let statusCode: number | undefined = undefined;
+
+      // 创建带超时的AbortController
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, 8000); // 8秒超时
+
       try {
-        const startTime = Date.now();
-
-        // 创建带超时的AbortController
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8秒超时
-
         let response: Response;
 
-        try {
-          if (test.method === "OPTIONS") {
-            // 预检请求测试
-            response = await fetch(`${API_BASE_URL}${test.endpoint}`, {
-              method: "OPTIONS",
-              mode: "cors",
-              signal: controller.signal,
-              headers: {
-                Origin: window.location.origin,
-                "Access-Control-Request-Method": "POST",
-                "Access-Control-Request-Headers": "Content-Type, Authorization",
-              },
-            });
-          } else {
-            response = await fetch(`${API_BASE_URL}${test.endpoint}`, {
-              method: test.method,
-              mode: "cors",
-              signal: controller.signal,
-              headers: {
-                "Content-Type": "application/json",
-              },
-            });
-          }
-
-          clearTimeout(timeoutId);
-        } catch (fetchError) {
-          clearTimeout(timeoutId);
-          throw fetchError;
+        if (test.method === "OPTIONS") {
+          // 预检请求测试
+          response = await fetch(`${API_BASE_URL}${test.endpoint}`, {
+            method: "OPTIONS",
+            mode: "cors",
+            signal: controller.signal,
+            headers: {
+              Origin: window.location.origin,
+              "Access-Control-Request-Method": "POST",
+              "Access-Control-Request-Headers": "Content-Type, Authorization",
+            },
+          });
+        } else {
+          response = await fetch(`${API_BASE_URL}${test.endpoint}`, {
+            method: test.method,
+            mode: "cors",
+            signal: controller.signal,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
         }
 
-        const duration = Date.now() - startTime;
-        let responseData;
+        clearTimeout(timeoutId);
+        duration = Date.now() - startTime;
+        statusCode = response.status;
 
+        // 尝试读取响应内容
         try {
           const contentType = response.headers.get("content-type");
           if (contentType && contentType.includes("application/json")) {
@@ -113,56 +115,52 @@ export function ApiDebugger() {
           ),
         };
 
-        setTests((prev) =>
-          prev.map((t) =>
-            t.endpoint === test.endpoint && t.method === test.method
-              ? {
-                  ...t,
-                  status: response.ok ? "success" : "error",
-                  statusCode: response.status,
-                  response: { data: responseData, corsHeaders },
-                  duration,
-                }
-              : t,
-          ),
-        );
+        responseData = { data: responseData, corsHeaders };
+        status = response.ok ? "success" : "error";
       } catch (error) {
-        const duration = Date.now() - startTime;
-        let status: ApiTestResult["status"] = "error";
-        let errorMessage = "Unknown error";
+        clearTimeout(timeoutId);
+        duration = Date.now() - startTime;
 
+        // 详细的错误分类和处理
         if (error instanceof Error) {
-          errorMessage = error.message;
-
           if (error.name === "AbortError") {
             status = "timeout";
             errorMessage = "请求超时 (>8秒)";
-          } else if (errorMessage.includes("Failed to fetch")) {
+          } else if (error.message.includes("Failed to fetch")) {
             status = "cors";
             errorMessage =
               "CORS错误或网络连接问题 - 这是预期的，说明需要配置CORS";
-          } else if (errorMessage.includes("NetworkError")) {
+          } else if (error.message.includes("NetworkError")) {
             status = "cors";
             errorMessage = "网络错误 - 可能是CORS策略阻止了请求";
-          } else if (errorMessage.includes("blocked by CORS")) {
+          } else if (error.message.includes("blocked by CORS")) {
             status = "cors";
             errorMessage = "CORS策略明确阻止了请求";
+          } else {
+            status = "error";
+            errorMessage = `网络错误: ${error.message}`;
           }
+        } else {
+          status = "error";
+          errorMessage = "未知网络错误";
         }
-
-        setTests((prev) =>
-          prev.map((t) =>
-            t.endpoint === test.endpoint && t.method === test.method
-              ? {
-                  ...t,
-                  status,
-                  error: errorMessage,
-                  duration,
-                }
-              : t,
-          ),
-        );
       }
+
+      // 更新测试结果 - 无论成功还是失败都会到这里
+      setTests((prev) =>
+        prev.map((t) =>
+          t.endpoint === test.endpoint && t.method === test.method
+            ? {
+                ...t,
+                status,
+                statusCode,
+                response: responseData,
+                error: errorMessage || undefined,
+                duration,
+              }
+            : t,
+        ),
+      );
 
       // 小延迟避免请求过于密集
       await new Promise((resolve) => setTimeout(resolve, 300));

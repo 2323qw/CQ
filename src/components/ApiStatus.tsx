@@ -25,12 +25,20 @@ export const ApiStatus: React.FC<ApiStatusProps> = ({ className = "" }) => {
 
       if (response.data !== undefined && response.code === 200) {
         setStatus("online");
-      } else {
+      } else if (response.code === 0 && response.error?.includes("无法连接")) {
         setStatus("offline");
+      } else {
+        setStatus("error");
       }
     } catch (error) {
       console.error("API health check failed:", error);
-      setStatus("error");
+
+      // 根据错误类型设置不同状态
+      if (error instanceof Error && error.message.includes("Failed to fetch")) {
+        setStatus("offline");
+      } else {
+        setStatus("error");
+      }
     } finally {
       setLastCheck(new Date());
     }

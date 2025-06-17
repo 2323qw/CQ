@@ -1,0 +1,1035 @@
+/**
+ * 增强科幻主题样式 - 2024版
+ * Enhanced Sci-Fi Theme Styles - 2024 Edition
+ */
+
+/* 全局科幻字体优化 */
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap");
+
+:root {
+  /* 更新后的科幻色彩变量 */
+  --neon-blue: #00f5ff;
+  --neon-green: #39ff14;
+  --neon-purple: #bf00ff;
+  --neon-pink: #ff1493;
+  --neon-orange: #ff6600;
+  --neon-yellow: #ffff00;
+  --neon-cyan: #00ffff;
+  --neon-red: #ff0040;
+
+  --tech-primary: #0052ff;
+  --tech-secondary: #0066ff;
+  --tech-accent: #00d4ff;
+
+  --quantum-primary: #bf00ff;
+  --neural-primary: #00ff88;
+  --ai-primary: #aa33ff;
+
+  /* 深空背景色 */
+  --deep-space-bg: #0a0e1a;
+  --nebula-bg: #111827;
+  --void-bg: #0f172a;
+
+  /* 高级阴影和发光效果 */
+  --shadow-quantum: 0 0 30px rgba(191, 0, 255, 0.4);
+  --shadow-neural: 0 0 30px rgba(0, 255, 136, 0.4);
+  --shadow-tech: 0 0 30px rgba(0, 212, 255, 0.4);
+  --shadow-energy: 0 0 40px rgba(0, 245, 255, 0.6);
+}
+
+/* 字体增强 */
+.font-orbitron {
+  font-family: "Orbitron", monospace;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.font-rajdhani {
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* 高级霓虹文本效果 */
+.neon-text-blue {
+  color: var(--neon-blue);
+  text-shadow:
+    0 0 5px var(--neon-blue),
+    0 0 10px var(--neon-blue),
+    0 0 15px var(--neon-blue),
+    0 0 20px var(--neon-blue),
+    0 0 35px var(--neon-blue);
+  animation: neon-flicker 3s ease-in-out infinite alternate;
+}
+
+.neon-text-green {
+  color: var(--neon-green);
+  text-shadow:
+    0 0 5px var(--neon-green),
+    0 0 10px var(--neon-green),
+    0 0 15px var(--neon-green),
+    0 0 20px var(--neon-green),
+    0 0 35px var(--neon-green);
+  animation: neon-flicker 2.5s ease-in-out infinite alternate;
+}
+
+.neon-text-purple {
+  color: var(--neon-purple);
+  text-shadow:
+    0 0 5px var(--neon-purple),
+    0 0 10px var(--neon-purple),
+    0 0 15px var(--neon-purple),
+    0 0 20px var(--neon-purple),
+    0 0 35px var(--neon-purple);
+  animation: neon-flicker 3.5s ease-in-out infinite alternate;
+}
+
+/* 高级霓虹边框效果 */
+.neon-border-blue {
+  border: 2px solid var(--neon-blue);
+  box-shadow:
+    0 0 5px var(--neon-blue),
+    0 0 10px var(--neon-blue),
+    0 0 15px var(--neon-blue),
+    inset 0 0 5px var(--neon-blue);
+  position: relative;
+}
+
+.neon-border-blue::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    var(--neon-blue),
+    transparent
+  );
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0.3;
+  animation: border-flow 3s linear infinite;
+}
+
+.neon-border-green {
+  border: 2px solid var(--neon-green);
+  box-shadow:
+    0 0 5px var(--neon-green),
+    0 0 10px var(--neon-green),
+    0 0 15px var(--neon-green),
+    inset 0 0 5px var(--neon-green);
+  position: relative;
+}
+
+.neon-border-green::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    var(--neon-green),
+    transparent
+  );
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0.3;
+  animation: border-flow 2.5s linear infinite;
+}
+
+/* 量子效果背景 */
+.quantum-bg {
+  background:
+    radial-gradient(
+      circle at 25% 25%,
+      rgba(191, 0, 255, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 75% 75%,
+      rgba(170, 51, 255, 0.1) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      135deg,
+      var(--deep-space-bg) 0%,
+      var(--nebula-bg) 50%,
+      var(--void-bg) 100%
+    );
+  position: relative;
+}
+
+.quantum-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 98px,
+      rgba(191, 0, 255, 0.03) 100px
+    ),
+    repeating-linear-gradient(
+      180deg,
+      transparent,
+      transparent 98px,
+      rgba(191, 0, 255, 0.03) 100px
+    );
+  animation: quantum-pulse 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* 神经网络效果背景 */
+.neural-bg {
+  background:
+    radial-gradient(
+      circle at 30% 70%,
+      rgba(0, 255, 136, 0.08) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 70% 30%,
+      rgba(57, 255, 20, 0.08) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      135deg,
+      var(--deep-space-bg) 0%,
+      var(--nebula-bg) 50%,
+      var(--void-bg) 100%
+    );
+  position: relative;
+}
+
+.neural-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(
+      circle at 20% 50%,
+      rgba(0, 255, 136, 0.03) 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 80% 50%,
+      rgba(57, 255, 20, 0.03) 1px,
+      transparent 1px
+    );
+  background-size:
+    50px 50px,
+    30px 30px;
+  animation: neural-flow 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* 高级按钮样式 */
+.quantum-button {
+  background: linear-gradient(
+    135deg,
+    transparent,
+    rgba(191, 0, 255, 0.1),
+    transparent
+  );
+  border: 2px solid var(--quantum-primary);
+  color: var(--quantum-primary);
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-family: "Orbitron", monospace;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.quantum-button:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(191, 0, 255, 0.1),
+    rgba(191, 0, 255, 0.2),
+    rgba(191, 0, 255, 0.1)
+  );
+  box-shadow: var(--shadow-quantum);
+  transform: translateY(-2px);
+  color: white;
+}
+
+.quantum-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(191, 0, 255, 0.4),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.quantum-button:hover::before {
+  left: 100%;
+}
+
+.neural-button {
+  background: linear-gradient(
+    135deg,
+    transparent,
+    rgba(0, 255, 136, 0.1),
+    transparent
+  );
+  border: 2px solid var(--neural-primary);
+  color: var(--neural-primary);
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.neural-button:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 136, 0.1),
+    rgba(0, 255, 136, 0.2),
+    rgba(0, 255, 136, 0.1)
+  );
+  box-shadow: var(--shadow-neural);
+  transform: translateY(-2px);
+  color: white;
+}
+
+.neural-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 136, 0.4),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.neural-button:hover::before {
+  left: 100%;
+}
+
+/* 高级卡片样式 */
+.quantum-card {
+  background: linear-gradient(
+    135deg,
+    rgba(17, 24, 39, 0.95),
+    rgba(88, 28, 135, 0.1),
+    rgba(31, 41, 55, 0.9)
+  );
+  border: 2px solid rgba(191, 0, 255, 0.3);
+  border-radius: 16px;
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 25px rgba(191, 0, 255, 0.3),
+    inset 0 1px 0 rgba(191, 0, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.quantum-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(191, 0, 255, 0.05) 50%,
+    transparent 70%
+  );
+  animation: quantum-shimmer 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.neural-card {
+  background: linear-gradient(
+    135deg,
+    rgba(17, 24, 39, 0.95),
+    rgba(5, 46, 22, 0.2),
+    rgba(31, 41, 55, 0.9)
+  );
+  border: 2px solid rgba(0, 255, 136, 0.3);
+  border-radius: 16px;
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 25px rgba(0, 255, 136, 0.3),
+    inset 0 1px 0 rgba(0, 255, 136, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.neural-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(0, 255, 136, 0.05) 50%,
+    transparent 70%
+  );
+  animation: neural-shimmer 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* 高级进度条样式 */
+.quantum-progress {
+  width: 100%;
+  height: 8px;
+  background: rgba(31, 41, 55, 0.8);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(191, 0, 255, 0.3);
+}
+
+.quantum-progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--quantum-primary),
+    rgba(191, 0, 255, 0.8)
+  );
+  border-radius: 4px;
+  position: relative;
+  box-shadow: 0 0 15px rgba(191, 0, 255, 0.6);
+  transition: width 1s ease-out;
+}
+
+.quantum-progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: progress-flow 2s linear infinite;
+}
+
+.neural-progress {
+  width: 100%;
+  height: 8px;
+  background: rgba(31, 41, 55, 0.8);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.neural-progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--neural-primary),
+    rgba(0, 255, 136, 0.8)
+  );
+  border-radius: 4px;
+  position: relative;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+  transition: width 1s ease-out;
+}
+
+.neural-progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: progress-flow 1.5s linear infinite;
+}
+
+/* 高级输入框样式 */
+.cyber-input {
+  background: rgba(17, 24, 39, 0.9);
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #f8fafc;
+  font-family: "Orbitron", monospace;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+}
+
+.cyber-input:focus {
+  outline: none;
+  border-color: var(--tech-accent);
+  box-shadow:
+    0 0 0 4px rgba(0, 212, 255, 0.1),
+    0 0 20px rgba(0, 212, 255, 0.4),
+    inset 0 0 20px rgba(0, 212, 255, 0.05);
+  background: rgba(17, 24, 39, 0.95);
+}
+
+.cyber-input::placeholder {
+  color: rgba(203, 213, 225, 0.6);
+  font-style: italic;
+}
+
+/* 3D效果增强 */
+.floating-element {
+  animation: float-enhanced 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+.rotating-element {
+  animation: rotate-3d 20s linear infinite;
+  transform-style: preserve-3d;
+}
+
+.pulsing-element {
+  animation: pulse-enhanced 3s ease-in-out infinite;
+}
+
+/* 高级动画关键帧 */
+@keyframes neon-flicker {
+  0%,
+  100% {
+    text-shadow:
+      0 0 5px currentColor,
+      0 0 10px currentColor,
+      0 0 15px currentColor,
+      0 0 20px currentColor;
+  }
+  50% {
+    text-shadow:
+      0 0 2px currentColor,
+      0 0 5px currentColor,
+      0 0 8px currentColor,
+      0 0 12px currentColor;
+  }
+}
+
+@keyframes border-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes quantum-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes neural-flow {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+@keyframes quantum-shimmer {
+  0% {
+    transform: translateX(-100%) translateY(-100%);
+  }
+  50% {
+    transform: translateX(0%) translateY(0%);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%);
+  }
+}
+
+@keyframes neural-shimmer {
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) rotate(45deg);
+  }
+}
+
+@keyframes progress-flow {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes float-enhanced {
+  0%,
+  100% {
+    transform: translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
+  33% {
+    transform: translateY(-20px) rotateX(5deg) rotateY(5deg);
+  }
+  66% {
+    transform: translateY(-10px) rotateX(-5deg) rotateY(-5deg);
+  }
+}
+
+@keyframes rotate-3d {
+  from {
+    transform: rotateY(0deg) rotateX(0deg);
+  }
+  to {
+    transform: rotateY(360deg) rotateX(360deg);
+  }
+}
+
+@keyframes pulse-enhanced {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .neon-text-blue,
+  .neon-text-green,
+  .neon-text-purple {
+    text-shadow:
+      0 0 3px currentColor,
+      0 0 6px currentColor,
+      0 0 9px currentColor;
+  }
+
+  .quantum-button,
+  .neural-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .quantum-card,
+  .neural-card {
+    border-radius: 12px;
+  }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+  .neon-text-blue,
+  .neon-text-green,
+  .neon-text-purple {
+    text-shadow: none;
+    font-weight: 700;
+  }
+
+  .quantum-card,
+  .neural-card {
+    border-width: 3px;
+  }
+}
+
+/* 减少动画模式支持 */
+@media (prefers-reduced-motion: reduce) {
+  .floating-element,
+  .rotating-element,
+  .pulsing-element {
+    animation: none;
+  }
+
+  .quantum-button::before,
+  .neural-button::before {
+    display: none;
+  }
+}
+
+/* 3D态势大屏专用样式增强 */
+.matrix-background {
+  position: relative;
+  background:
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(0, 245, 255, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(191, 0, 255, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 40% 40%,
+      rgba(57, 255, 20, 0.03) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      135deg,
+      var(--deep-space-bg) 0%,
+      var(--nebula-bg) 25%,
+      var(--void-bg) 50%,
+      var(--nebula-bg) 75%,
+      var(--deep-space-bg) 100%
+    );
+}
+
+.matrix-background::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 245, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 245, 255, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: matrix-grid-flow 20s linear infinite;
+  pointer-events: none;
+}
+
+/* 状态卡片悬停缩放效果 */
+.hover\:scale-102:hover {
+  transform: scale(1.02);
+}
+
+.hover\:scale-105:hover {
+  transform: scale(1.05);
+}
+
+/* 量子波动动画 */
+.quantum-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.quantum-ripple::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(191, 0, 255, 0.4) 0%,
+    transparent 70%
+  );
+  transform: translate(-50%, -50%);
+  animation: quantum-ripple-animation 3s ease-out infinite;
+}
+
+/* 神经脉冲效果 */
+.neural-pulse-ring {
+  position: relative;
+}
+
+.neural-pulse-ring::before,
+.neural-pulse-ring::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--neon-green);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: neural-pulse-expand 2s ease-out infinite;
+}
+
+.neural-pulse-ring::after {
+  animation-delay: 1s;
+}
+
+/* 3D控制面板特效 */
+.panel-slide-in {
+  animation: panel-slide-in 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.panel-slide-out {
+  animation: panel-slide-out 0.5s cubic-bezier(0.55, 0.06, 0.68, 0.19);
+}
+
+/* 状态指示器增强 */
+.status-indicator {
+  position: relative;
+  display: inline-block;
+}
+
+.status-indicator::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
+  border-radius: 50%;
+  background: inherit;
+  opacity: 0.3;
+  transform: translate(-50%, -50%);
+  animation: status-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* 威胁等级颜色增强 */
+.threat-level-critical {
+  background: linear-gradient(135deg, #ff0040, #ff3366);
+  box-shadow: 0 0 20px rgba(255, 0, 64, 0.6);
+}
+
+.threat-level-high {
+  background: linear-gradient(135deg, #ff6600, #ff8800);
+  box-shadow: 0 0 20px rgba(255, 102, 0, 0.6);
+}
+
+.threat-level-medium {
+  background: linear-gradient(135deg, #ffcc00, #ffdd33);
+  box-shadow: 0 0 20px rgba(255, 204, 0, 0.6);
+}
+
+.threat-level-low {
+  background: linear-gradient(135deg, #39ff14, #55ff33);
+  box-shadow: 0 0 20px rgba(57, 255, 20, 0.6);
+}
+
+/* 数据流动线条 */
+.data-flow-line {
+  position: relative;
+  overflow: hidden;
+}
+
+.data-flow-line::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 245, 255, 0.8),
+    transparent
+  );
+  animation: data-flow-sweep 2s linear infinite;
+}
+
+/* 全息闪烁增强 */
+.hologram-enhanced {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    transparent 25%,
+    rgba(0, 245, 255, 0.1) 25%,
+    rgba(0, 245, 255, 0.1) 50%,
+    transparent 50%,
+    transparent 75%,
+    rgba(0, 245, 255, 0.1) 75%
+  );
+  background-size: 30px 30px;
+  animation: hologram-enhanced-flicker 0.15s linear infinite;
+}
+
+.hologram-enhanced::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 245, 255, 0.4),
+    transparent
+  );
+  animation: hologram-scan 4s linear infinite;
+  pointer-events: none;
+}
+
+/* 高级动画关键帧 */
+@keyframes matrix-grid-flow {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
+}
+
+@keyframes quantum-ripple-animation {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    width: 300px;
+    height: 300px;
+    opacity: 0;
+  }
+}
+
+@keyframes neural-pulse-expand {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes panel-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes panel-slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes status-ping {
+  75%,
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes data-flow-sweep {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes hologram-enhanced-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+  75% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes hologram-scan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* 性能优化的3D容器 */
+.canvas-container {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* 高DPI显示优化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .quantum-card,
+  .neural-card {
+    border-width: 1px;
+  }
+
+  .neon-text-blue,
+  .neon-text-green,
+  .neon-text-purple {
+    text-shadow:
+      0 0 3px currentColor,
+      0 0 6px currentColor,
+      0 0 9px currentColor,
+      0 0 12px currentColor;
+  }
+}
+
+/* 打印样式优化 */
+@media print {
+  .quantum-bg,
+  .neural-bg,
+  .matrix-background {
+    background: white !important;
+  }
+
+  .neon-text-blue,
+  .neon-text-green,
+  .neon-text-purple {
+    color: black !important;
+    text-shadow: none !important;
+  }
+
+  .quantum-card,
+  .neural-card {
+    border: 2px solid black !important;
+    box-shadow: none !important;
+  }
+
+  .matrix-background::before {
+    display: none !important;
+  }
+}

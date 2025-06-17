@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { useEffect, useState } from "react";
 import {
   Shield,
   AlertTriangle,
@@ -15,16 +16,19 @@ import {
   Key,
   Monitor,
   Globe,
+  Crown,
+  BarChart3,
 } from "lucide-react";
 
 const navItems = [
   { name: "仪表板", path: "/", icon: Activity },
   { name: "3D态势大屏", path: "/situation", icon: Globe },
+  { name: "系统监控", path: "/system-monitor", icon: Monitor },
   { name: "威胁告警", path: "/alerts", icon: AlertTriangle },
   { name: "安全报告", path: "/reports", icon: FileText },
   { name: "威胁情报", path: "/threat-intelligence", icon: Shield },
   { name: "资产管理", path: "/assets", icon: Server },
-  { name: "用��管理", path: "/users", icon: Users },
+  { name: "用户管理", path: "/users", icon: Users },
   { name: "系统日志", path: "/logs", icon: FileText },
   { name: "API密钥", path: "/api-keys", icon: Key },
   { name: "系统设置", path: "/settings", icon: Settings },
@@ -34,6 +38,35 @@ export function Navigation() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [userRole, setUserRole] = useState("");
+  const [userColor, setUserColor] = useState("");
+
+  useEffect(() => {
+    // 获取用户角色和颜色信息
+    const role = localStorage.getItem("cyberguard_user_role") || "用户";
+    const color =
+      localStorage.getItem("cyberguard_user_color") || "text-neon-blue";
+    setUserRole(role);
+    setUserColor(color);
+  }, [user]);
+
+  // 根据角色获取图标
+  const getRoleIcon = (role: string) => {
+    switch (role) {
+      case "超级管理员":
+        return Crown;
+      case "安全管理员":
+        return Shield;
+      case "数据分析师":
+        return BarChart3;
+      case "系统操作员":
+        return Settings;
+      default:
+        return User;
+    }
+  };
+
+  const RoleIcon = getRoleIcon(userRole);
 
   const handleLogout = () => {
     logout();
@@ -105,15 +138,54 @@ export function Navigation() {
       {/* User Profile */}
       <div className="p-4 border-t border-matrix-border">
         <div className="flex items-center space-x-3 mb-3">
-          <div className="w-8 h-8 bg-neon-blue/20 rounded-full flex items-center justify-center border border-neon-blue/30">
-            <User className="w-4 h-4 text-neon-blue" />
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center border relative"
+            style={{
+              backgroundColor: userColor.includes("purple")
+                ? "rgba(191, 0, 255, 0.1)"
+                : userColor.includes("blue")
+                  ? "rgba(0, 245, 255, 0.1)"
+                  : userColor.includes("green")
+                    ? "rgba(57, 255, 20, 0.1)"
+                    : userColor.includes("orange")
+                      ? "rgba(255, 102, 0, 0.1)"
+                      : "rgba(0, 245, 255, 0.1)",
+              borderColor: userColor.includes("purple")
+                ? "rgba(191, 0, 255, 0.3)"
+                : userColor.includes("blue")
+                  ? "rgba(0, 245, 255, 0.3)"
+                  : userColor.includes("green")
+                    ? "rgba(57, 255, 20, 0.3)"
+                    : userColor.includes("orange")
+                      ? "rgba(255, 102, 0, 0.3)"
+                      : "rgba(0, 245, 255, 0.3)",
+            }}
+          >
+            <RoleIcon className={`w-5 h-5 ${userColor}`} />
+            <div
+              className="absolute inset-0 rounded-full animate-pulse"
+              style={{
+                boxShadow: userColor.includes("purple")
+                  ? "0 0 10px rgba(191, 0, 255, 0.3)"
+                  : userColor.includes("blue")
+                    ? "0 0 10px rgba(0, 245, 255, 0.3)"
+                    : userColor.includes("green")
+                      ? "0 0 10px rgba(57, 255, 20, 0.3)"
+                      : userColor.includes("orange")
+                        ? "0 0 10px rgba(255, 102, 0, 0.3)"
+                        : "0 0 10px rgba(0, 245, 255, 0.3)",
+              }}
+            />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-white truncate">
-              {user || "安全管理员"}
+              {user || "访客用户"}
+            </p>
+            <p className={`text-xs font-medium truncate ${userColor}`}>
+              {userRole}
             </p>
             <p className="text-xs text-muted-foreground truncate">
-              admin@cyberguard.com
+              {user}@cyberguard.com
             </p>
           </div>
         </div>

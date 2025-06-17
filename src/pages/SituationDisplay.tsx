@@ -180,9 +180,15 @@ function AdvancedCyberScene({
   onNodeSelect: (nodeId: string | null) => void;
 }) {
   const sceneRef = useRef<Group>(null);
-  const { data: realTimeData } = useRealTimeData(generateSituationData, {
+  // 使用真实API数据，带模拟数据作为fallback
+  const {
+    data: realTimeData,
+    isUsingMockData,
+    error: apiError,
+  } = useRealTimeAPI({
     interval: sceneConfig.updateInterval || 2000,
     enabled: !sceneConfig.isPaused,
+    fallbackToMock: true,
   });
 
   useFrame((state) => {

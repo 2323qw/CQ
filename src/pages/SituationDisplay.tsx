@@ -134,6 +134,7 @@ import {
   useRealTimeData,
   generateSituationData,
 } from "@/hooks/useRealTimeData";
+import { useRealTimeAPI } from "@/hooks/useRealTimeAPI";
 import {
   DISPLAY_COLORS,
   DISPLAY_THEME,
@@ -155,7 +156,7 @@ import {
 // 视图模式类型定义
 type ViewMode = "3d" | "2d" | "split-horizontal" | "split-vertical" | "quad";
 
-// 组件��级定义
+// 组件层级定义
 const Z_INDEX = {
   background: 0,
   canvas: 10,
@@ -167,7 +168,7 @@ const Z_INDEX = {
 } as const;
 
 /**
- * 高级3D态势监控场景
+ * 高级3D态势监控场���
  */
 function AdvancedCyberScene({
   sceneConfig,
@@ -503,7 +504,7 @@ function NetworkTopologyView({
       <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
         <div className="bg-black/80 backdrop-blur-sm rounded-lg px-4 py-2">
           <h3 className="text-white font-bold">网络拓扑图</h3>
-          <p className="text-xs text-gray-400">实时网络状态监控</p>
+          <p className="text-xs text-gray-400">实时网��状态监控</p>
         </div>
         <div className="bg-black/80 backdrop-blur-sm rounded-lg px-4 py-2">
           <div className="flex items-center space-x-4 text-xs">
@@ -513,7 +514,7 @@ function NetworkTopologyView({
             </div>
             <div className="flex items-center space-x-1">
               <div className="w-2 h-2 rounded-full bg-yellow-400"></div>
-              <span className="text-yellow-400">警告</span>
+              <span className="text-yellow-400">警��</span>
             </div>
             <div className="flex items-center space-x-1">
               <div className="w-2 h-2 rounded-full bg-red-400"></div>
@@ -719,7 +720,7 @@ function ViewModeSelector({
       id: "quad" as ViewMode,
       label: "四分屏",
       icon: Grid3X3,
-      desc: "四象限视图",
+      desc: "四��限视图",
     },
   ];
 
@@ -1826,7 +1827,7 @@ export default function SituationDisplay() {
         onConfigChange={handleConfigChange}
       />
 
-      {/* 面板切换按钮（仅在未���示控制面板时显示） */}
+      {/* 面板切换按钮（仅在未显示控制面板时显示） */}
       {!is2DPanelVisible && (
         <button
           onClick={toggle2DPanel}

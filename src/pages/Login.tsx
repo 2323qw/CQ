@@ -85,7 +85,44 @@ export default function Login() {
     setError("");
 
     try {
-      // 优先尝试真实API登录
+      // 首先检查是否为测试用户
+      const testUser = TEST_USERS.find(
+        (u) =>
+          u.username === formData.username && u.password === formData.password,
+      );
+
+      if (testUser) {
+        // 测试用��直接登录，不需要API调用
+        console.log("Using test user:", testUser.username);
+
+        // 创建模拟的API响应
+        const mockUser = {
+          id: Math.floor(Math.random() * 1000),
+          username: testUser.username,
+          is_active: true,
+          is_superuser: testUser.role === "超级管理员",
+          created_at: new Date().toISOString(),
+        };
+
+        // 模拟token
+        const mockToken = `test_token_${testUser.username}_${Date.now()}`;
+        localStorage.setItem("access_token", mockToken);
+
+        // 存储用户角色信息
+        localStorage.setItem("cyberguard_user_role", testUser.role);
+        localStorage.setItem("cyberguard_user_color", testUser.color);
+
+        // 直接设置认证状态
+        const authManager = (await import("@/services/api")).authManager;
+        authManager.setToken(mockToken);
+
+        // 通过AuthContext设置用户状态
+        navigate("/", { replace: true });
+        return;
+      }
+
+      // 不是测试用户，尝试真实API登录
+      console.log("Attempting API login for:", formData.username);
       const result = await login({
         username: formData.username,
         password: formData.password,
@@ -93,37 +130,25 @@ export default function Login() {
 
       if (result.success) {
         // API登录成功，跳转到主页面
+        console.log("API login successful");
         navigate("/", { replace: true });
       } else {
-        // API登录失败，尝试测试用户
-        const testUser = TEST_USERS.find(
-          (u) =>
-            u.username === formData.username &&
-            u.password === formData.password,
+        // API登录失败，显示错误信息
+        console.log("API login failed:", result.error);
+        setError(
+          result.error ||
+            "API登录失败。请使用下方测试账号进行演示，或检查API服务器连接状态。",
         );
-
-        if (testUser) {
-          // 测试用户登录成功（模拟API响应）
-          const mockApiResponse = await login({
-            username: formData.username,
-            password: formData.password,
-          });
-
-          // 存储额外的用户角色信息
-          localStorage.setItem("cyberguard_user_role", testUser.role);
-          localStorage.setItem("cyberguard_user_color", testUser.color);
-
-          navigate("/", { replace: true });
-        } else {
-          // 显示详细错误信息
-          setError(
-            result.error || "登录失败。请尝试真实API账号或使用下方测试账号",
-          );
-        }
       }
     } catch (error) {
       console.error("Login error:", error);
-      setError("网络连接错误，请检查网络设置或使用测试账号");
+
+      // 网络错误时的友好提示
+      if (error instanceof Error && error.message.includes("Failed to fetch")) {
+        setError("无法连接到API服务器。请使用下方测试账号进行演示。");
+      } else {
+        setError("登录过程中发生错误，请使用测试账号或稍后重试。");
+      }
     }
 
     setLoading(false);
@@ -178,7 +203,7 @@ export default function Login() {
                   <div className="text-center">
                     <Loader className="w-8 h-8 text-neon-blue animate-spin mx-auto mb-2" />
                     <p className="text-neon-blue font-mono text-sm">
-                      加载态势感知监控系统...
+                      加载态势感知监控��统...
                     </p>
                   </div>
                 </div>

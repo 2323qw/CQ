@@ -1154,9 +1154,10 @@ function Advanced2DPanel({
   sceneConfig: any;
   onConfigChange: (config: any) => void;
 }) {
-  const { data: realTimeData } = useRealTimeData(generateSituationData, {
+  const { data: realTimeData } = useRealTimeAPI({
     interval: 1000,
     enabled: !sceneConfig.isPaused,
+    fallbackToMock: true,
   });
 
   const [activeTab, setActiveTab] = useState("overview");
@@ -1439,7 +1440,7 @@ function AdvancedControlsTab({
                 className="w-full neural-select"
               >
                 <option value="low">低质量</option>
-                <option value="medium">中等质量</option>
+                <option value="medium">中等质���</option>
                 <option value="high">高质量</option>
                 <option value="ultra">超高质量</option>
               </select>

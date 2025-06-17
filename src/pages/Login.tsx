@@ -84,27 +84,49 @@ export default function Login() {
     setLoading(true);
     setError("");
 
-    // 模拟登录验证
-    setTimeout(() => {
-      // 检查测试用户
-      const user = TEST_USERS.find(
-        (u) =>
-          u.username === formData.username && u.password === formData.password,
-      );
+    try {
+      // 优先尝试真实API登录
+      const result = await login({
+        username: formData.username,
+        password: formData.password,
+      });
 
-      if (user) {
-        // 使用AuthContext的login方法
-        login(formData.username);
-        // 存储用户角色信息
-        localStorage.setItem("cyberguard_user_role", user.role);
-        localStorage.setItem("cyberguard_user_color", user.color);
-        // 跳转到主页面
+      if (result.success) {
+        // API登录成功，跳转到主页面
         navigate("/", { replace: true });
       } else {
-        setError("用户名或密码错误，请检查测试账号信息");
+        // API登录失败，尝试测试用户
+        const testUser = TEST_USERS.find(
+          (u) =>
+            u.username === formData.username &&
+            u.password === formData.password,
+        );
+
+        if (testUser) {
+          // 测试用户登录成功（模拟API响应）
+          const mockApiResponse = await login({
+            username: formData.username,
+            password: formData.password,
+          });
+
+          // 存储额外的用户角色信息
+          localStorage.setItem("cyberguard_user_role", testUser.role);
+          localStorage.setItem("cyberguard_user_color", testUser.color);
+
+          navigate("/", { replace: true });
+        } else {
+          // 显示详细错误信息
+          setError(
+            result.error || "登录失败。请尝试真实API账号或使用下方测试账号",
+          );
+        }
       }
-      setLoading(false);
-    }, 1500);
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("网络连接错误，请检查网络设置或使用测试账号");
+    }
+
+    setLoading(false);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,7 +147,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex overflow-hidden">
-      {/* 左��� - 3D模型区域 */}
+      {/* 左侧 - 3D模型区域 */}
       <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative">
         {/* 3D背景渐变 */}
         <div className="absolute inset-0 bg-gradient-to-br from-matrix-bg via-matrix-surface to-matrix-accent"></div>

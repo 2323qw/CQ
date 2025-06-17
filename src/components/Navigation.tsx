@@ -23,11 +23,12 @@ import {
 const navItems = [
   { name: "仪表板", path: "/", icon: Activity },
   { name: "3D态势大屏", path: "/situation", icon: Globe },
+  { name: "系统监控", path: "/system-monitor", icon: Monitor },
   { name: "威胁告警", path: "/alerts", icon: AlertTriangle },
   { name: "安全报告", path: "/reports", icon: FileText },
   { name: "威胁情报", path: "/threat-intelligence", icon: Shield },
   { name: "资产管理", path: "/assets", icon: Server },
-  { name: "用��管理", path: "/users", icon: Users },
+  { name: "用户管理", path: "/users", icon: Users },
   { name: "系统日志", path: "/logs", icon: FileText },
   { name: "API密钥", path: "/api-keys", icon: Key },
   { name: "系统设置", path: "/settings", icon: Settings },
@@ -125,7 +126,7 @@ export function Navigation() {
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 bg-neon-green rounded-full animate-pulse" />
-            <span className="text-neon-green">系统��线</span>
+            <span className="text-neon-green">系统在线</span>
           </div>
           <div className="flex items-center space-x-2">
             <Bell className="w-4 h-4 text-threat-medium" />

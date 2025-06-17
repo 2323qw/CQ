@@ -13,6 +13,8 @@ import {
   Crown,
   Settings,
   BarChart3,
+  Server,
+  Cloud,
 } from "lucide-react";
 import { UltraCyberSecurityModel } from "@/components/3d/UltraCyberSecurityModel";
 import { BasicCyberSecurityModel } from "@/components/3d/BasicCyberSecurityModel";
@@ -123,7 +125,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex overflow-hidden">
-      {/* 左侧 - 3D模型区域 */}
+      {/* 左��� - 3D模型区域 */}
       <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative">
         {/* 3D背景渐变 */}
         <div className="absolute inset-0 bg-gradient-to-br from-matrix-bg via-matrix-surface to-matrix-accent"></div>

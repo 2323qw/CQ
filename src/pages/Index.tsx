@@ -15,8 +15,13 @@ export default function Index() {
             网络安全监控仪表板
           </h1>
           <p className="text-muted-foreground">
-            实���监控网络威胁，保护您的数字��产安全
+            实时监控网络威胁，保护您的数字资产安全
           </p>
+        </div>
+
+        {/* API状态检查 */}
+        <div className="mb-6">
+          <ApiStatus />
         </div>
 
         <div className="space-y-8">

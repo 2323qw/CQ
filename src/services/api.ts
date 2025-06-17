@@ -183,6 +183,13 @@ class HttpClient {
     this.authManager = AuthManager.getInstance();
   }
 
+  // 创建超时信号，兼容旧浏览器
+  private createTimeoutSignal(timeout: number): AbortSignal {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), timeout);
+    return controller.signal;
+  }
+
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},

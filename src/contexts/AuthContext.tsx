@@ -63,6 +63,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   ): Promise<{ success: boolean; error?: string }> => {
     setLoading(true);
     try {
+      // 检查是否已有token（测试用户情况）
+      const existingToken = localStorage.getItem("access_token");
+      if (existingToken && existingToken.startsWith("test_token_")) {
+        // 测试用户已经设置了token，创建模拟用户对象
+        const mockUser: User = {
+          id: Math.floor(Math.random() * 1000),
+          username: credentials.username,
+          is_active: true,
+          is_superuser: credentials.username === "admin",
+          created_at: new Date().toISOString(),
+        };
+
+        setIsAuthenticated(true);
+        setUser(mockUser);
+        setLoading(false);
+        return { success: true };
+      }
+
+      // 尝试真实API登录
       const response = await apiService.login(credentials);
 
       if (response.data && response.data.access_token) {
@@ -74,15 +93,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false);
         return {
           success: false,
-          error: response.error || "登录失败，请检查用户名和密码",
+          error: response.error || "API登录失败，请检查用户名和密码",
         };
       }
     } catch (error) {
       console.error("Login failed:", error);
       setLoading(false);
+
+      // 更详细的错误处理
+      if (error instanceof Error) {
+        if (error.message.includes("Failed to fetch")) {
+          return {
+            success: false,
+            error: "无法连接到API服务器，请检查网络连接",
+          };
+        } else {
+          return {
+            success: false,
+            error: `网络错误: ${error.message}`,
+          };
+        }
+      }
+
       return {
         success: false,
-        error: "网络错误，请稍后重试",
+        error: "登录过程中发生未知错误",
       };
     }
   };

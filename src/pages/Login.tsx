@@ -1,4 +1,4 @@
-import { useState, Suspense } from "react";
+import React, { useState, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -59,7 +59,7 @@ const TEST_USERS = [
   {
     username: "operator",
     password: "operator123",
-    role: "系统操作��",
+    role: "系统操作员",
     icon: Settings,
     description: "系统操作员，负责日常运维",
     color: "text-neon-orange",
@@ -133,7 +133,7 @@ export default function Login() {
         const authManager = (await import("@/services/api")).authManager;
         authManager.setToken(mockToken);
 
-        // 通过AuthContext设置用户状态
+        // 通过AuthContext设置用户���态
         navigate("/", { replace: true });
         return;
       }
@@ -169,7 +169,7 @@ export default function Login() {
       // 网络错误且不是测试用户
       if (error instanceof Error && error.message.includes("Failed to fetch")) {
         setError(
-          "无法连接到API服务器。网络连接问题或CORS配置问题。请使用下方测试账号进行演示。",
+          "无法连接到API��务器。网络连接问题或CORS配置问题。请使用下方测试账号进行演示。",
         );
       } else {
         setError("登录过程中发生错误，请使用测试账号或稍后重试。");
@@ -202,7 +202,7 @@ export default function Login() {
         {/* 3D背景渐变 */}
         <div className="absolute inset-0 bg-gradient-to-br from-matrix-bg via-matrix-surface to-matrix-accent"></div>
 
-        {/* 矩���雨效果 */}
+        {/* 矩阵雨效果 */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {Array.from({ length: 20 }).map((_, i) => (
             <div
@@ -265,7 +265,7 @@ export default function Login() {
                     minPolarAngle={Math.PI / 6}
                   />
 
-                  {/* 超级丰富网络��全模型 */}
+                  {/* 超级丰富网络安全模型 */}
                   <UltraCyberSecurityModel />
 
                   {/* 雾效 */}

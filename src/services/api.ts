@@ -195,7 +195,7 @@ class HttpClient {
         ...options.headers,
       },
       // 添加超时设置
-      signal: AbortSignal.timeout(10000), // 10秒超时
+      signal: this.createTimeoutSignal(10000), // 10秒超时
     };
 
     try {

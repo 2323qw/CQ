@@ -51,6 +51,16 @@ function AppLayout() {
         }
       />
       <Route
+        path="/system-monitor"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <SystemMonitor />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/alerts"
         element={
           <ProtectedRoute>

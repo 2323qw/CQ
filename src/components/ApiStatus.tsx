@@ -5,21 +5,31 @@ import {
   AlertTriangle,
   CheckCircle,
   Loader,
+  Database,
 } from "lucide-react";
 import { apiService } from "@/services/api";
+import { useDataSource } from "@/contexts/DataSourceContext";
 
 interface ApiStatusProps {
   className?: string;
 }
 
 export const ApiStatus: React.FC<ApiStatusProps> = ({ className = "" }) => {
+  const { isMockMode, isApiMode } = useDataSource();
   const [status, setStatus] = useState<
-    "checking" | "online" | "offline" | "error"
+    "checking" | "online" | "offline" | "error" | "mock"
   >("checking");
   const [lastCheck, setLastCheck] = useState<Date | null>(null);
 
   const checkApiStatus = async () => {
     try {
+      if (isMockMode) {
+        // 模拟模式：不进行实际API调用
+        setStatus("mock");
+        setLastCheck(new Date());
+        return;
+      }
+
       setStatus("checking");
       const response = await apiService.healthCheck();
 
@@ -33,7 +43,7 @@ export const ApiStatus: React.FC<ApiStatusProps> = ({ className = "" }) => {
     } catch (error) {
       console.error("API health check failed:", error);
 
-      // 根据错误类型设置不同状态
+      // 根据错误类型设��不同状态
       if (error instanceof Error && error.message.includes("Failed to fetch")) {
         setStatus("offline");
       } else {
@@ -48,11 +58,18 @@ export const ApiStatus: React.FC<ApiStatusProps> = ({ className = "" }) => {
     // 立即检查一次
     checkApiStatus();
 
-    // 每30秒检查一次
-    const interval = setInterval(checkApiStatus, 30000);
+    // 只在API模式下设置定时器
+    let interval: NodeJS.Timeout | null = null;
+    if (isApiMode) {
+      interval = setInterval(checkApiStatus, 30000);
+    }
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [isMockMode, isApiMode]); // 当数据源模式改变时重新检查
 
   const getStatusInfo = () => {
     switch (status) {
@@ -92,6 +109,15 @@ export const ApiStatus: React.FC<ApiStatusProps> = ({ className = "" }) => {
           text: "连接错误",
           description: "API连接出现错误",
         };
+      case "mock":
+        return {
+          icon: Database,
+          color: "text-neon-green",
+          bgColor: "bg-neon-green/10",
+          borderColor: "border-neon-green/30",
+          text: "模拟模式",
+          description: "使用本地模拟数据，无需API连接",
+        };
       default:
         return {
           icon: CloudOff,
@@ -123,10 +149,10 @@ export const ApiStatus: React.FC<ApiStatusProps> = ({ className = "" }) => {
       </div>
       <button
         onClick={checkApiStatus}
-        className="text-xs px-2 py-1 rounded bg-gray-600 hover:bg-gray-500 transition-colors"
-        disabled={status === "checking"}
+        className="text-xs px-2 py-1 rounded bg-gray-600 hover:bg-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={status === "checking" || status === "mock"}
       >
-        刷新
+        {status === "mock" ? "模拟" : "刷新"}
       </button>
     </div>
   );

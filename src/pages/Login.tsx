@@ -105,13 +105,20 @@ export default function Login() {
         const { authManager } = await import("@/services/api");
         authManager.setToken(token);
 
-        console.log("Test user authenticated, navigating to dashboard");
+        // 手动调用AuthContext的checkAuth来更新状态
+        try {
+          const { useAuth } = await import("@/contexts/AuthContext");
+          // 由于我们已经设置了token，checkAuth应该会检测到并设置认证状态
+          console.log("Test user authenticated, updating auth state");
 
-        // 短暂延迟确保状态更新，然后导航
-        setTimeout(() => {
+          // 直接导航，ProtectedRoute会处理状态检查
+          setLoading(false);
           navigate("/", { replace: true });
-          window.location.reload(); // 强制刷新以确保认证状态更新
-        }, 200);
+        } catch (error) {
+          console.error("Error updating auth state:", error);
+          // 如果有问题，强制刷新页面
+          window.location.href = "/";
+        }
 
         return;
       }
@@ -347,7 +354,7 @@ export default function Login() {
                   ) : (
                     <>
                       <Shield className="w-5 h-5" />
-                      <span className="text-white font-semibold">��录系统</span>
+                      <span className="text-white font-semibold">登录系统</span>
                     </>
                   )}
                 </div>
@@ -412,7 +419,7 @@ export default function Login() {
                 <div className="bg-matrix-accent/30 rounded-lg p-4">
                   <div className="text-xs text-muted-foreground space-y-2">
                     <div className="flex items-center justify-between">
-                      <span>演示账号:</span>
+                      <span>���示账号:</span>
                       <code className="text-neon-blue font-mono bg-matrix-surface px-2 py-1 rounded">
                         admin
                       </code>

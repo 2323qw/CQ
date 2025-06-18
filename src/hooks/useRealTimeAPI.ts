@@ -4,6 +4,7 @@ import {
   type SystemMetrics,
   type SystemMetricsSummary,
 } from "@/services/api";
+import { useDataSource } from "@/contexts/DataSourceContext";
 
 // 实时数据Hook配置
 interface UseRealTimeDataConfig {
@@ -50,363 +51,279 @@ const generateMockData = (): StandardizedData => {
     diskUsage: disk,
     networkLatency: Math.round(Math.random() * 50 + 10),
     activeConnections: Math.round(Math.random() * 1000 + 8000),
-    bandwidthUsage: Math.round(Math.random() * 40 + 30),
-    onlineNodes: Math.round(Math.random() * 3 + 45),
-    realTimeThreats: Math.round(Math.random() * 5 + 1),
+    bandwidthUsage: Math.round(Math.random() * 500 + 200),
+    onlineNodes: Math.round(Math.random() * 10 + 40),
+    realTimeThreats:
+      cpu > 80 || memory > 80
+        ? Math.round(Math.random() * 5 + 3)
+        : Math.round(Math.random() * 3 + 1),
     timestamp: new Date().toISOString(),
+    cpu_count: 8,
+    memory_total: 16 * 1024 * 1024 * 1024, // 16GB
+    memory_available: Math.round(
+      (16 * 1024 * 1024 * 1024 * (100 - memory)) / 100,
+    ),
+    disk_total: 500 * 1024 * 1024 * 1024, // 500GB
+    disk_used: Math.round((500 * 1024 * 1024 * 1024 * disk) / 100),
+    net_bytes_sent: Math.round(Math.random() * 1000000000),
+    net_bytes_recv: Math.round(Math.random() * 2000000000),
     alerts: {
       cpu_alert: cpu > 80,
-      memory_alert: memory > 85,
-      disk_alert: disk > 90,
+      memory_alert: memory > 80,
+      disk_alert: disk > 85,
     },
   };
 };
 
-// 数据转换函数
-const transformApiData = (metrics: SystemMetrics): StandardizedData => {
+// API数据转换器
+const transformApiToStandardData = (
+  apiData: SystemMetrics,
+): StandardizedData => {
   return {
-    cpuUsage: Math.round(metrics.cpu_percent),
-    memoryUsage: Math.round(metrics.memory_percent),
-    diskUsage: Math.round(metrics.disk_percent),
-    networkLatency: Math.round(Math.random() * 50 + 10), // API暂时没有延迟数据
-    activeConnections: Math.round(Math.random() * 1000 + 8000), // 需要从网络连接API获取
+    cpuUsage: Math.round(apiData.cpu_percent),
+    memoryUsage: Math.round(apiData.memory_percent),
+    diskUsage: Math.round(apiData.disk_percent),
+    networkLatency: Math.round(Math.random() * 50 + 10), // API中没有这个字段，使用模拟值
+    activeConnections: Math.round(Math.random() * 1000 + 8000), // API中没有这个字段，使用模拟值
     bandwidthUsage: Math.round(
-      ((metrics.net_bytes_sent + metrics.net_bytes_recv) / 1024 / 1024 / 100) %
-        100,
-    ), // 转换为百分比
-    onlineNodes: 47, // 固定值，需要从进程或服务API获取
+      (apiData.net_bytes_sent + apiData.net_bytes_recv) / 1024 / 1024,
+    ), // MB
+    onlineNodes: 47, // 固定值，API中没有这个字段
     realTimeThreats:
-      metrics.cpu_alert || metrics.memory_alert || metrics.disk_alert
+      apiData.cpu_alert || apiData.memory_alert || apiData.disk_alert
         ? Math.round(Math.random() * 5 + 3)
         : Math.round(Math.random() * 3 + 1),
-    timestamp: metrics.timestamp,
-
-    // 原始详细数据
-    cpu_count: metrics.cpu_count,
-    memory_total: metrics.memory_total,
-    memory_available: metrics.memory_available,
-    disk_total: metrics.disk_total,
-    disk_used: metrics.disk_used,
-    net_bytes_sent: metrics.net_bytes_sent,
-    net_bytes_recv: metrics.net_bytes_recv,
+    timestamp: apiData.timestamp,
+    cpu_count: apiData.cpu_count,
+    memory_total: apiData.memory_total,
+    memory_available: apiData.memory_available,
+    disk_total: apiData.disk_total,
+    disk_used: apiData.disk_used,
+    net_bytes_sent: apiData.net_bytes_sent,
+    net_bytes_recv: apiData.net_bytes_recv,
     alerts: {
-      cpu_alert: metrics.cpu_alert,
-      memory_alert: metrics.memory_alert,
-      disk_alert: metrics.disk_alert,
+      cpu_alert: apiData.cpu_alert,
+      memory_alert: apiData.memory_alert,
+      disk_alert: apiData.disk_alert,
     },
   };
 };
 
 // 主要的实时数据Hook
 export function useRealTimeAPI(config: UseRealTimeDataConfig = {}) {
-  const { interval = 5000, enabled = true, fallbackToMock = true } = config;
+  const { interval = 5000, enabled = true } = config;
+  const { isMockMode, isApiMode } = useDataSource();
 
   const [data, setData] = useState<StandardizedData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isUsingMockData, setIsUsingMockData] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const isFirstLoad = useRef(true);
+  const isMountedRef = useRef(true);
 
-  // 获取数据的核心函数
   const fetchData = useCallback(async () => {
-    if (!enabled) return;
+    if (!isMountedRef.current) return;
 
     try {
+      setLoading(true);
       setError(null);
 
-      // 尝试获取真实数据
-      const response = await apiService.getCurrentMetrics();
-
-      if (response.data) {
-        const transformedData = transformApiData(response.data);
-        setData(transformedData);
-        setIsUsingMockData(false);
-
-        if (isFirstLoad.current) {
-          setLoading(false);
-          isFirstLoad.current = false;
-        }
-      } else {
-        throw new Error(response.error || "Failed to fetch data");
-      }
-    } catch (err) {
-      console.warn("API data fetch failed:", err);
-      setError(err instanceof Error ? err.message : "Unknown error");
-
-      // 如果允许fallback，使用模拟数据
-      if (fallbackToMock) {
+      if (isMockMode) {
+        // 模拟模式：直接生成模拟数据
+        console.log("Data Source: Mock mode - generating simulated data");
         const mockData = generateMockData();
         setData(mockData);
-        setIsUsingMockData(true);
-
-        if (isFirstLoad.current) {
-          setLoading(false);
-          isFirstLoad.current = false;
-        }
+        setIsConnected(true);
+        setError(null);
       } else {
-        setLoading(false);
-      }
-    }
-  }, [enabled, fallbackToMock]);
+        // API模式：尝试从真实API获取数据
+        console.log("Data Source: API mode - fetching from real backend");
 
-  // 立即获取数据
-  const fetchNow = useCallback(() => {
+        const response = await apiService.getCurrentMetrics();
+
+        if (response.data) {
+          // API调用成功
+          const standardizedData = transformApiToStandardData(response.data);
+          setData(standardizedData);
+          setIsConnected(true);
+          setError(null);
+          console.log("API data received successfully:", standardizedData);
+        } else {
+          // API调用失败，但有错误响应
+          console.warn("API call failed:", response.error);
+          throw new Error(response.error || "API调用失败");
+        }
+      }
+    } catch (error) {
+      console.error("Data fetching error:", error);
+
+      if (isApiMode) {
+        // API模式下出错，回退到模拟数据
+        console.log("API mode failed, falling back to mock data");
+        const mockData = generateMockData();
+        setData(mockData);
+        setIsConnected(false);
+        setError(
+          `API连接失败: ${error instanceof Error ? error.message : "未知错误"}。正在使用模拟数据。`,
+        );
+      } else {
+        // 模拟模式下也出错（不太可能），设置错误状态
+        setIsConnected(false);
+        setError(
+          `数据生成错误: ${error instanceof Error ? error.message : "未知错误"}`,
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [isMockMode, isApiMode]);
+
+  // 手动刷新数据
+  const refresh = useCallback(() => {
     fetchData();
   }, [fetchData]);
 
-  // 设置定时器
+  // 设置和清理定时器
   useEffect(() => {
-    if (!enabled) {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-      return;
-    }
+    isMountedRef.current = true;
 
     // 立即获取一次数据
     fetchData();
 
-    // 设置定时器
-    intervalRef.current = setInterval(fetchData, interval);
+    // 设置定时器（如果启用）
+    if (enabled) {
+      intervalRef.current = setInterval(fetchData, interval);
+    }
 
     return () => {
+      isMountedRef.current = false;
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
     };
-  }, [enabled, interval, fetchData]);
+  }, [fetchData, interval, enabled, isMockMode]); // 依赖isMockMode，数据源变化时重新获取
 
   return {
     data,
     loading,
     error,
-    isUsingMockData,
-    fetchNow,
-    refetch: fetchData,
+    isConnected,
+    refresh,
+    dataSource: isMockMode ? "mock" : "api",
   };
+}
+
+// 向后兼容的Hook
+export function useRealTimeData(
+  refreshInterval: number = 5000,
+  enableRealTime: boolean = true,
+) {
+  return useRealTimeAPI({
+    interval: refreshInterval,
+    enabled: enableRealTime,
+  });
 }
 
 // 系统摘要数据Hook
 export function useSystemSummary() {
+  const { isMockMode, isApiMode } = useDataSource();
   const [summary, setSummary] = useState<SystemMetricsSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchSummary = useCallback(async () => {
     try {
+      setLoading(true);
       setError(null);
-      const response = await apiService.getSystemMetricsSummary();
 
-      if (response.data) {
-        setSummary(response.data);
+      if (isMockMode) {
+        // 模拟摘要数据
+        const mockSummary: SystemMetricsSummary = {
+          current_cpu_percent: Math.round(Math.random() * 40 + 30),
+          current_memory_percent: Math.round(Math.random() * 30 + 50),
+          current_disk_percent: Math.round(Math.random() * 20 + 40),
+          has_alerts: Math.random() > 0.7,
+          alert_count: Math.round(Math.random() * 3),
+        };
+        setSummary(mockSummary);
       } else {
-        throw new Error(response.error || "Failed to fetch summary");
+        const response = await apiService.getSystemMetricsSummary();
+        if (response.data) {
+          setSummary(response.data);
+        } else {
+          throw new Error(response.error || "Failed to fetch summary");
+        }
       }
-    } catch (err) {
-      console.error("Summary fetch failed:", err);
-      setError(err instanceof Error ? err.message : "Unknown error");
+    } catch (error) {
+      console.error("Summary fetch error:", error);
+      setError(error instanceof Error ? error.message : "Unknown error");
+
+      // 回退到模拟数据
+      if (isApiMode) {
+        const mockSummary: SystemMetricsSummary = {
+          current_cpu_percent: Math.round(Math.random() * 40 + 30),
+          current_memory_percent: Math.round(Math.random() * 30 + 50),
+          current_disk_percent: Math.round(Math.random() * 20 + 40),
+          has_alerts: Math.random() > 0.7,
+          alert_count: Math.round(Math.random() * 3),
+        };
+        setSummary(mockSummary);
+      }
     } finally {
       setLoading(false);
     }
-  }, [isMockMode]);
+  }, [isMockMode, isApiMode]);
 
   useEffect(() => {
     fetchSummary();
   }, [fetchSummary]);
 
-  return {
-    summary,
-    loading,
-    error,
-    refetch: fetchSummary,
-  };
-}
-
-// 网络接口数据Hook
-export function useNetworkInterfaces() {
-  const [interfaces, setInterfaces] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchInterfaces = useCallback(async () => {
-    try {
-      setError(null);
-      const response = await apiService.getCurrentNetworkMetrics();
-
-      if (response.data && response.data.metrics) {
-        setInterfaces(response.data.metrics);
-      } else {
-        throw new Error(response.error || "Failed to fetch network interfaces");
-      }
-    } catch (err) {
-      console.error("Network interfaces fetch failed:", err);
-      setError(err instanceof Error ? err.message : "Unknown error");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchInterfaces();
-  }, [fetchInterfaces]);
-
-  return {
-    interfaces,
-    loading,
-    error,
-    refetch: fetchInterfaces,
-  };
-}
-
-// 进程监控Hook
-export function useProcesses(limit: number = 20) {
-  const [processes, setProcesses] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchProcesses = useCallback(async () => {
-    try {
-      setError(null);
-      const response = await apiService.getProcesses({ limit });
-
-      if (response.data) {
-        setProcesses(response.data);
-      } else {
-        throw new Error(response.error || "Failed to fetch processes");
-      }
-    } catch (err) {
-      console.error("Processes fetch failed:", err);
-      setError(err instanceof Error ? err.message : "Unknown error");
-    } finally {
-      setLoading(false);
-    }
-  }, [limit]);
-
-  useEffect(() => {
-    fetchProcesses();
-  }, [fetchProcesses]);
-
-  return {
-    processes,
-    loading,
-    error,
-    refetch: fetchProcesses,
-  };
-}
-
-// 服务状态Hook
-export function useServices() {
-  const [services, setServices] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchServices = useCallback(async () => {
-    try {
-      setError(null);
-      const response = await apiService.getServices();
-
-      if (response.data) {
-        setServices(response.data);
-      } else {
-        throw new Error(response.error || "Failed to fetch services");
-      }
-    } catch (err) {
-      console.error("Services fetch failed:", err);
-      setError(err instanceof Error ? err.message : "Unknown error");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchServices();
-  }, [fetchServices]);
-
-  return {
-    services,
-    loading,
-    error,
-    refetch: fetchServices,
-  };
+  return { summary, loading, error, refresh: fetchSummary };
 }
 
 // 健康检查Hook
 export function useHealthCheck() {
-  const [health, setHealth] = useState<any>(null);
+  const { isApiMode } = useDataSource();
+  const [isHealthy, setIsHealthy] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const checkHealth = useCallback(async () => {
-    try {
+    if (!isApiMode) {
+      // 模拟模式下总是健康的
+      setIsHealthy(true);
+      setLoading(false);
       setError(null);
-      const response = await apiService.healthCheck();
+      return;
+    }
 
-      if (response.data !== undefined) {
-        setHealth(response.data);
-      } else {
-        throw new Error(response.error || "Health check failed");
-      }
-    } catch (err) {
-      console.error("Health check failed:", err);
-      setError(err instanceof Error ? err.message : "Unknown error");
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await apiService.healthCheck();
+      setIsHealthy(!!response.data);
+    } catch (error) {
+      console.error("Health check failed:", error);
+      setIsHealthy(false);
+      setError(error instanceof Error ? error.message : "Health check failed");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isApiMode]);
 
   useEffect(() => {
     checkHealth();
+
+    // 每30秒检查一次健康状态
+    const interval = setInterval(checkHealth, 30000);
+
+    return () => clearInterval(interval);
   }, [checkHealth]);
 
-  return {
-    health,
-    loading,
-    error,
-    refetch: checkHealth,
-  };
+  return { isHealthy, loading, error, checkHealth };
 }
 
-// 兼容现有代码的Hook（向后兼容）
-export function useRealTimeData(
-  dataGenerator: () => any,
-  config: { interval?: number; enabled?: boolean } = {},
-) {
-  const { data, loading, error, isUsingMockData } = useRealTimeAPI({
-    interval: config.interval,
-    enabled: config.enabled,
-    fallbackToMock: true,
-  });
-
-  return {
-    data,
-    loading,
-    error,
-    isUsingMockData,
-  };
-}
-
-// 批量数据收集函数
-export async function collectAllMetrics(): Promise<{
-  success: boolean;
-  error?: string;
-}> {
-  try {
-    const response = await apiService.collectAllMetrics();
-    if (response.error) {
-      return { success: false, error: response.error };
-    }
-    return { success: true };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-  }
-}
-
-// 导出主要Hook以供使用
 export default useRealTimeAPI;

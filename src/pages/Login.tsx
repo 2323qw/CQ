@@ -43,7 +43,7 @@ const TEST_USERS = [
     password: "security123",
     role: "安全���理员",
     icon: Shield,
-    description: "网络安全管理员，负责威胁监控",
+    description: "网络安全管理员，负责威胁��控",
     color: "text-neon-blue",
     bgColor: "bg-neon-blue/10",
     borderColor: "border-neon-blue/30",
@@ -131,7 +131,7 @@ export default function Login() {
         const modeInfo = isMockMode ? "Mock Mode" : "API Mode fallback";
         console.log(`${modeInfo}: Using test user:`, testUser.username);
 
-        // 模拟token
+        // 模拟token（格式：test_token_username_timestamp）
         const mockToken = `test_token_${testUser.username}_${Date.now()}`;
         localStorage.setItem("access_token", mockToken);
 
@@ -181,7 +181,7 @@ export default function Login() {
       if (testUser) {
         console.log("Network error, using test user:", testUser.username);
 
-        // 模拟token
+        // 模拟token（格式：test_token_username_timestamp）
         const mockToken = `test_token_${testUser.username}_${Date.now()}`;
         localStorage.setItem("access_token", mockToken);
         localStorage.setItem("cyberguard_user_role", testUser.role);
@@ -268,7 +268,7 @@ export default function Login() {
           ))}
         </div>
 
-        {/* 3D场景容器 */}
+        {/* 3D场景容��� */}
         <div className="absolute inset-0 flex items-center justify-center">
           <ThreeErrorBoundary>
             <Suspense

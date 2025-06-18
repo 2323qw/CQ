@@ -326,6 +326,45 @@ export function useHealthCheck() {
   return { isHealthy, loading, error, checkHealth };
 }
 
+// 收集所有指标Hook
+export function collectAllMetrics() {
+  const { isMockMode } = useDataSource();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const collect = useCallback(async () => {
+    if (isMockMode) {
+      // 模拟模式：模拟收集操作
+      console.log("Mock mode: Simulating metrics collection");
+      setLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // 模拟延迟
+      setLoading(false);
+      return { success: true, message: "模拟数据收集完成" };
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await apiService.collectAllMetrics();
+      setLoading(false);
+
+      if (response.data) {
+        return { success: true, data: response.data };
+      } else {
+        throw new Error(response.error || "收集失败");
+      }
+    } catch (error) {
+      setLoading(false);
+      const errorMessage = error instanceof Error ? error.message : "收集失败";
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    }
+  }, [isMockMode]);
+
+  return { collect, loading, error };
+}
+
 // 网络接口Hook - 占位符实现
 export function useNetworkInterfaces() {
   const { isMockMode } = useDataSource();

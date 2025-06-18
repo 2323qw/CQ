@@ -179,13 +179,13 @@ export function Navigation() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-white truncate">
-              {user || "访客用户"}
+              {user?.username || "访客用户"}
             </p>
             <p className={`text-xs font-medium truncate ${userColor}`}>
               {userRole}
             </p>
             <p className="text-xs text-muted-foreground truncate">
-              {user}@cyberguard.com
+              {user?.username || "guest"}@cyberguard.com
             </p>
           </div>
         </div>

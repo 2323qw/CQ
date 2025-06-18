@@ -48,7 +48,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // 从localStorage获取用户角色信息
         const userRole =
           localStorage.getItem("cyberguard_user_role") || "测试用户";
-        const username = token.split("_")[2] || "test"; // 从token中提取用户名
+        const tokenParts = token.split("_");
+        const username = tokenParts.length >= 3 ? tokenParts[2] : "test"; // 从token中提取用户名
 
         // 创建模拟用户对象
         const mockUser: User = {

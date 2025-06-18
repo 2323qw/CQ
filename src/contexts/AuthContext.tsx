@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { apiService, type User, type LoginCredentials } from "@/services/api";
-import { useDataSource } from "@/contexts/DataSourceContext";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -16,7 +15,11 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { isMockMode, isApiMode } = useDataSource();
+  // 动态获取数据源状态而不是通过hook（避免循环依赖）
+  const getDataSourceMode = () => {
+    const saved = localStorage.getItem("cyberguard_data_source");
+    return (saved as "api" | "mock") || "mock";
+  };
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -65,7 +68,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   ): Promise<{ success: boolean; error?: string }> => {
     setLoading(true);
     try {
-      if (isMockMode) {
+      const dataSourceMode = getDataSourceMode();
+
+      if (dataSourceMode === "mock") {
         // 模拟模式：不尝试API调用，直接返回失败让上层处理测试用户逻辑
         console.log("Mock mode: Skipping API login attempt");
         setLoading(false);
@@ -113,7 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error("Login failed:", error);
       setLoading(false);
 
-      // 更详细的错误处理
+      // 更详细的错误处���
       if (error instanceof Error) {
         if (error.message.includes("Failed to fetch")) {
           return {

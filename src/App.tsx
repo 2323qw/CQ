@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { DataSourceProvider } from "@/contexts/DataSourceContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Navigation } from "@/components/Navigation";
 import { ToastContainer } from "@/components/ui/toast";
@@ -158,11 +159,13 @@ function App() {
       <DataSourceProvider>
         <AuthProvider>
           <div className="min-h-screen bg-gradient-to-br from-matrix-bg via-matrix-surface to-matrix-accent text-white">
-            <AppRoutes />
-            <Toaster />
+            <AppLayout />
+            <ToastContainer />
           </div>
         </AuthProvider>
       </DataSourceProvider>
     </BrowserRouter>
-  )
+  );
+}
+
 export default App;

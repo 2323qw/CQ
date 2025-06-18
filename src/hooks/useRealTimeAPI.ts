@@ -212,7 +212,7 @@ export function useSystemSummary() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isMockMode]);
 
   useEffect(() => {
     fetchSummary();

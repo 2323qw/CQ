@@ -14,17 +14,15 @@ import {
   Crown,
   Settings,
   BarChart3,
-  Server,
-  Cloud,
   Bug,
 } from "lucide-react";
 import { UltraCyberSecurityModel } from "@/components/3d/UltraCyberSecurityModel";
-import { BasicCyberSecurityModel } from "@/components/3d/BasicCyberSecurityModel";
 import { ThreeErrorBoundary } from "@/components/3d/ErrorBoundary";
 import { SimpleShield } from "@/components/3d/SimpleShield";
 import { DataSourceToggle } from "@/components/DataSourceToggle";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
+import { authenticateTestUser } from "@/utils/testUserAuth";
 
 // 测试用户数据
 const TEST_USERS = [
@@ -41,7 +39,7 @@ const TEST_USERS = [
   {
     username: "security",
     password: "security123",
-    role: "安全���理员",
+    role: "安全管理员",
     icon: Shield,
     description: "网络安全管理员，负责威胁监控",
     color: "text-neon-blue",
@@ -74,6 +72,7 @@ export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const { isApiMode, isMockMode } = useDataSource();
+
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -92,42 +91,27 @@ export default function Login() {
     try {
       // 检查是否为测试用户
       const testUser = TEST_USERS.find(
-        (u) => u.username === formData.username && u.password === formData.password
+        (u) =>
+          u.username === formData.username && u.password === formData.password,
       );
 
       if (testUser) {
-        // 测试用户登录
-        console.log("Test user login:", testUser.username);
+        console.log("Test user found:", testUser.username);
 
-        // 生成测试token
-        const mockToken = `test_token_${testUser.username}_${Date.now()}`;
-
-        // 存储认证信息
-        localStorage.setItem("access_token", mockToken);
-        localStorage.setItem("cyberguard_user_role", testUser.role);
-        localStorage.setItem("cyberguard_user_color", testUser.color);
+        // 设置测试用户认证信息
+        const token = authenticateTestUser(testUser.username, testUser.role);
 
         // 设置API服务的token
-        const authManager = (await import("@/services/api")).authManager;
-        authManager.setToken(mockToken);
+        const { authManager } = await import("@/services/api");
+        authManager.setToken(token);
 
-        // 创建模拟用户对象并直接设置认证状态（避免循环调用）
-        const mockUser = {
-          id: Math.floor(Math.random() * 1000),
-          username: testUser.username,
-          is_active: true,
-          is_superuser: testUser.role === "超级管理员",
-          created_at: new Date().toISOString(),
-        };
+        console.log("Test user authenticated, navigating to dashboard");
 
-        // 直接设置认证状态
-        console.log("Setting auth state for test user");
-        setLoading(false);
-
-        // 触发AuthContext重新检查认证状态
+        // 短暂延迟确保状态更新，然后导航
         setTimeout(() => {
           navigate("/", { replace: true });
-        }, 100);
+          window.location.reload(); // 强制刷新以确保认证状态更新
+        }, 200);
 
         return;
       }
@@ -145,50 +129,17 @@ export default function Login() {
           navigate("/", { replace: true });
           return;
         } else {
-          console.log("API login failed:", result.error);
           setError(`API登录失败: ${result.error || "用户名或密码错误"}`);
         }
       } else {
         // 模拟模式下，只允许测试用户
         setError("模拟模式下请使用下方测试账号登录。");
       }
-
     } catch (error) {
       console.error("Login error:", error);
-
-      // 即使出错，也检查测试用户
-      const testUser = TEST_USERS.find(
-        (u) => u.username === formData.username && u.password === formData.password
-      );
-
-      if (testUser) {
-        console.log("Error occurred but found test user, proceeding with test login");
-
-        const mockToken = `test_token_${testUser.username}_${Date.now()}`;
-        localStorage.setItem("access_token", mockToken);
-        localStorage.setItem("cyberguard_user_role", testUser.role);
-        localStorage.setItem("cyberguard_user_color", testUser.color);
-
-        const authManager = (await import("@/services/api")).authManager;
-        authManager.setToken(mockToken);
-
-        setLoading(false);
-        setTimeout(() => {
-          navigate("/", { replace: true });
-        }, 100);
-        return;
-      }
-
-      // 网络错误且不是测试用户
-      if (error instanceof Error && error.message.includes("Failed to fetch")) {
-        setError("无法连接到API服务器。请使用下方测试账号进行演示。");
-      } else {
-        setError("登录过程中发生错误，请使用测试账号或稍后重试。");
-      }
+      setError("登录过程中发生错误，请使用测试账号或稍后重试。");
     }
 
-    setLoading(false);
-  };
     setLoading(false);
   };
 
@@ -212,7 +163,6 @@ export default function Login() {
     <div className="min-h-screen flex overflow-hidden">
       {/* 左侧 - 3D模型区域 */}
       <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 relative">
-        {/* 3D背景渐变 */}
         <div className="absolute inset-0 bg-gradient-to-br from-matrix-bg via-matrix-surface to-matrix-accent"></div>
 
         {/* 矩阵雨效果 */}
@@ -234,19 +184,7 @@ export default function Login() {
         {/* 3D场景容器 */}
         <div className="absolute inset-0 flex items-center justify-center">
           <ThreeErrorBoundary>
-            <Suspense
-              fallback={
-                <div className="flex flex-col items-center space-y-6">
-                  <SimpleShield />
-                  <div className="text-center">
-                    <Loader className="w-8 h-8 text-neon-blue animate-spin mx-auto mb-2" />
-                    <p className="text-neon-blue font-mono text-sm">
-                      加载态势感知监控系统...
-                    </p>
-                  </div>
-                </div>
-              }
-            >
+            <Suspense fallback={<SimpleShield />}>
               <div className="w-full h-full">
                 <Canvas
                   camera={{ position: [8, 6, 8], fov: 60 }}
@@ -254,7 +192,6 @@ export default function Login() {
                   dpr={[1, 2]}
                   gl={{ antialias: true, alpha: true }}
                 >
-                  {/* 星空背景 */}
                   <Stars
                     radius={100}
                     depth={50}
@@ -264,8 +201,6 @@ export default function Login() {
                     fade
                     speed={0.3}
                   />
-
-                  {/* 相机控制 */}
                   <OrbitControls
                     enableZoom={true}
                     enablePan={false}
@@ -277,11 +212,7 @@ export default function Login() {
                     maxPolarAngle={Math.PI / 1.8}
                     minPolarAngle={Math.PI / 6}
                   />
-
-                  {/* 超级丰富网络安全模型 */}
                   <UltraCyberSecurityModel />
-
-                  {/* 雾效 */}
                   <fog attach="fog" args={["#0d1117", 8, 25]} />
                 </Canvas>
               </div>
@@ -306,56 +237,15 @@ export default function Login() {
         <div className="absolute top-8 right-8 z-10">
           <DataSourceToggle variant="compact" size="sm" />
         </div>
-
-        {/* 系统状态指示器 */}
-        <div className="absolute bottom-8 left-8 z-10">
-          <div className="cyber-card p-4 bg-matrix-surface/80 backdrop-blur-sm">
-            <div className="flex items-center space-x-3 text-sm">
-              <div className="w-3 h-3 bg-neon-green rounded-full animate-pulse"></div>
-              <span className="text-neon-green font-mono">监控系统在线</span>
-              <span className="text-muted-foreground">|</span>
-              <span className="text-neon-blue font-mono">态势感知激活</span>
-            </div>
-            <div className="mt-2 text-xs text-muted-foreground">
-              <span>监控等级: </span>
-              <span className="text-threat-critical font-mono">ENTERPRISE</span>
-            </div>
-          </div>
-        </div>
-
-        {/* 扫描线效果 */}
-        <div
-          className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-neon-blue/50 to-transparent animate-scan-line"
-          style={{ animationDuration: "12s" }}
-        />
       </div>
 
       {/* 右侧 - 登录表单区域 */}
       <div className="w-full lg:w-1/2 xl:w-2/5 flex items-center justify-center relative matrix-bg">
-        {/* 移动端背景效果 */}
-        <div className="lg:hidden absolute inset-0 pointer-events-none overflow-hidden">
-          {Array.from({ length: 15 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-px bg-gradient-to-b from-transparent via-neon-green/30 to-transparent animate-matrix-rain"
-              style={{
-                left: `${Math.random() * 100}%`,
-                height: "100px",
-                animationDelay: `${Math.random() * 5}s`,
-                animationDuration: `${3 + Math.random() * 4}s`,
-              }}
-            />
-          ))}
-        </div>
-
         <div className="w-full max-w-md mx-6 z-10">
           {/* 移动端Logo */}
           <div className="lg:hidden text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-neon-blue/10 border-2 border-neon-blue/30 mb-4 relative">
               <Shield className="w-8 h-8 text-neon-blue glow-text" />
-              <div className="absolute inset-0 animate-pulse-glow">
-                <Shield className="w-8 h-8 text-neon-blue opacity-30 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-              </div>
             </div>
             <h1 className="text-2xl font-bold text-white glow-text mb-1">
               CyberGuard
@@ -373,11 +263,13 @@ export default function Login() {
               <p className="text-sm text-muted-foreground">
                 请输入您的凭据以访问态势监控控制台
               </p>
-              <div className={`text-xs mt-2 px-2 py-1 rounded-full inline-block ${
-                isApiMode
-                  ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30"
-                  : "bg-neon-green/20 text-neon-green border border-neon-green/30"
-              }`}>
+              <div
+                className={`text-xs mt-2 px-2 py-1 rounded-full inline-block ${
+                  isApiMode
+                    ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30"
+                    : "bg-neon-green/20 text-neon-green border border-neon-green/30"
+                }`}
+              >
                 当前模式: {isApiMode ? "真实API连接" : "模拟数据演示"}
               </div>
             </div>
@@ -407,7 +299,6 @@ export default function Login() {
                     className="w-full pl-12 pr-4 py-4 bg-matrix-surface/50 border-2 border-matrix-border rounded-lg text-white placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-neon-blue focus:border-neon-blue transition-all duration-200 backdrop-blur-sm"
                     required
                   />
-                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-transparent via-neon-blue/5 to-transparent opacity-0 hover:opacity-100 transition-opacity pointer-events-none" />
                 </div>
               </div>
 
@@ -438,7 +329,6 @@ export default function Login() {
                       <Eye className="w-5 h-5" />
                     )}
                   </button>
-                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-transparent via-neon-blue/5 to-transparent opacity-0 hover:opacity-100 transition-opacity pointer-events-none" />
                 </div>
               </div>
 
@@ -448,7 +338,6 @@ export default function Login() {
                 disabled={loading}
                 className="w-full py-4 px-6 rounded-lg font-medium transition-all duration-300 relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-neon-blue to-neon-green hover:shadow-lg hover:shadow-neon-blue/25"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-neon-blue/20 to-neon-green/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative flex items-center justify-center space-x-3">
                   {loading ? (
                     <>
@@ -458,7 +347,7 @@ export default function Login() {
                   ) : (
                     <>
                       <Shield className="w-5 h-5" />
-                      <span className="text-white font-semibold">登录系统</span>
+                      <span className="text-white font-semibold">��录系统</span>
                     </>
                   )}
                 </div>
@@ -519,7 +408,6 @@ export default function Login() {
                 </div>
               )}
 
-              {/* 传统演��信息 */}
               {!showTestUsers && (
                 <div className="bg-matrix-accent/30 rounded-lg p-4">
                   <div className="text-xs text-muted-foreground space-y-2">
@@ -545,13 +433,6 @@ export default function Login() {
               )}
             </div>
 
-            {/* 表单装饰效果 */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg">
-              <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-neon-blue/50 to-transparent animate-scan-line" />
-              <div className="absolute bottom-0 right-0 w-px h-full bg-gradient-to-t from-transparent via-neon-green/30 to-transparent" />
-            </div>
-          </div>
-
             {/* API调试区域 */}
             <div className="mt-6 pt-4 border-t border-matrix-border">
               <button
@@ -564,9 +445,15 @@ export default function Login() {
 
               {showApiDebug && (
                 <div className="mt-4">
-                  <Suspense fallback={<div className="text-center p-4">加载调试工具...</div>}>
+                  <Suspense
+                    fallback={
+                      <div className="text-center p-4">加载调试工具...</div>
+                    }
+                  >
                     {(() => {
-                      const ApiDebugger = React.lazy(() => import("@/components/ApiDebugger"));
+                      const ApiDebugger = React.lazy(
+                        () => import("@/components/ApiDebugger"),
+                      );
                       return <ApiDebugger />;
                     })()}
                   </Suspense>

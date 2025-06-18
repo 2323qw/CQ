@@ -130,17 +130,6 @@ export default function Login() {
       if (testUser) {
         const modeInfo = isMockMode ? "Mock Mode" : "API Mode fallback";
         console.log(`${modeInfo}: Using test user:`, testUser.username);
-        // 测试用户直接登录，不需要API调用
-        console.log("Falling back to test user:", testUser.username);
-
-        // 创建模拟的API响应
-        const mockUser = {
-          id: Math.floor(Math.random() * 1000),
-          username: testUser.username,
-          is_active: true,
-          is_superuser: testUser.role === "超级管理员",
-          created_at: new Date().toISOString(),
-        };
 
         // 模拟token
         const mockToken = `test_token_${testUser.username}_${Date.now()}`;
@@ -150,11 +139,24 @@ export default function Login() {
         localStorage.setItem("cyberguard_user_role", testUser.role);
         localStorage.setItem("cyberguard_user_color", testUser.color);
 
-        // 直接设置认证状态
+        // 设置API服务的token
         const authManager = (await import("@/services/api")).authManager;
         authManager.setToken(mockToken);
 
-        // 通过AuthContext设置用户状态
+        // 重要：调用AuthContext的login方法来设置认证状态
+        const authResult = await login({
+          username: testUser.username,
+          password: testUser.password,
+        });
+
+        if (authResult.success) {
+          console.log("Test user authenticated successfully");
+          navigate("/", { replace: true });
+        } else {
+          console.error("Failed to authenticate test user:", authResult.error);
+          setError("测试用户认证失败，请重试");
+        }
+        return;
         navigate("/", { replace: true });
         return;
       }
@@ -178,7 +180,8 @@ export default function Login() {
 
       if (testUser) {
         console.log("Network error, using test user:", testUser.username);
-        // 使用测试用户登录逻辑（同上）
+
+        // 模拟token
         const mockToken = `test_token_${testUser.username}_${Date.now()}`;
         localStorage.setItem("access_token", mockToken);
         localStorage.setItem("cyberguard_user_role", testUser.role);
@@ -187,7 +190,29 @@ export default function Login() {
         const authManager = (await import("@/services/api")).authManager;
         authManager.setToken(mockToken);
 
-        navigate("/", { replace: true });
+        // 重要：调用AuthContext的login方法来设置认证状态
+        try {
+          const authResult = await login({
+            username: testUser.username,
+            password: testUser.password,
+          });
+
+          if (authResult.success) {
+            console.log(
+              "Test user authenticated successfully after network error",
+            );
+            navigate("/", { replace: true });
+          } else {
+            console.error(
+              "Failed to authenticate test user after network error:",
+              authResult.error,
+            );
+            setError("测试用户认证失败，请重试");
+          }
+        } catch (authError) {
+          console.error("Auth error for test user:", authError);
+          setError("认证过程出现错误，请重试");
+        }
         return;
       }
 

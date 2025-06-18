@@ -17,6 +17,7 @@ import SituationDisplay from "@/pages/SituationDisplay";
 import SystemMonitor from "@/pages/SystemMonitor";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
+import AuthDebug from "@/components/AuthDebug";
 
 // 受保护的布局组件
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
@@ -161,6 +162,7 @@ function App() {
           <div className="min-h-screen bg-gradient-to-br from-matrix-bg via-matrix-surface to-matrix-accent text-white">
             <AppLayout />
             <ToastContainer />
+            <AuthDebug />
           </div>
         </AuthProvider>
       </DataSourceProvider>

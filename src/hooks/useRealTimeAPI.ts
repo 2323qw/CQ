@@ -326,4 +326,132 @@ export function useHealthCheck() {
   return { isHealthy, loading, error, checkHealth };
 }
 
+// 网络接口Hook - 占位符实现
+export function useNetworkInterfaces() {
+  const { isMockMode } = useDataSource();
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refresh = useCallback(async () => {
+    if (isMockMode) {
+      // 模拟网络接口数据
+      setData([
+        {
+          interface_name: "eth0",
+          bytes_sent: Math.random() * 1000000000,
+          bytes_recv: Math.random() * 2000000000,
+          is_up: true,
+        },
+        {
+          interface_name: "wlan0",
+          bytes_sent: Math.random() * 500000000,
+          bytes_recv: Math.random() * 1000000000,
+          is_up: Math.random() > 0.3,
+        },
+      ]);
+    } else {
+      try {
+        const response = await apiService.getCurrentNetworkMetrics();
+        setData(response.data?.metrics || []);
+      } catch (error) {
+        setError(error instanceof Error ? error.message : "Unknown error");
+      }
+    }
+  }, [isMockMode]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  return { data, loading, error, refresh };
+}
+
+// 进程Hook - 占位符实现
+export function useProcesses() {
+  const { isMockMode } = useDataSource();
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refresh = useCallback(async () => {
+    if (isMockMode) {
+      // 模拟进程数据
+      setData([
+        {
+          pid: 1234,
+          name: "chrome",
+          cpu_percent: Math.random() * 30,
+          memory_percent: Math.random() * 20,
+          status: "running",
+        },
+        {
+          pid: 5678,
+          name: "node",
+          cpu_percent: Math.random() * 15,
+          memory_percent: Math.random() * 10,
+          status: "running",
+        },
+      ]);
+    } else {
+      try {
+        const response = await apiService.getProcesses({ limit: 10 });
+        setData(response.data || []);
+      } catch (error) {
+        setError(error instanceof Error ? error.message : "Unknown error");
+      }
+    }
+  }, [isMockMode]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  return { data, loading, error, refresh };
+}
+
+// 服务Hook - 占位符实现
+export function useServices() {
+  const { isMockMode } = useDataSource();
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refresh = useCallback(async () => {
+    if (isMockMode) {
+      // 模拟服务数据
+      setData([
+        {
+          name: "nginx",
+          status: "active",
+          running: true,
+        },
+        {
+          name: "mysql",
+          status: "active",
+          running: true,
+        },
+        {
+          name: "redis",
+          status: Math.random() > 0.8 ? "inactive" : "active",
+          running: Math.random() > 0.8 ? false : true,
+        },
+      ]);
+    } else {
+      try {
+        const response = await apiService.getServices({ limit: 10 });
+        setData(response.data || []);
+      } catch (error) {
+        setError(error instanceof Error ? error.message : "Unknown error");
+      }
+    }
+  }, [isMockMode]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  return { data, loading, error, refresh };
+}
+
 export default useRealTimeAPI;

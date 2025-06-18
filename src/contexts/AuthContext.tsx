@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { apiService, type User, type LoginCredentials } from "@/services/api";
+import { useDataSource } from "@/contexts/DataSourceContext";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -15,6 +16,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { isMockMode, isApiMode } = useDataSource();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -63,7 +65,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   ): Promise<{ success: boolean; error?: string }> => {
     setLoading(true);
     try {
-      // 检查是否已有token（测试用户情况）
+      if (isMockMode) {
+        // 模拟模式：不尝试API调用，直接返回失败让上层处理测试用户逻辑
+        console.log("Mock mode: Skipping API login attempt");
+        setLoading(false);
+        return {
+          success: false,
+          error: "模拟模式：请使用测试账号",
+        };
+      }
+
+      // API模式：检查是否已有token（测试用户情况）
       const existingToken = localStorage.getItem("access_token");
       if (existingToken && existingToken.startsWith("test_token_")) {
         // 测试用户已经设置了token，创建模拟用户对象
@@ -82,6 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // 尝试真实API登录
+      console.log("API mode: Attempting real API login");
       const response = await apiService.login(credentials);
 
       if (response.data && response.data.access_token) {

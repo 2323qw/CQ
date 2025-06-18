@@ -10,6 +10,7 @@ interface AuthContextType {
   ) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   checkAuth: () => Promise<boolean>;
+  refreshAuth: () => Promise<void>; // 新增：手动刷新认证状态
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -124,7 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const dataSourceMode = getDataSourceMode();
 
       if (dataSourceMode === "mock") {
-        // 模拟模式：不尝试API调用，直接返回失败让上层处理测试用户逻辑
+        // 模拟模式：不尝试API调用，直接返回失败��上层处理测试用户逻辑
         console.log("Mock mode: Skipping API login attempt");
         setLoading(false);
         return {
@@ -199,9 +200,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   };
 
+  const refreshAuth = async () => {
+    await checkAuth();
+  };
+
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, loading, login, logout, checkAuth }}
+      value={{
+        isAuthenticated,
+        user,
+        loading,
+        login,
+        logout,
+        checkAuth,
+        refreshAuth,
+      }}
     >
       {children}
     </AuthContext.Provider>

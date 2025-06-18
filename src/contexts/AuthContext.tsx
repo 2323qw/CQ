@@ -39,7 +39,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
 
-      // 验证token是否有效
+      const token = localStorage.getItem("access_token");
+
+      // 检查是否为测试用户token
+      if (token && token.startsWith("test_token_")) {
+        console.log("Found test user token, creating mock user");
+
+        // 从localStorage获取用户角色信息
+        const userRole =
+          localStorage.getItem("cyberguard_user_role") || "测试用户";
+        const username = token.split("_")[2] || "test"; // 从token中提取用户名
+
+        // 创建模拟用户对象
+        const mockUser: User = {
+          id: Math.floor(Math.random() * 1000),
+          username: username,
+          is_active: true,
+          is_superuser: userRole === "超级管理员",
+          created_at: new Date().toISOString(),
+        };
+
+        setIsAuthenticated(true);
+        setUser(mockUser);
+        setLoading(false);
+        return true;
+      }
+
+      // 真实token，验证是否有效
       const response = await apiService.getCurrentUser();
       if (response.data) {
         setIsAuthenticated(true);
@@ -48,6 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return true;
       } else {
         // Token无效，清除认证状态
+        console.log("API token validation failed:", response.error);
         apiService.logout();
         setIsAuthenticated(false);
         setUser(null);
@@ -56,6 +83,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       console.error("Auth check failed:", error);
+
+      // 如果是测试用户token，即使API调用失败也要保持认证状态
+      const token = localStorage.getItem("access_token");
+      if (token && token.startsWith("test_token_")) {
+        console.log(
+          "API check failed but test token found, maintaining auth state",
+        );
+        const username = token.split("_")[2] || "test";
+        const userRole =
+          localStorage.getItem("cyberguard_user_role") || "测试用户";
+
+        const mockUser: User = {
+          id: Math.floor(Math.random() * 1000),
+          username: username,
+          is_active: true,
+          is_superuser: userRole === "超级管理员",
+          created_at: new Date().toISOString(),
+        };
+
+        setIsAuthenticated(true);
+        setUser(mockUser);
+        setLoading(false);
+        return true;
+      }
+
       setIsAuthenticated(false);
       setUser(null);
       setLoading(false);
@@ -118,7 +170,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error("Login failed:", error);
       setLoading(false);
 
-      // 更详细的错误处���
+      // 更详细的错误处理
       if (error instanceof Error) {
         if (error.message.includes("Failed to fetch")) {
           return {

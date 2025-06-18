@@ -1,6 +1,7 @@
 import React, { useState, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useDataSource } from "@/contexts/DataSourceContext";
 import {
   Shield,
   Eye,
@@ -21,6 +22,7 @@ import { UltraCyberSecurityModel } from "@/components/3d/UltraCyberSecurityModel
 import { BasicCyberSecurityModel } from "@/components/3d/BasicCyberSecurityModel";
 import { ThreeErrorBoundary } from "@/components/3d/ErrorBoundary";
 import { SimpleShield } from "@/components/3d/SimpleShield";
+import { DataSourceToggle } from "@/components/DataSourceToggle";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 
@@ -39,7 +41,7 @@ const TEST_USERS = [
   {
     username: "security",
     password: "security123",
-    role: "安全管理员",
+    role: "安全���理员",
     icon: Shield,
     description: "网络安全管理员，负责威胁监控",
     color: "text-neon-blue",
@@ -71,6 +73,7 @@ const TEST_USERS = [
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { isApiMode, isMockMode } = useDataSource();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -87,28 +90,46 @@ export default function Login() {
     setError("");
 
     try {
-      // 首先尝试真实API登录
-      console.log("Attempting API login for:", formData.username);
-      const result = await login({
-        username: formData.username,
-        password: formData.password,
-      });
+      // 根据数据源模式决定登录策略
+      if (isApiMode) {
+        // API模式：首先尝试真实API登录
+        console.log("API Mode: Attempting API login for:", formData.username);
+        const result = await login({
+          username: formData.username,
+          password: formData.password,
+        });
 
-      if (result.success) {
-        // API登录成功，跳转到主页面
-        console.log("API login successful");
-        navigate("/", { replace: true });
-        return;
+        if (result.success) {
+          // API登录成功，跳转到主页面
+          console.log("API login successful");
+          navigate("/", { replace: true });
+          return;
+        }
+
+        // API登录失败但不是测试用户的情况
+        console.log("API login failed:", result.error);
+        const isTestUser = TEST_USERS.find(
+          (u) =>
+            u.username === formData.username &&
+            u.password === formData.password,
+        );
+
+        if (!isTestUser) {
+          setError(`API登录失败: ${result.error || "用户名或密码错误"}`);
+          setLoading(false);
+          return;
+        }
       }
 
-      // API登录失败，检查是否为测试用户
-      console.log("API login failed, checking test users:", result.error);
+      // 检查是否为测试用户（模拟模式或API模式下的fallback）
       const testUser = TEST_USERS.find(
         (u) =>
           u.username === formData.username && u.password === formData.password,
       );
 
       if (testUser) {
+        const modeInfo = isMockMode ? "Mock Mode" : "API Mode fallback";
+        console.log(`${modeInfo}: Using test user:`, testUser.username);
         // 测试用户直接登录，不需要API调用
         console.log("Falling back to test user:", testUser.username);
 
@@ -133,15 +154,19 @@ export default function Login() {
         const authManager = (await import("@/services/api")).authManager;
         authManager.setToken(mockToken);
 
-        // 通过AuthContext设置用户���态
+        // 通过AuthContext设置用户状态
         navigate("/", { replace: true });
         return;
       }
 
       // 既不是有效的API用户，也不是测试用户
-      setError(
-        `登录失败: ${result.error || "用户名或密码错误"}。如需演示，请使用下方测试账号。`,
-      );
+      if (isMockMode) {
+        setError("模拟模式下请使用下方测试账号登录。");
+      } else {
+        setError(
+          `API登录失败: 用户名或密码错误。您也可以切换到模拟数据模式进行演示。`,
+        );
+      }
     } catch (error) {
       console.error("Login error:", error);
 
@@ -169,7 +194,7 @@ export default function Login() {
       // 网络错误且不是测试用户
       if (error instanceof Error && error.message.includes("Failed to fetch")) {
         setError(
-          "无法连接到API��务器。网络连接问题或CORS配置问题。请使用下方测试账号进行演示。",
+          "无法连接到API服务器。网络连接问题或CORS配置问题。请使用下方测试账号进行演示。",
         );
       } else {
         setError("登录过程中发生错误，请使用测试账号或稍后重试。");
@@ -289,6 +314,11 @@ export default function Login() {
           </div>
         </div>
 
+        {/* 数据源切换器 - 左上角 */}
+        <div className="absolute top-8 right-8 z-10">
+          <DataSourceToggle variant="compact" size="sm" />
+        </div>
+
         {/* 系统状态指示器 */}
         <div className="absolute bottom-8 left-8 z-10">
           <div className="cyber-card p-4 bg-matrix-surface/80 backdrop-blur-sm">
@@ -355,6 +385,15 @@ export default function Login() {
               <p className="text-sm text-muted-foreground">
                 请输入您的凭据以访问态势监控控制台
               </p>
+              <div
+                className={`text-xs mt-2 px-2 py-1 rounded-full inline-block ${
+                  isApiMode
+                    ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30"
+                    : "bg-neon-green/20 text-neon-green border border-neon-green/30"
+                }`}
+              >
+                当前模式: {isApiMode ? "真实API连接" : "模拟数据演示"}
+              </div>
             </div>
 
             {/* 错误提示 */}
@@ -440,8 +479,13 @@ export default function Login() {
               </button>
             </form>
 
-            {/* 测试用户信息 */}
+            {/* 数据源切换器 */}
             <div className="mt-8 pt-6 border-t border-matrix-border">
+              <DataSourceToggle />
+            </div>
+
+            {/* 测试用户信息 */}
+            <div className="mt-6 pt-6 border-t border-matrix-border">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm font-medium text-white">测试账号</span>
                 <button

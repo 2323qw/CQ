@@ -154,13 +154,15 @@ function AppLayout() {
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <AppLayout />
-        <ToastContainer />
-      </BrowserRouter>
-    </AuthProvider>
-  );
-}
-
+    <BrowserRouter>
+      <DataSourceProvider>
+        <AuthProvider>
+          <div className="min-h-screen bg-gradient-to-br from-matrix-bg via-matrix-surface to-matrix-accent text-white">
+            <AppRoutes />
+            <Toaster />
+          </div>
+        </AuthProvider>
+      </DataSourceProvider>
+    </BrowserRouter>
+  )
 export default App;

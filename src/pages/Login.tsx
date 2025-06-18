@@ -519,7 +519,7 @@ export default function Login() {
                 </div>
               )}
 
-              {/* 传统演示信息 */}
+              {/* 传统演��信息 */}
               {!showTestUsers && (
                 <div className="bg-matrix-accent/30 rounded-lg p-4">
                   <div className="text-xs text-muted-foreground space-y-2">
@@ -580,6 +580,7 @@ export default function Login() {
                 © 2024 CyberGuard Security Platform. All rights reserved.
               </p>
             </div>
+          </div>
         </div>
       </div>
     </div>

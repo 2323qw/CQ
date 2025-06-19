@@ -218,7 +218,7 @@ export default function ThreatIntelligence() {
   };
 
   return (
-    <div className="ml-64 p-8 min-h-screen matrix-bg">
+    <div className="p-8 min-h-screen matrix-bg">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white glow-text mb-2">
           威胁情报中心

@@ -145,10 +145,10 @@ const OptimizedNode = ({ data }: { data: any }) => {
   return (
     <div
       className={cn(
-        "relative px-3 py-2 shadow-lg border min-w-[100px] max-w-[130px] bg-matrix-surface text-center transition-all duration-300 hover:scale-110",
+        "irregular-node relative px-3 py-2 shadow-lg border min-w-[100px] max-w-[130px] bg-matrix-surface text-center transition-all duration-300 hover:scale-110",
         getRiskColor(data.risk),
-        data.isTarget && "ring-2 ring-quantum-500 ring-opacity-75",
-        isHovered && "shadow-2xl",
+        data.isTarget && "ring-2 ring-quantum-500 ring-opacity-75 node-glow",
+        isHovered && "shadow-2xl node-glow",
       )}
       style={{
         ...{

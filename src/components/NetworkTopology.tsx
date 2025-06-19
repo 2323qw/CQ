@@ -75,25 +75,25 @@ const CustomNode = ({ data }: { data: any }) => {
   return (
     <div
       className={cn(
-        "px-4 py-3 shadow-lg rounded-lg border-2 min-w-[120px] cyber-card",
+        "px-3 py-2 shadow-lg rounded-lg border-2 min-w-[100px] max-w-[140px] cyber-card",
         getRiskColor(data.risk),
         data.isTarget && "ring-2 ring-quantum-500 ring-opacity-50",
       )}
     >
-      <div className="flex items-center gap-2 mb-1">
+      <div className="flex items-center gap-1 mb-1">
         {getNodeIcon(data.type)}
-        <div className="font-medium text-sm">{data.label}</div>
+        <div className="font-medium text-xs truncate">{data.label}</div>
       </div>
-      <div className="text-xs opacity-75">{data.ip}</div>
+      <div className="text-xs opacity-75 font-mono truncate">{data.ip}</div>
       {data.ports && data.ports.length > 0 && (
-        <div className="text-xs mt-1 opacity-60">
-          端口: {data.ports.slice(0, 3).join(", ")}
-          {data.ports.length > 3 && "..."}
+        <div className="text-xs mt-1 opacity-60 truncate">
+          :{data.ports.slice(0, 2).join(",")}
+          {data.ports.length > 2 && "..."}
         </div>
       )}
       {data.risk && (
         <div className="flex items-center gap-1 mt-1">
-          <AlertTriangle className="w-3 h-3" />
+          <AlertTriangle className="w-2 h-2" />
           <span className="text-xs">{data.risk}</span>
         </div>
       )}
@@ -116,11 +116,11 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
     const nodes: Node[] = [];
     const edges: Edge[] = [];
 
-    // 中心目标节点
+    // 中心目标节点 - 优化尺寸和位置
     nodes.push({
       id: "target",
       type: "custom",
-      position: { x: 400, y: 300 },
+      position: { x: 350, y: 250 },
       data: {
         label: "调查目标",
         ip: centerIP,
@@ -135,21 +135,21 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
                 : "low",
         isTarget: true,
         ports: investigation?.networkAnalysis?.openPorts
-          ?.slice(0, 3)
+          ?.slice(0, 2)
           .map((p: any) => p.port) ||
           investigation?.timeline
-            ?.slice(0, 3)
-            .map((_: any, i: number) => 80 + i * 10) || [80, 443, 22],
+            ?.slice(0, 2)
+            .map((_: any, i: number) => 80 + i * 10) || [80, 443],
       },
       sourcePosition: Position.Right,
       targetPosition: Position.Left,
     });
 
-    // 互联网网关
+    // 互联网网关 - 增加间距
     nodes.push({
       id: "internet",
       type: "custom",
-      position: { x: 100, y: 300 },
+      position: { x: 50, y: 250 },
       data: {
         label: "互联网",
         ip: "0.0.0.0/0",
@@ -160,13 +160,13 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
       targetPosition: Position.Left,
     });
 
-    // 路由器/网关
+    // 路由器/网关 - 优化位置
     nodes.push({
       id: "router",
       type: "custom",
-      position: { x: 250, y: 300 },
+      position: { x: 200, y: 250 },
       data: {
-        label: "网络网关",
+        label: "网关",
         ip: "192.168.1.1",
         type: "router",
         risk: "low",
@@ -175,24 +175,20 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
       targetPosition: Position.Left,
     });
 
-    // 基于调查结果生成相关节点 - 优化布局
+    // 基于调查结果生成相关节点 - 优化布局防止重叠
     if (investigation?.networkAnalysis?.connections) {
       investigation.networkAnalysis.connections
-        .slice(0, 8)
+        .slice(0, 6)
         .forEach((conn: any, index: number) => {
-          // 创建更有序的网络布局
-          let x, y;
-          if (index < 4) {
-            // 右侧节点
-            const angle = (index * Math.PI) / 2 - Math.PI / 4;
-            x = 550 + Math.cos(angle) * 120;
-            y = 300 + Math.sin(angle) * 100;
-          } else {
-            // 左侧节点
-            const angle = ((index - 4) * Math.PI) / 2 - Math.PI / 4;
-            x = 250 + Math.cos(angle + Math.PI) * 120;
-            y = 300 + Math.sin(angle + Math.PI) * 100;
-          }
+          // 创建环形布局，确保节点不重叠
+          const totalNodes = Math.min(
+            investigation.networkAnalysis.connections.length,
+            6,
+          );
+          const angle = (index * 2 * Math.PI) / totalNodes;
+          const radius = 160; // 增加半径避免重叠
+          const x = 350 + Math.cos(angle) * radius;
+          const y = 250 + Math.sin(angle) * radius;
 
           const deviceType =
             conn.destPort === 80 || conn.destPort === 443
@@ -236,7 +232,7 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
             id: `edge-target-${index}`,
             source: "target",
             target: `connection-${index}`,
-            type: "default",
+            type: "straight",
             animated: conn.status === "active",
             style: {
               stroke:
@@ -246,19 +242,30 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
                     : "#00f5ff"
                   : "#6b7280",
               strokeWidth: conn.status === "active" ? 3 : 2,
-              strokeDasharray: conn.status === "active" ? "none" : "8,4",
+              strokeDasharray: conn.status === "active" ? "none" : "6,3",
             },
             label: `${conn.protocol}:${conn.destPort}`,
             labelStyle: {
               fill: "#ffffff",
-              fontSize: "10px",
+              fontSize: "9px",
               backgroundColor: "rgba(0, 0, 0, 0.8)",
-              padding: "2px 6px",
-              borderRadius: "4px",
+              padding: "1px 4px",
+              borderRadius: "3px",
               border: "1px solid rgba(255, 255, 255, 0.2)",
             },
-            labelBgPadding: [4, 2],
-            labelBgBorderRadius: 4,
+            labelBgPadding: [2, 1],
+            labelBgBorderRadius: 3,
+            markerEnd: {
+              type: "arrowclosed",
+              width: 12,
+              height: 12,
+              color:
+                conn.status === "active"
+                  ? conn.destPort < 1024
+                    ? "#ff0040"
+                    : "#00f5ff"
+                  : "#6b7280",
+            },
           });
 
           // 添加路径流向指示
@@ -279,15 +286,16 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
           }
         });
     } else if (investigation?.timeline) {
-      // 如果没有网络连接数据，基于时间线生成攻击路径节点
+      // 如果没有网络连接数据��基于时间线生成攻击路径节点
       investigation.timeline
-        .slice(0, 6)
+        .slice(0, 5)
         .forEach((event: any, index: number) => {
-          // 创建攻击路径布局
-          const angle = (index * Math.PI * 2) / 6;
-          const radius = 140;
-          const x = 400 + Math.cos(angle) * radius;
-          const y = 300 + Math.sin(angle) * radius;
+          // 创建攻击路径布局，增加间距
+          const totalNodes = Math.min(investigation.timeline.length, 5);
+          const angle = (index * 2 * Math.PI) / totalNodes;
+          const radius = 170; // 增加半径
+          const x = 350 + Math.cos(angle) * radius;
+          const y = 250 + Math.sin(angle) * radius;
 
           nodes.push({
             id: `event-${index}`,
@@ -353,17 +361,23 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
         });
     }
 
-    // 威胁情报相关节点
+    // 威胁情报相关节点 - 优化位置避免重叠
     if (investigation?.threatIntelligence?.relatedThreats) {
       investigation.threatIntelligence.relatedThreats
         .slice(0, 3)
         .forEach((threat: any, index: number) => {
+          // 在外圈放置威胁节点
+          const angle = (index * Math.PI * 2) / 3 + Math.PI / 6; // 偏移角度避免与其他节点重叠
+          const radius = 220;
+          const x = 350 + Math.cos(angle) * radius;
+          const y = 250 + Math.sin(angle) * radius;
+
           nodes.push({
             id: `threat-${index}`,
             type: "custom",
-            position: { x: 600 + index * 100, y: 150 + index * 50 },
+            position: { x, y },
             data: {
-              label: `威胁IP ${index + 1}`,
+              label: `威胁 ${index + 1}`,
               ip: threat.ip,
               type: "cloud",
               risk: threat.riskScore > 70 ? "critical" : "high",
@@ -395,36 +409,54 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
         });
     }
 
-    // 基础网络连接
+    // 基础网络连接 - 优化线条样式
     edges.push(
       {
         id: "edge-internet-router",
         source: "internet",
         target: "router",
-        type: "smoothstep",
-        style: { stroke: "#6b7280", strokeWidth: 2 },
+        type: "straight",
+        style: {
+          stroke: "#6b7280",
+          strokeWidth: 2,
+        },
         label: "WAN",
         labelStyle: {
           fill: "#9ca3af",
-          fontSize: "10px",
-          backgroundColor: "rgba(0, 0, 0, 0.7)",
-          padding: "2px 4px",
-          borderRadius: "4px",
+          fontSize: "9px",
+          backgroundColor: "rgba(0, 0, 0, 0.8)",
+          padding: "1px 3px",
+          borderRadius: "3px",
+        },
+        markerEnd: {
+          type: "arrowclosed",
+          width: 10,
+          height: 10,
+          color: "#6b7280",
         },
       },
       {
         id: "edge-router-target",
         source: "router",
         target: "target",
-        type: "smoothstep",
-        style: { stroke: "#00f5ff", strokeWidth: 3 },
+        type: "straight",
+        style: {
+          stroke: "#00f5ff",
+          strokeWidth: 3,
+        },
         label: "LAN",
         labelStyle: {
           fill: "#00f5ff",
-          fontSize: "10px",
-          backgroundColor: "rgba(0, 0, 0, 0.7)",
-          padding: "2px 4px",
-          borderRadius: "4px",
+          fontSize: "9px",
+          backgroundColor: "rgba(0, 0, 0, 0.8)",
+          padding: "1px 3px",
+          borderRadius: "3px",
+        },
+        markerEnd: {
+          type: "arrowclosed",
+          width: 12,
+          height: 12,
+          color: "#00f5ff",
         },
       },
     );
@@ -456,18 +488,21 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
         connectionMode={ConnectionMode.Loose}
         fitView
         fitViewOptions={{
-          padding: 0.2,
-          minZoom: 0.5,
-          maxZoom: 1.5,
+          padding: 0.3,
+          minZoom: 0.4,
+          maxZoom: 1.2,
         }}
         className="bg-matrix-bg"
         style={{
           backgroundColor: "rgb(10, 14, 26)",
         }}
-        defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
+        defaultViewport={{ x: 0, y: 0, zoom: 0.6 }}
         minZoom={0.3}
-        maxZoom={2}
+        maxZoom={1.5}
         attributionPosition="bottom-left"
+        nodesDraggable={true}
+        nodesConnectable={false}
+        elementsSelectable={true}
       >
         <Controls
           className="bg-matrix-surface border border-matrix-border text-white"

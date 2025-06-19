@@ -10,7 +10,6 @@ import {
   Node,
   Edge,
   Position,
-  Panel,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import {

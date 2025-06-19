@@ -622,86 +622,87 @@ const EvidenceCollection: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="cyber-card p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">
-                    基础信息
-                  </h3>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">IP地址:</span>
-                      <span className="text-white font-mono">
-                        {(investigation as any).ip}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">地理位置:</span>
-                      <span className="text-white">
-                        {(investigation as any).country}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">组织:</span>
-                      <span className="text-white">
-                        {(investigation as any).organization}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">首次发现:</span>
-                      <span className="text-white">
-                        {new Date(
-                          (investigation as any).firstSeen,
-                        ).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">最后活动:</span>
-                      <span className="text-white">
-                        {new Date(
-                          (investigation as any).lastActivity,
-                        ).toLocaleDateString()}
-                      </span>
+                  <div className="cyber-card p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4">
+                      基础信息
+                    </h3>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">IP地址:</span>
+                        <span className="text-white font-mono">
+                          {(investigation as any).ip}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">地理位置:</span>
+                        <span className="text-white">
+                          {(investigation as any).country}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">组织:</span>
+                        <span className="text-white">
+                          {(investigation as any).organization}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">首次发现:</span>
+                        <span className="text-white">
+                          {new Date(
+                            (investigation as any).firstSeen,
+                          ).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">最后活动:</span>
+                        <span className="text-white">
+                          {new Date(
+                            (investigation as any).lastActivity,
+                          ).toLocaleDateString()}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="cyber-card p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">
-                    攻击类型分布
-                  </h3>
-                  {attackTypeData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height={200}>
-                      <PieChart>
-                        <Pie
-                          data={attackTypeData}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={80}
-                          dataKey="value"
-                          label={({ name, value }) => `${name}: ${value}`}
-                        >
-                          {attackTypeData.map((entry, index) => (
-                            <Cell
-                              key={`cell-${index}`}
-                              fill={pieColors[index % pieColors.length]}
-                            />
-                          ))}
-                        </Pie>
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: "#1f2937",
-                            border: "1px solid #374151",
-                            borderRadius: "8px",
-                            color: "#f8fafc",
-                          }}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <Activity className="w-12 h-12 mx-auto mb-2" />
-                      <p>暂无攻击数据</p>
-                    </div>
-                  )}
+                  <div className="cyber-card p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4">
+                      攻击类型分布
+                    </h3>
+                    {attackTypeData.length > 0 ? (
+                      <ResponsiveContainer width="100%" height={200}>
+                        <PieChart>
+                          <Pie
+                            data={attackTypeData}
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={80}
+                            dataKey="value"
+                            label={({ name, value }) => `${name}: ${value}`}
+                          >
+                            {attackTypeData.map((entry, index) => (
+                              <Cell
+                                key={`cell-${index}`}
+                                fill={pieColors[index % pieColors.length]}
+                              />
+                            ))}
+                          </Pie>
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: "#1f2937",
+                              border: "1px solid #374151",
+                              borderRadius: "8px",
+                              color: "#f8fafc",
+                            }}
+                          />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Activity className="w-12 h-12 mx-auto mb-2" />
+                        <p>暂无攻击数据</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -728,7 +729,7 @@ const EvidenceCollection: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-white mb-2">
-                  开始威胁调查
+                  开始威胁��查
                 </h3>
                 <p className="text-muted-foreground">输入IP地址开始安全分析</p>
               </div>

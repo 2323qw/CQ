@@ -349,6 +349,13 @@ export default function Alerts() {
                     <button className="px-3 py-1 text-xs border border-neon-blue/30 text-neon-blue rounded hover:bg-neon-blue/10 transition-colors">
                       详情
                     </button>
+                    <InvestigationTrigger
+                      ip={alert.source}
+                      variant="button"
+                      className="px-3 py-1 text-xs"
+                    >
+                      开始调查
+                    </InvestigationTrigger>
                     <button className="px-3 py-1 text-xs border border-threat-medium/30 text-threat-medium rounded hover:bg-threat-medium/10 transition-colors">
                       处理
                     </button>

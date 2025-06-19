@@ -338,10 +338,10 @@ export const TopologyAnalysisEnhanced: React.FC<
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                 <Target className="w-5 h-5 text-quantum-500" />
-                智能网络拓扑图
+                Network Topology Analysis
               </h3>
               <Badge className="bg-quantum-500/20 text-quantum-400 border-quantum-500/40">
-                {centerIP}
+                Target: {centerIP}
               </Badge>
             </div>
             <NetworkTopologyInternational
@@ -444,7 +444,7 @@ export const TopologyAnalysisEnhanced: React.FC<
                             color: "#00f5ff",
                           },
                           {
-                            name: "可疑��接",
+                            name: "可疑连接",
                             value: networkStats.suspiciousConnections,
                             color: "#ff6600",
                           },
@@ -845,7 +845,7 @@ export const TopologyAnalysisEnhanced: React.FC<
                   </div>
                   <div>
                     <div className="text-xl font-bold text-amber-400">3</div>
-                    <div className="text-muted-foreground">警告</div>
+                    <div className="text-muted-foreground">警���</div>
                   </div>
                   <div>
                     <div className="text-xl font-bold text-red-400">2</div>

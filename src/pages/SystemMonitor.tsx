@@ -102,7 +102,7 @@ const SystemMonitor: React.FC = () => {
     loading: processesLoading,
     error: processesError,
     refresh: refetchProcesses,
-  } = useProcesses();
+  } = useProcesses(10);
 
   const {
     data: services,

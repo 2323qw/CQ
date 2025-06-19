@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useIPInvestigation } from "@/hooks/useIPInvestigation";
 import { useAdvancedInvestigation } from "@/hooks/useAdvancedInvestigation";
+import { TopologyAnalysis } from "@/components/TopologyAnalysis";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -323,7 +324,7 @@ const EvidenceCollection: React.FC = () => {
                     : (investigation as any).reputation === "malicious"
                       ? "恶意"
                       : (investigation as any).reputation === "suspicious"
-                        ? "可疑"
+                        ? "���疑"
                         : (investigation as any).reputation === "clean"
                           ? "干净"
                           : "未知"}
@@ -333,8 +334,15 @@ const EvidenceCollection: React.FC = () => {
 
             {/* 详细分析面板 */}
             {investigationMode === "advanced" ? (
-              <Tabs defaultValue="network" className="space-y-4">
+              <Tabs defaultValue="topology" className="space-y-4">
                 <TabsList className="bg-matrix-surface border border-matrix-border">
+                  <TabsTrigger
+                    value="topology"
+                    className="flex items-center gap-2"
+                  >
+                    <Target className="w-4 h-4" />
+                    网络拓扑
+                  </TabsTrigger>
                   <TabsTrigger
                     value="network"
                     className="flex items-center gap-2"
@@ -364,6 +372,13 @@ const EvidenceCollection: React.FC = () => {
                     取证分析
                   </TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="topology" className="space-y-4">
+                  <TopologyAnalysis
+                    investigation={investigation}
+                    centerIP={selectedIP}
+                  />
+                </TabsContent>
 
                 <TabsContent value="network" className="space-y-4">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -593,7 +608,20 @@ const EvidenceCollection: React.FC = () => {
               </Tabs>
             ) : (
               /* 基础模式简化展示 */
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="space-y-6">
+                {/* 基础网络拓扑 */}
+                <div className="cyber-card p-6">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                    <Target className="w-5 h-5 text-quantum-500" />
+                    网络关系图
+                  </h3>
+                  <TopologyAnalysis
+                    investigation={investigation}
+                    centerIP={selectedIP}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="cyber-card p-6">
                   <h3 className="text-lg font-semibold text-white mb-4">
                     基础信息

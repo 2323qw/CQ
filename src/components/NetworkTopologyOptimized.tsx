@@ -215,7 +215,7 @@ const generateOptimizedLayout = (
   const layoutNodes: Node[] = [];
   const layoutEdges: Edge[] = [];
 
-  // 计算节点重���性和层级
+  // 计算节点重要性和层级
   const getNodeImportance = (nodeData: any) => {
     let importance = 0;
     if (nodeData.isTarget) importance += 100;
@@ -256,7 +256,7 @@ const generateOptimizedLayout = (
   // 分层布局算法
   const layers = [
     { radius: 180, maxNodes: 6 }, // 内层 - 重要基础设施
-    { radius: 280, maxNodes: 12 }, // ��层 - 一般设备
+    { radius: 280, maxNodes: 12 }, // 中层 - 一般设备
     { radius: 380, maxNodes: 18 }, // 外层 - 边缘设备
   ];
 
@@ -366,7 +366,7 @@ export const NetworkTopologyOptimized: React.FC<
   const [currentViewMode, setCurrentViewMode] = useState(viewMode);
   const [showPerformance, setShowPerformance] = useState(false);
 
-  // 生成优化的网络拓扑数据
+  // 生成优化的网络拓扑���据
   const { nodes: initialNodes, edges: initialEdges } = useMemo(() => {
     if (!investigation) return { nodes: [], edges: [] };
 
@@ -553,7 +553,7 @@ export const NetworkTopologyOptimized: React.FC<
       return generateOptimizedLayout(networkNodes, networkEdges, centerIP);
     }
 
-    // 简单的手动布局作为后备
+    // 简单���手动布局作为后备
     const simpleNodes: Node[] = networkNodes.map((node, index) => ({
       id: node.id,
       type: "custom",
@@ -762,10 +762,7 @@ export const NetworkTopologyOptimized: React.FC<
       </ReactFlow>
 
       {/* 图例 */}
-      <Panel
-        position="bottom-center"
-        className="bg-matrix-surface/90 backdrop-blur-sm rounded-lg p-2 border border-matrix-border"
-      >
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10 bg-matrix-surface/90 backdrop-blur-sm rounded-lg p-2 border border-matrix-border">
         <div className="flex gap-4 text-xs">
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 bg-red-400 rounded-full"></div>
@@ -788,7 +785,7 @@ export const NetworkTopologyOptimized: React.FC<
             <span className="text-muted-foreground">目标</span>
           </div>
         </div>
-      </Panel>
+      </div>
 
       {/* 节点详情模态框 */}
       <NodeDetailModal

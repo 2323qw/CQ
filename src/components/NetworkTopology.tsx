@@ -264,7 +264,7 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
             },
           });
 
-          // 添加路径流向指示
+          // 添加流向指示
           if (conn.status === "active") {
             edges.push({
               id: `flow-${index}`,
@@ -278,6 +278,54 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
                 opacity: 0.6,
               },
               zIndex: 10,
+            });
+          }
+
+          // 连接相邻节点形成网状结构
+          if (index > 0) {
+            edges.push({
+              id: `inter-connection-${index}`,
+              source: `connection-${index - 1}`,
+              target: `connection-${index}`,
+              type: "straight",
+              style: {
+                stroke: "#4b5563",
+                strokeWidth: 1,
+                strokeDasharray: "2,2",
+                opacity: 0.4,
+              },
+              label: "邻接",
+              labelStyle: {
+                fill: "#6b7280",
+                fontSize: "8px",
+                backgroundColor: "rgba(0, 0, 0, 0.6)",
+                padding: "1px 2px",
+                borderRadius: "2px",
+              },
+            });
+          }
+
+          // 每隔一个节点连接到路由器
+          if (index % 2 === 0) {
+            edges.push({
+              id: `router-connection-${index}`,
+              source: "router",
+              target: `connection-${index}`,
+              type: "straight",
+              style: {
+                stroke: "#6b7280",
+                strokeWidth: 1,
+                strokeDasharray: "4,2",
+                opacity: 0.3,
+              },
+              label: "路由",
+              labelStyle: {
+                fill: "#6b7280",
+                fontSize: "8px",
+                backgroundColor: "rgba(0, 0, 0, 0.6)",
+                padding: "1px 2px",
+                borderRadius: "2px",
+              },
             });
           }
         });
@@ -311,7 +359,7 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
             targetPosition: Position.Left,
           });
 
-          // 攻击路径边 - 显示攻击方向和类型
+          // 攻击路径边 - 显示攻击方向和��型
           edges.push({
             id: `edge-attack-${index}`,
             source: `event-${index}`,
@@ -354,6 +402,54 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
                     : "#39ff14",
             },
           });
+
+          // 攻击源之间的关联连接
+          if (index > 0) {
+            edges.push({
+              id: `attack-relation-${index}`,
+              source: `event-${index - 1}`,
+              target: `event-${index}`,
+              type: "straight",
+              style: {
+                stroke: "#7c3aed",
+                strokeWidth: 1,
+                strokeDasharray: "3,3",
+                opacity: 0.5,
+              },
+              label: "关联",
+              labelStyle: {
+                fill: "#7c3aed",
+                fontSize: "8px",
+                backgroundColor: "rgba(0, 0, 0, 0.6)",
+                padding: "1px 2px",
+                borderRadius: "2px",
+              },
+            });
+          }
+
+          // 攻击源到路由器的潜在路径
+          if (index % 2 === 1) {
+            edges.push({
+              id: `attack-route-${index}`,
+              source: `event-${index}`,
+              target: "router",
+              type: "straight",
+              style: {
+                stroke: "#dc2626",
+                strokeWidth: 1,
+                strokeDasharray: "2,4",
+                opacity: 0.3,
+              },
+              label: "攻击路径",
+              labelStyle: {
+                fill: "#dc2626",
+                fontSize: "8px",
+                backgroundColor: "rgba(0, 0, 0, 0.6)",
+                padding: "1px 2px",
+                borderRadius: "2px",
+              },
+            });
+          }
         });
     }
 
@@ -402,7 +498,85 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
               borderRadius: "4px",
             },
           });
+
+          // 威胁节点之间的关联
+          if (index > 0) {
+            edges.push({
+              id: `threat-relation-${index}`,
+              source: `threat-${index - 1}`,
+              target: `threat-${index}`,
+              type: "straight",
+              style: {
+                stroke: "#dc2626",
+                strokeWidth: 2,
+                strokeDasharray: "4,4",
+                opacity: 0.6,
+              },
+              label: "威胁网络",
+              labelStyle: {
+                fill: "#dc2626",
+                fontSize: "8px",
+                backgroundColor: "rgba(0, 0, 0, 0.7)",
+                padding: "1px 3px",
+                borderRadius: "2px",
+              },
+            });
+          }
+
+          // 威胁到互联网的连接
+          edges.push({
+            id: `threat-internet-${index}`,
+            source: "internet",
+            target: `threat-${index}`,
+            type: "straight",
+            style: {
+              stroke: "#dc2626",
+              strokeWidth: 1,
+              strokeDasharray: "6,2",
+              opacity: 0.4,
+            },
+            label: "外部威胁",
+            labelStyle: {
+              fill: "#dc2626",
+              fontSize: "8px",
+              backgroundColor: "rgba(0, 0, 0, 0.6)",
+              padding: "1px 2px",
+              borderRadius: "2px",
+            },
+          });
         });
+    }
+
+    // 添加网络基础设施的完整连接
+    // 如果有连接节点，连接第一个和最后一个到路由器形成环路
+    if (
+      investigation?.networkAnalysis?.connections &&
+      investigation.networkAnalysis.connections.length > 2
+    ) {
+      const totalConnections = Math.min(
+        investigation.networkAnalysis.connections.length,
+        6,
+      );
+      edges.push({
+        id: "network-ring-closure",
+        source: `connection-${totalConnections - 1}`,
+        target: `connection-0`,
+        type: "straight",
+        style: {
+          stroke: "#4b5563",
+          strokeWidth: 1,
+          strokeDasharray: "2,2",
+          opacity: 0.3,
+        },
+        label: "网络环路",
+        labelStyle: {
+          fill: "#6b7280",
+          fontSize: "8px",
+          backgroundColor: "rgba(0, 0, 0, 0.6)",
+          padding: "1px 2px",
+          borderRadius: "2px",
+        },
+      });
     }
 
     // 基础网络连接 - 优化线条样式
@@ -467,6 +641,20 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
     // 可以在这里添加连接逻辑
   }, []);
 
+  // 双击放大功能
+  const onNodeDoubleClick = useCallback((event: any, node: any) => {
+    // 计算放大后的视图
+    const zoomLevel = 1.5;
+    const viewportTransform = {
+      x: -node.position.x * zoomLevel + 400, // 将节点居中
+      y: -node.position.y * zoomLevel + 200,
+      zoom: zoomLevel,
+    };
+
+    // 这里可以添加状态管理来控制视图变换
+    console.log("Double-clicked node:", node.data.label);
+  }, []);
+
   return (
     <div
       className={cn(
@@ -480,25 +668,30 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onNodeDoubleClick={onNodeDoubleClick}
         nodeTypes={nodeTypes}
         connectionMode={ConnectionMode.Loose}
         fitView
         fitViewOptions={{
           padding: 0.3,
           minZoom: 0.4,
-          maxZoom: 1.2,
+          maxZoom: 2.5,
         }}
         className="bg-matrix-bg"
         style={{
           backgroundColor: "rgb(10, 14, 26)",
         }}
         defaultViewport={{ x: 0, y: 0, zoom: 0.6 }}
-        minZoom={0.3}
-        maxZoom={1.5}
+        minZoom={0.2}
+        maxZoom={3.0}
         attributionPosition="bottom-left"
         nodesDraggable={true}
         nodesConnectable={false}
         elementsSelectable={true}
+        zoomOnDoubleClick={true}
+        panOnDrag={true}
+        panOnScroll={true}
+        zoomOnScroll={true}
       >
         <Controls
           className="bg-matrix-surface border border-matrix-border text-white"

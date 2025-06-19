@@ -175,59 +175,117 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
       targetPosition: Position.Left,
     });
 
-    // 基于调查结果生成相关节点
+    // 基于调查结果生成相关节点 - 优化布局
     if (investigation?.networkAnalysis?.connections) {
       investigation.networkAnalysis.connections
-        .slice(0, 6)
+        .slice(0, 8)
         .forEach((conn: any, index: number) => {
-          const angle = (index * Math.PI * 2) / 6;
-          const radius = 150;
-          const x = 400 + Math.cos(angle) * radius;
-          const y = 300 + Math.sin(angle) * radius;
+          // 创建更有序的网络布局
+          let x, y;
+          if (index < 4) {
+            // 右侧节点
+            const angle = (index * Math.PI) / 2 - Math.PI / 4;
+            x = 550 + Math.cos(angle) * 120;
+            y = 300 + Math.sin(angle) * 100;
+          } else {
+            // 左侧节点
+            const angle = ((index - 4) * Math.PI) / 2 - Math.PI / 4;
+            x = 250 + Math.cos(angle + Math.PI) * 120;
+            y = 300 + Math.sin(angle + Math.PI) * 100;
+          }
+
+          const deviceType =
+            conn.destPort === 80 || conn.destPort === 443
+              ? "server"
+              : conn.destPort === 22 || conn.destPort === 21
+                ? "database"
+                : conn.destPort === 53
+                  ? "cloud"
+                  : "device";
 
           nodes.push({
             id: `connection-${index}`,
             type: "custom",
             position: { x, y },
             data: {
-              label: `设备 ${index + 1}`,
+              label: `${
+                deviceType === "server"
+                  ? "Web服务器"
+                  : deviceType === "database"
+                    ? "数据库"
+                    : deviceType === "cloud"
+                      ? "DNS服务"
+                      : "终端设备"
+              } ${index + 1}`,
               ip: conn.destIP,
-              type: index % 2 === 0 ? "server" : "device",
-              risk: conn.status === "active" ? "medium" : "low",
+              type: deviceType,
+              risk:
+                conn.status === "active"
+                  ? conn.destPort < 1024
+                    ? "high"
+                    : "medium"
+                  : "low",
               ports: [conn.destPort],
             },
             sourcePosition: Position.Right,
             targetPosition: Position.Left,
           });
 
-          // 添加连接边
+          // 添加连接边 - 增强路径可视化
           edges.push({
             id: `edge-target-${index}`,
             source: "target",
             target: `connection-${index}`,
-            type: "smoothstep",
+            type: "default",
             animated: conn.status === "active",
             style: {
-              stroke: conn.status === "active" ? "#00f5ff" : "#6b7280",
-              strokeWidth: 2,
+              stroke:
+                conn.status === "active"
+                  ? conn.destPort < 1024
+                    ? "#ff0040"
+                    : "#00f5ff"
+                  : "#6b7280",
+              strokeWidth: conn.status === "active" ? 3 : 2,
+              strokeDasharray: conn.status === "active" ? "none" : "8,4",
             },
             label: `${conn.protocol}:${conn.destPort}`,
             labelStyle: {
               fill: "#ffffff",
               fontSize: "10px",
-              backgroundColor: "rgba(0, 0, 0, 0.7)",
-              padding: "2px 4px",
+              backgroundColor: "rgba(0, 0, 0, 0.8)",
+              padding: "2px 6px",
               borderRadius: "4px",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
             },
+            labelBgPadding: [4, 2],
+            labelBgBorderRadius: 4,
           });
+
+          // 添加路径流向指示
+          if (conn.status === "active") {
+            edges.push({
+              id: `flow-${index}`,
+              source: "target",
+              target: `connection-${index}`,
+              type: "straight",
+              animated: true,
+              style: {
+                stroke: "#39ff14",
+                strokeWidth: 1,
+                opacity: 0.6,
+              },
+              zIndex: 10,
+            });
+          }
         });
     } else if (investigation?.timeline) {
-      // 如果没有网络连接数据，基于时间线生成节点
+      // 如果没有网络连接数据，基于时间线生成攻击路径节点
       investigation.timeline
-        .slice(0, 5)
+        .slice(0, 6)
         .forEach((event: any, index: number) => {
-          const angle = (index * Math.PI * 2) / 5;
-          const radius = 120;
+          // 创建攻击路径布局
+          const angle = (index * Math.PI * 2) / 6;
+          const radius = 140;
           const x = 400 + Math.cos(angle) * radius;
           const y = 300 + Math.sin(angle) * radius;
 
@@ -237,19 +295,24 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
             position: { x, y },
             data: {
               label: `攻击源 ${index + 1}`,
-              ip: `10.0.${index}.${100 + index}`,
-              type: event.type?.includes("malware") ? "database" : "device",
+              ip: `${192 + Math.floor(index / 2)}.168.${index}.${100 + index}`,
+              type: event.type?.includes("malware")
+                ? "database"
+                : event.type?.includes("ddos")
+                  ? "cloud"
+                  : "device",
               risk: event.severity || "medium",
             },
             sourcePosition: Position.Right,
             targetPosition: Position.Left,
           });
 
+          // 攻击路径边 - 显示攻击方向和类型
           edges.push({
             id: `edge-attack-${index}`,
             source: `event-${index}`,
             target: "target",
-            type: "smoothstep",
+            type: "default",
             animated: true,
             style: {
               stroke:
@@ -257,16 +320,34 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
                   ? "#ff0040"
                   : event.severity === "high"
                     ? "#ff6600"
-                    : "#39ff14",
-              strokeWidth: 2,
+                    : event.severity === "medium"
+                      ? "#ffaa00"
+                      : "#39ff14",
+              strokeWidth:
+                event.severity === "critical"
+                  ? 4
+                  : event.severity === "high"
+                    ? 3
+                    : 2,
+              strokeDasharray: "8,4",
             },
             label: event.type?.replace("_", " ") || "attack",
             labelStyle: {
               fill: "#ffffff",
               fontSize: "10px",
-              backgroundColor: "rgba(0, 0, 0, 0.7)",
-              padding: "2px 4px",
+              backgroundColor: "rgba(0, 0, 0, 0.8)",
+              padding: "2px 6px",
               borderRadius: "4px",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+            },
+            markerEnd: {
+              type: "arrowclosed",
+              color:
+                event.severity === "critical"
+                  ? "#ff0040"
+                  : event.severity === "high"
+                    ? "#ff6600"
+                    : "#39ff14",
             },
           });
         });
@@ -361,7 +442,7 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
   return (
     <div
       className={cn(
-        "w-full h-96 bg-matrix-bg rounded-lg overflow-hidden",
+        "w-full h-80 bg-matrix-bg rounded-lg overflow-hidden border border-matrix-border",
         className,
       )}
     >
@@ -374,10 +455,19 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
         nodeTypes={nodeTypes}
         connectionMode={ConnectionMode.Loose}
         fitView
+        fitViewOptions={{
+          padding: 0.2,
+          minZoom: 0.5,
+          maxZoom: 1.5,
+        }}
         className="bg-matrix-bg"
         style={{
           backgroundColor: "rgb(10, 14, 26)",
         }}
+        defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
+        minZoom={0.3}
+        maxZoom={2}
+        attributionPosition="bottom-left"
       >
         <Controls
           className="bg-matrix-surface border border-matrix-border text-white"
@@ -388,11 +478,14 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
               border: "1px solid rgb(55, 65, 81)",
             },
           }}
+          position="top-left"
         />
         <MiniMap
           className="bg-matrix-surface border border-matrix-border"
           style={{
             backgroundColor: "rgb(31, 41, 55)",
+            width: 120,
+            height: 80,
           }}
           nodeColor={(node) => {
             switch (node.data?.risk) {
@@ -408,13 +501,17 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
                 return "#3b82f6";
             }
           }}
+          position="bottom-right"
+          pannable
+          zoomable
         />
         <Background
-          variant="dots"
-          gap={20}
+          variant="lines"
+          gap={[40, 40]}
           size={1}
           style={{ backgroundColor: "rgb(10, 14, 26)" }}
           color="#374151"
+          lineWidth={1}
         />
       </ReactFlow>
     </div>

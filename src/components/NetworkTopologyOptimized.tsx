@@ -198,7 +198,7 @@ const generateOptimizedLayout = (
     return importance;
   };
 
-  // 层次化布�� - 中心目标在中心，其他节点按重要性分层
+  // 层次化布局 - 中心目标在中心，其他节点按重要性分层
   const centerX = 400;
   const centerY = 300;
 
@@ -476,9 +476,6 @@ export const NetworkTopologyOptimized: React.FC<
             type: "cloud",
             risk: "critical",
             ports: [],
-            threats: threat.attackTypes?.length || 1,
-            connections: 0,
-            performance: { cpu: 0, bandwidth: 0 },
           });
 
           networkEdges.push({

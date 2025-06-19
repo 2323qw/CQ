@@ -8,6 +8,9 @@ import {
   Shield,
   AlertTriangle,
   Eye,
+  Activity,
+  BarChart3,
+  PieChart as PieIcon,
 } from "lucide-react";
 import {
   BarChart,
@@ -23,6 +26,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { PageLayout, StatsCard, Card } from "@/components/PageLayout";
 
 // 模拟报告数据
 const threatTrendData = [
@@ -110,65 +114,56 @@ export default function Reports() {
   );
 
   return (
-    <div className="min-h-screen matrix-bg">
-      <div className="p-8">
-        {/* 页面标题 */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white glow-text mb-2">
-            安全报告中心
-          </h1>
-          <p className="text-muted-foreground">
-            生成和管理安全分析报告，跟踪系统安全态势
-          </p>
+    <PageLayout
+      title="安全报告中心"
+      description="生成和查看系统安全分析报告、威胁趋势和合规性检查"
+      icon={FileText}
+      headerActions={
+        <div className="flex items-center space-x-4">
+          <button className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-xl text-white font-medium transition-all duration-200">
+            <Download className="w-4 h-4" />
+            <span>导出报告</span>
+          </button>
         </div>
+      }
+    >
+      <div className="space-y-8">
 
-        {/* 快速统计 */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="cyber-card p-6 border-l-4 border-l-neon-blue">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">本月检测威胁</p>
-                <p className="text-2xl font-bold text-neon-blue glow-text">
-                  2,847
-                </p>
-                <p className="text-xs text-neon-green">+12% 环比上月</p>
-              </div>
-              <TrendingUp className="w-8 h-8 text-neon-blue" />
-            </div>
-          </div>
-
-          <div className="cyber-card p-6 border-l-4 border-l-neon-green">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">成功拦截</p>
-                <p className="text-2xl font-bold text-neon-green glow-text">
-                  2,534
-                </p>
-                <p className="text-xs text-neon-green">89% 拦截率</p>
-              </div>
-              <Shield className="w-8 h-8 text-neon-green" />
-            </div>
-          </div>
-
-          <div className="cyber-card p-6 border-l-4 border-l-threat-medium">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">处理中告警</p>
-                <p className="text-2xl font-bold text-threat-medium glow-text">
-                  47
-                </p>
-                <p className="text-xs text-threat-high">需要关注</p>
-              </div>
-              <AlertTriangle className="w-8 h-8 text-threat-medium" />
-            </div>
-          </div>
-
-          <div className="cyber-card p-6 border-l-4 border-l-threat-info">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">监控节点</p>
-                <p className="text-2xl font-bold text-threat-info glow-text">
-                  156
+        {/* 统计概览 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatsCard
+            title="本月威胁"
+            value="1,234"
+            subtitle="检测到的威胁总数"
+            icon={Shield}
+            color="blue"
+            trend={{ value: 12, direction: "up" }}
+          />
+          <StatsCard
+            title="已阻止"
+            value="987"
+            subtitle="成功拦截的威胁"
+            icon={Shield}
+            color="emerald"
+            trend={{ value: 8, direction: "up" }}
+          />
+          <StatsCard
+            title="待处理"
+            value="67"
+            subtitle="需要人工干预"
+            icon={AlertTriangle}
+            color="amber"
+            trend={{ value: 5, direction: "down" }}
+          />
+          <StatsCard
+            title="报告生成"
+            value="45"
+            subtitle="本月生成的报告"
+            icon={FileText}
+            color="purple"
+            trend={{ value: 15, direction: "up" }}
+          />
+        </div>
                 </p>
                 <p className="text-xs text-neon-green">全部在线</p>
               </div>
@@ -300,13 +295,36 @@ export default function Reports() {
           </div>
         </div>
 
-        {/* 报告列表 */}
-        <div className="cyber-card">
-          <div className="p-6 border-b border-matrix-border">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-white">生成的报告</h3>
-              <div className="flex items-center space-x-4">
-                <select
+        {/* 详细分析图表 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <Card title="威胁类型分布" description="各类威胁的检测比例">
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={threatTypeData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) =>
+                      `${name} ${(percent * 100).toFixed(0)}%`
+                    }
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {threatTypeData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
                   value={reportType}
                   onChange={(e) => setReportType(e.target.value)}
                   className="px-3 py-1 bg-matrix-surface border border-matrix-border rounded text-white text-sm"
@@ -373,8 +391,8 @@ export default function Reports() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       </div>
-    </div>
+    </PageLayout>
   );
 }

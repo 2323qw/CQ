@@ -168,7 +168,7 @@ export function useRealTimeAPI(config: UseRealTimeDataConfig = {}) {
           `API连接失败: ${error instanceof Error ? error.message : "未知错误"}。正在使用模拟数据。`,
         );
       } else {
-        // 模拟模式下也出错（不太可能），设置错误状态
+        // 模拟模��下也出错（不太可能），设置错误状态
         setIsConnected(false);
         setError(
           `数据生成错误: ${error instanceof Error ? error.message : "未知错误"}`,
@@ -407,7 +407,7 @@ export function useNetworkInterfaces() {
 }
 
 // 进程Hook - 占位符实现
-export function useProcesses() {
+export function useProcesses(limit = 10) {
   const { isMockMode } = useDataSource();
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -416,7 +416,7 @@ export function useProcesses() {
   const refresh = useCallback(async () => {
     if (isMockMode) {
       // 模拟进程数据
-      setData([
+      const mockProcesses = [
         {
           pid: 1234,
           name: "chrome",
@@ -431,16 +431,31 @@ export function useProcesses() {
           memory_percent: Math.random() * 10,
           status: "running",
         },
-      ]);
+        {
+          pid: 9012,
+          name: "firefox",
+          cpu_percent: Math.random() * 25,
+          memory_percent: Math.random() * 18,
+          status: "running",
+        },
+        {
+          pid: 3456,
+          name: "vscode",
+          cpu_percent: Math.random() * 20,
+          memory_percent: Math.random() * 15,
+          status: "running",
+        },
+      ];
+      setData(mockProcesses.slice(0, limit));
     } else {
       try {
-        const response = await apiService.getProcesses({ limit: 10 });
+        const response = await apiService.getProcesses({ limit });
         setData(response.data || []);
       } catch (error) {
         setError(error instanceof Error ? error.message : "Unknown error");
       }
     }
-  }, [isMockMode]);
+  }, [isMockMode, limit]);
 
   useEffect(() => {
     refresh();

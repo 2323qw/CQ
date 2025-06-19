@@ -98,38 +98,40 @@ export const TopologyAnalysis: React.FC<TopologyAnalysisProps> = ({
   };
 
   return (
-    <div className={cn("space-y-6", className)}>
-      {/* 网络统计概览 */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="cyber-card p-3 text-center">
-          <div className="text-lg font-bold text-tech-accent mb-1">
-            {networkStats.totalConnections}
+    <div className={cn("space-y-4", className)}>
+      {/* 紧凑的网络统计面板 */}
+      <div className="cyber-card p-4">
+        <div className="grid grid-cols-5 gap-4 text-center">
+          <div>
+            <div className="text-xl font-bold text-tech-accent">
+              {networkStats.totalConnections}
+            </div>
+            <div className="text-xs text-muted-foreground">连接</div>
           </div>
-          <div className="text-xs text-muted-foreground">总连接数</div>
-        </div>
-        <div className="cyber-card p-3 text-center">
-          <div className="text-lg font-bold text-green-400 mb-1">
-            {networkStats.activeConnections}
+          <div>
+            <div className="text-xl font-bold text-green-400">
+              {networkStats.activeConnections}
+            </div>
+            <div className="text-xs text-muted-foreground">活跃</div>
           </div>
-          <div className="text-xs text-muted-foreground">活跃连接</div>
-        </div>
-        <div className="cyber-card p-3 text-center">
-          <div className="text-lg font-bold text-quantum-400 mb-1">
-            {networkStats.openPorts}
+          <div>
+            <div className="text-xl font-bold text-quantum-400">
+              {networkStats.openPorts}
+            </div>
+            <div className="text-xs text-muted-foreground">端口</div>
           </div>
-          <div className="text-xs text-muted-foreground">开放端口</div>
-        </div>
-        <div className="cyber-card p-3 text-center">
-          <div className="text-lg font-bold text-blue-400 mb-1">
-            {networkStats.secureConnections}
+          <div>
+            <div className="text-xl font-bold text-blue-400">
+              {networkStats.secureConnections}
+            </div>
+            <div className="text-xs text-muted-foreground">安全</div>
           </div>
-          <div className="text-xs text-muted-foreground">安全连接</div>
-        </div>
-        <div className="cyber-card p-3 text-center">
-          <div className="text-lg font-bold text-amber-400 mb-1">
-            {networkStats.suspiciousConnections}
+          <div>
+            <div className="text-xl font-bold text-amber-400">
+              {networkStats.suspiciousConnections}
+            </div>
+            <div className="text-xs text-muted-foreground">可疑</div>
           </div>
-          <div className="text-xs text-muted-foreground">可疑连接</div>
         </div>
       </div>
 
@@ -153,158 +155,280 @@ export const TopologyAnalysis: React.FC<TopologyAnalysisProps> = ({
           </TabsTrigger>
         </TabsList>
 
-        {/* 网络拓扑图 */}
-        <TabsContent value="topology" className="space-y-4">
-          <div className="cyber-card p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Target className="w-5 h-5 text-quantum-500" />
-                网络拓扑图
-              </h3>
-              <div className="flex items-center gap-2">
+        {/* 网络拓扑图 - 横向布局 */}
+        <TabsContent value="topology" className="space-y-3">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* 拓扑图主区域 */}
+            <div className="lg:col-span-2 cyber-card p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <Target className="w-5 h-5 text-quantum-500" />
+                  网络拓扑图
+                </h3>
                 <Badge className="bg-quantum-500/20 text-quantum-400 border-quantum-500/40">
-                  中心节点: {centerIP}
+                  {centerIP}
                 </Badge>
-                <Button size="sm" className="neon-button text-xs">
-                  <Eye className="w-3 h-3 mr-1" />
-                  全屏
-                </Button>
+              </div>
+              <NetworkTopology
+                investigation={displayData}
+                centerIP={centerIP}
+                className="h-80"
+              />
+              <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                  <span className="text-muted-foreground">高风险</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
+                  <span className="text-muted-foreground">中风险</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  <span className="text-muted-foreground">低风险</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-quantum-500 rounded-full ring-1 ring-quantum-500/50"></div>
+                  <span className="text-muted-foreground">目标</span>
+                </div>
               </div>
             </div>
-            <NetworkTopology
-              investigation={displayData}
-              centerIP={centerIP}
-              className="h-96 border border-matrix-border rounded-lg"
-            />
-            <div className="mt-3 flex flex-wrap gap-2 text-xs">
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                <span className="text-muted-foreground">高风险</span>
+
+            {/* 侧边信息面板 */}
+            <div className="space-y-3">
+              {/* 连接详情 */}
+              <div className="cyber-card p-3">
+                <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-1">
+                  <Network className="w-4 h-4 text-tech-accent" />
+                  活跃连接
+                </h4>
+                <div className="space-y-2 max-h-32 overflow-y-auto">
+                  {displayData?.networkAnalysis?.connections
+                    ?.slice(0, 4)
+                    .map((conn: any, i: number) => (
+                      <div
+                        key={i}
+                        className="text-xs bg-matrix-surface/50 p-2 rounded"
+                      >
+                        <div className="font-mono text-neon-blue truncate">
+                          {conn.destIP}:{conn.destPort}
+                        </div>
+                        <div className="text-muted-foreground">
+                          {conn.protocol} • {conn.status}
+                        </div>
+                      </div>
+                    )) || (
+                    <div className="text-xs text-muted-foreground text-center py-2">
+                      暂无连接数据
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
-                <span className="text-muted-foreground">中风险</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                <span className="text-muted-foreground">低风险</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 bg-quantum-500 rounded-full ring-2 ring-quantum-500/50"></div>
-                <span className="text-muted-foreground">调查目标</span>
+
+              {/* 威胁指标 */}
+              <div className="cyber-card p-3">
+                <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-1">
+                  <AlertTriangle className="w-4 h-4 text-red-400" />
+                  威胁指标
+                </h4>
+                <div className="space-y-2">
+                  {displayData?.threatIntelligence?.relatedThreats
+                    ?.slice(0, 3)
+                    .map((threat: any, i: number) => (
+                      <div
+                        key={i}
+                        className="text-xs bg-red-500/10 p-2 rounded border border-red-500/20"
+                      >
+                        <div className="font-mono text-red-400 truncate">
+                          {threat.ip}
+                        </div>
+                        <div className="text-muted-foreground">
+                          相似度: {threat.similarity}%
+                        </div>
+                      </div>
+                    )) || (
+                    <div className="text-xs text-muted-foreground text-center py-2">
+                      暂无威胁关联
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </TabsContent>
 
-        {/* 流量分析 */}
-        <TabsContent value="analysis" className="space-y-4">
+        {/* 流量分析 - 紧凑表格布局 */}
+        <TabsContent value="analysis" className="space-y-3">
           <div className="cyber-card p-4">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
               <Activity className="w-5 h-5 text-neural-500" />
               网络流量分析
             </h3>
 
             {displayData?.networkAnalysis?.connections ? (
-              <div className="space-y-3">
-                {displayData.networkAnalysis.connections
-                  .slice(0, 8)
-                  .map((conn: any, index: number) => (
-                    <div
-                      key={index}
-                      className="bg-matrix-surface/50 p-3 rounded border-l-4 border-l-blue-500"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-3">
-                          <Badge
-                            className={cn(
-                              "px-2 py-1",
-                              getRiskColor(
-                                conn.status === "active" ? "medium" : "low",
-                              ),
-                            )}
-                          >
-                            {conn.protocol}
-                          </Badge>
-                          <span className="font-mono text-sm text-neon-blue">
-                            {conn.sourceIP}:{conn.sourcePort} → {conn.destIP}:
-                            {conn.destPort}
-                          </span>
-                        </div>
-                        <Badge
-                          className={cn(
-                            "px-2 py-1",
-                            conn.status === "active"
-                              ? "bg-green-500/20 text-green-400 border-green-500/40"
-                              : conn.status === "closed"
-                                ? "bg-gray-500/20 text-gray-400 border-gray-500/40"
-                                : "bg-amber-500/20 text-amber-400 border-amber-500/40",
-                          )}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-matrix-border">
+                      <th className="text-left py-2 text-muted-foreground">
+                        协议
+                      </th>
+                      <th className="text-left py-2 text-muted-foreground">
+                        连接
+                      </th>
+                      <th className="text-left py-2 text-muted-foreground">
+                        状态
+                      </th>
+                      <th className="text-left py-2 text-muted-foreground">
+                        流量
+                      </th>
+                      <th className="text-left py-2 text-muted-foreground">
+                        时长
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {displayData.networkAnalysis.connections
+                      .slice(0, 8)
+                      .map((conn: any, index: number) => (
+                        <tr
+                          key={index}
+                          className="border-b border-matrix-border/50 hover:bg-matrix-surface/30"
                         >
-                          {conn.status}
-                        </Badge>
-                      </div>
-                      <div className="grid grid-cols-3 gap-4 text-xs text-muted-foreground">
-                        <div>持续时间: {conn.duration}s</div>
-                        <div>数据量: {(conn.bytes / 1024).toFixed(1)} KB</div>
-                        <div>数据包: {conn.packets}</div>
-                      </div>
-                    </div>
-                  ))}
+                          <td className="py-2">
+                            <Badge
+                              className={cn(
+                                "px-2 py-1 text-xs",
+                                getRiskColor(
+                                  conn.status === "active" ? "medium" : "low",
+                                ),
+                              )}
+                            >
+                              {conn.protocol}
+                            </Badge>
+                          </td>
+                          <td className="py-2 font-mono text-xs text-neon-blue">
+                            {conn.destIP}:{conn.destPort}
+                          </td>
+                          <td className="py-2">
+                            <Badge
+                              className={cn(
+                                "px-2 py-1 text-xs",
+                                conn.status === "active"
+                                  ? "bg-green-500/20 text-green-400 border-green-500/40"
+                                  : conn.status === "closed"
+                                    ? "bg-gray-500/20 text-gray-400 border-gray-500/40"
+                                    : "bg-amber-500/20 text-amber-400 border-amber-500/40",
+                              )}
+                            >
+                              {conn.status}
+                            </Badge>
+                          </td>
+                          <td className="py-2 text-xs text-muted-foreground">
+                            {(conn.bytes / 1024).toFixed(1)} KB
+                          </td>
+                          <td className="py-2 text-xs text-muted-foreground">
+                            {conn.duration}s
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
               </div>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <Activity className="w-12 h-12 mx-auto mb-2" />
-                <p>暂无网络流量数据</p>
+              <div className="text-center py-6 text-muted-foreground">
+                <Activity className="w-8 h-8 mx-auto mb-2" />
+                <p className="text-sm">暂无网络流量数据</p>
               </div>
             )}
           </div>
         </TabsContent>
 
-        {/* 路径追踪 */}
-        <TabsContent value="paths" className="space-y-4">
+        {/* 路径追踪 - 表格布局 */}
+        <TabsContent value="paths" className="space-y-3">
           <div className="cyber-card p-4">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
               <Share2 className="w-5 h-5 text-tech-accent" />
               网络路径追踪
             </h3>
 
             {networkPaths.length > 0 ? (
-              <div className="space-y-3">
-                {networkPaths.map((path) => (
-                  <div
-                    key={path.id}
-                    className="bg-matrix-surface/50 p-3 rounded"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <Badge
-                          className={cn("px-2 py-1", getRiskColor(path.risk))}
-                        >
-                          路径 {path.id + 1}
-                        </Badge>
-                        <span className="font-mono text-sm text-white">
-                          {path.source} → {path.destination}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Layers className="w-3 h-3" />
-                        {path.hops} 跳
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-4 gap-4 text-xs text-muted-foreground">
-                      <div>协议: {path.protocol}</div>
-                      <div>端口: {path.port}</div>
-                      <div>延迟: {path.latency}</div>
-                      <div>状态: {path.status}</div>
-                    </div>
-                  </div>
-                ))}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-matrix-border">
+                      <th className="text-left py-2 text-muted-foreground">
+                        路径
+                      </th>
+                      <th className="text-left py-2 text-muted-foreground">
+                        目标
+                      </th>
+                      <th className="text-left py-2 text-muted-foreground">
+                        协议:端口
+                      </th>
+                      <th className="text-left py-2 text-muted-foreground">
+                        跳数
+                      </th>
+                      <th className="text-left py-2 text-muted-foreground">
+                        延迟
+                      </th>
+                      <th className="text-left py-2 text-muted-foreground">
+                        状态
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {networkPaths.map((path) => (
+                      <tr
+                        key={path.id}
+                        className="border-b border-matrix-border/50 hover:bg-matrix-surface/30"
+                      >
+                        <td className="py-2">
+                          <Badge
+                            className={cn(
+                              "px-2 py-1 text-xs",
+                              getRiskColor(path.risk),
+                            )}
+                          >
+                            路径 {path.id + 1}
+                          </Badge>
+                        </td>
+                        <td className="py-2 font-mono text-xs text-neon-blue">
+                          {path.destination}
+                        </td>
+                        <td className="py-2 text-xs text-white">
+                          {path.protocol}:{path.port}
+                        </td>
+                        <td className="py-2 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Layers className="w-3 h-3" />
+                            {path.hops}
+                          </div>
+                        </td>
+                        <td className="py-2 text-xs text-muted-foreground">
+                          {path.latency}
+                        </td>
+                        <td className="py-2">
+                          <Badge
+                            className={cn(
+                              "px-2 py-1 text-xs",
+                              path.status === "active"
+                                ? "bg-green-500/20 text-green-400 border-green-500/40"
+                                : "bg-gray-500/20 text-gray-400 border-gray-500/40",
+                            )}
+                          >
+                            {path.status}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <Share2 className="w-12 h-12 mx-auto mb-2" />
-                <p>暂无路径追踪数据</p>
+              <div className="text-center py-6 text-muted-foreground">
+                <Share2 className="w-8 h-8 mx-auto mb-2" />
+                <p className="text-sm">暂无路径追踪数据</p>
               </div>
             )}
           </div>

@@ -9,6 +9,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { InvestigationTrigger } from "@/components/InvestigationTrigger";
 
 interface Alert {
   id: string;

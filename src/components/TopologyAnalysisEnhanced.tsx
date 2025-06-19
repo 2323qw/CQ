@@ -344,12 +344,9 @@ export const TopologyAnalysisEnhanced: React.FC<
                 {centerIP}
               </Badge>
             </div>
-            <NetworkTopologyOptimized
+            <NetworkTopologyInternational
               investigation={displayData}
               centerIP={centerIP}
-              viewMode={topologyViewMode}
-              showLabels={true}
-              autoLayout={true}
               className="h-96"
             />
           </div>
@@ -447,7 +444,7 @@ export const TopologyAnalysisEnhanced: React.FC<
                             color: "#00f5ff",
                           },
                           {
-                            name: "可疑连接",
+                            name: "可疑��接",
                             value: networkStats.suspiciousConnections,
                             color: "#ff6600",
                           },

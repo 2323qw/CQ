@@ -207,7 +207,7 @@ export default function UserManagement() {
   };
 
   return (
-    <div className="ml-64 p-8 min-h-screen matrix-bg">
+    <div className="p-8 min-h-screen matrix-bg">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white glow-text mb-2">
           用户管理
@@ -404,7 +404,7 @@ export default function UserManagement() {
                         <button
                           onClick={() => handleUserAction("activate", user)}
                           className="p-2 text-neon-green hover:bg-neon-green/10 rounded transition-colors"
-                          title="激活用户"
+                          title="���活用户"
                         >
                           <Eye className="w-4 h-4" />
                         </button>

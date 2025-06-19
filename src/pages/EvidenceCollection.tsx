@@ -376,7 +376,7 @@ const EvidenceCollection: React.FC = () => {
                 </TabsList>
 
                 <TabsContent value="topology" className="space-y-4">
-                  <TopologyAnalysis
+                  <TopologyAnalysisEnhanced
                     investigation={investigation}
                     centerIP={selectedIP}
                   />
@@ -609,7 +609,7 @@ const EvidenceCollection: React.FC = () => {
                 </TabsContent>
               </Tabs>
             ) : (
-              /* 基础模式 - 包含拓���图的简化展示 */
+              /* 基础模式 - 包含拓扑图的简化展示 */
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {/* 左侧：网络拓扑 */}
                 <div className="lg:col-span-2">

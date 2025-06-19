@@ -24,7 +24,8 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-matrix-bg text-white font-mono">
       <Navigation />
-      <div className="ml-64">{children}</div>
+      {/* 为固定导航栏预留空间：ml-64 = 256px，与导航栏宽度w-64匹配 */}
+      <div className="ml-64 min-h-screen">{children}</div>
     </div>
   );
 }

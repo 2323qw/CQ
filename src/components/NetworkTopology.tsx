@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import {
   ReactFlow,
   MiniMap,
@@ -25,6 +25,7 @@ import {
   Cloud,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NodeDetailModal } from "./NodeDetailModal";
 
 interface NetworkTopologyProps {
   investigation: any;
@@ -107,6 +108,8 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
   centerIP,
   className,
 }) => {
+  const [selectedNode, setSelectedNode] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   // 生成网络拓扑数据
   const { nodes: initialNodes, edges: initialEdges } = useMemo(() => {
     const nodes: Node[] = [];
@@ -359,7 +362,7 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
             targetPosition: Position.Left,
           });
 
-          // 攻击路径边 - 显示攻击方向和��型
+          // 攻击路径边 - 显示攻击方向和类型
           edges.push({
             id: `edge-attack-${index}`,
             source: `event-${index}`,
@@ -641,18 +644,32 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
     // 可以在这里添加连接逻辑
   }, []);
 
+  // 节点点击功能
+  const onNodeClick = useCallback((event: any, node: any) => {
+    setSelectedNode(node);
+    setIsModalOpen(true);
+  }, []);
+
   // 双击放大功能
   const onNodeDoubleClick = useCallback((event: any, node: any) => {
+    // 防止双击时触发单击事件
+    event.stopPropagation();
+
     // 计算放大后的视图
-    const zoomLevel = 1.5;
+    const zoomLevel = 1.8;
     const viewportTransform = {
       x: -node.position.x * zoomLevel + 400, // 将节点居中
       y: -node.position.y * zoomLevel + 200,
       zoom: zoomLevel,
     };
 
-    // 这里可以添加状态管理来控制视图变换
-    console.log("Double-clicked node:", node.data.label);
+    console.log("Double-clicked node for zoom:", node.data.label);
+  }, []);
+
+  // 关闭模态框
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+    setSelectedNode(null);
   }, []);
 
   return (
@@ -668,6 +685,7 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onNodeClick={onNodeClick}
         onNodeDoubleClick={onNodeDoubleClick}
         nodeTypes={nodeTypes}
         connectionMode={ConnectionMode.Loose}
@@ -738,6 +756,13 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
           lineWidth={1}
         />
       </ReactFlow>
+
+      {/* 节点详情模态框 */}
+      <NodeDetailModal
+        node={selectedNode}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+      />
     </div>
   );
 };

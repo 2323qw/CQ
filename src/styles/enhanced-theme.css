@@ -5,6 +5,8 @@
 
 /* 全局科幻字体优化 */
 @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap");
+/* 中文字体支持 */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800;900&display=swap");
 
 :root {
   /* 更新后的科幻色彩变量 */
@@ -39,13 +41,15 @@
 
 /* 字体增强 */
 .font-orbitron {
-  font-family: "Orbitron", monospace;
+  font-family:
+    "Orbitron", "Noto Sans SC", "Microsoft YaHei", "SimHei", sans-serif;
   font-weight: 600;
   letter-spacing: 0.05em;
 }
 
 .font-rajdhani {
-  font-family: "Rajdhani", sans-serif;
+  font-family:
+    "Rajdhani", "Noto Sans SC", "Microsoft YaHei", "SimHei", sans-serif;
   font-weight: 500;
   letter-spacing: 0.02em;
 }
@@ -335,7 +339,7 @@
   left: 100%;
 }
 
-/* 高级卡片样式 */
+/* 高级卡��样式 */
 .quantum-card {
   background: linear-gradient(
     135deg,
@@ -676,7 +680,7 @@
   }
 }
 
-/* 减少动画模式支持 */
+/* 减少动画模式支��� */
 @media (prefers-reduced-motion: reduce) {
   .floating-element,
   .rotating-element,
@@ -731,7 +735,7 @@
   pointer-events: none;
 }
 
-/* 状态卡片悬停缩放效果 */
+/* 状态���片悬停缩放效果 */
 .hover\:scale-102:hover {
   transform: scale(1.02);
 }

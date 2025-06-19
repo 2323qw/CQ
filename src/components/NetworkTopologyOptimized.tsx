@@ -673,27 +673,19 @@ export const NetworkTopologyOptimized: React.FC<
         />
       </ReactFlow>
 
-      {/* 图例 */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10 bg-matrix-surface/90 backdrop-blur-sm rounded-lg p-2 border border-matrix-border">
-        <div className="flex gap-4 text-xs">
+      {/* 简化图例 */}
+      <div className="absolute bottom-4 right-4 z-10 bg-matrix-surface/80 backdrop-blur-sm rounded p-2 border border-matrix-border">
+        <div className="flex gap-3 text-xs">
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-            <span className="text-muted-foreground">严重</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
             <span className="text-muted-foreground">高风险</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
-            <span className="text-muted-foreground">中风险</span>
-          </div>
-          <div className="flex items-center gap-1">
             <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-            <span className="text-muted-foreground">低风险</span>
+            <span className="text-muted-foreground">正常</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-quantum-500 rounded-full ring-1 ring-quantum-500/50"></div>
+            <div className="w-2 h-2 bg-quantum-500 rounded-full"></div>
             <span className="text-muted-foreground">目标</span>
           </div>
         </div>

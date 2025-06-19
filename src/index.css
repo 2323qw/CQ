@@ -36,7 +36,10 @@
   }
 
   body {
-    @apply bg-background text-foreground font-mono;
+    @apply bg-background text-foreground;
+    font-family:
+      ui-monospace, SFMono-Regular, "JetBrains Mono", "Fira Code",
+      "Noto Sans SC", "Microsoft YaHei", "SimHei", Consolas, Monaco, monospace;
     background: linear-gradient(
       135deg,
       #0a0e1a 0%,

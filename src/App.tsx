@@ -6,6 +6,7 @@ import { NavigationProvider } from "@/contexts/NavigationContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Navigation } from "@/components/Navigation";
 import { MobileNavigationTrigger } from "@/components/MobileNavigationTrigger";
+import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { ToastContainer } from "@/components/ui/toast";
 import Index from "@/pages/Index";
 import Alerts from "@/pages/Alerts";
@@ -191,6 +192,7 @@ function App() {
       <AuthProvider>
         <DataSourceProvider>
           <NavigationProvider>
+            <KeyboardShortcuts />
             <AppContent />
             <ToastContainer />
           </NavigationProvider>

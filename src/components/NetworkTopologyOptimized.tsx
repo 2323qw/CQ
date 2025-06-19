@@ -198,7 +198,7 @@ const generateOptimizedLayout = (
     return importance;
   };
 
-  // 层次化布局 - 中心目标在中心，其他节点按重要性分层
+  // 层次化布�� - 中心目标在中心，其他节点按重要性分层
   const centerX = 400;
   const centerY = 300;
 
@@ -429,9 +429,6 @@ export const NetworkTopologyOptimized: React.FC<
         type: "router",
         risk: "low",
         ports: [80, 443, 22],
-        threats: 0,
-        connections: networkNodes.length + 2,
-        performance: { cpu: 35, bandwidth: 1200 },
       },
     ];
 

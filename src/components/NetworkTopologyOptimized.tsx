@@ -120,51 +120,43 @@ const OptimizedNode = ({ data }: { data: any }) => {
     return "scale-100";
   }, [data.isTarget, data.importance]);
 
-  // 根据设备类型选择不规则形状
-  const getNodeShape = (type: string) => {
+  // 根据设备类型选择规则形状
+  const getNodeStyle = (type: string) => {
     switch (type) {
       case "target":
-        return "clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)"; // 六边形
+        return "rounded-full"; // 圆形 - 突出目标重要性
       case "router":
-        return "clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)"; // 八角形
+        return "rounded-lg"; // 圆角矩形 - 网络设备
       case "server":
-        return "clip-path: polygon(0% 15%, 15% 15%, 15% 0%, 85% 0%, 85% 15%, 100% 15%, 100% 85%, 85% 85%, 85% 100%, 15% 100%, 15% 85%, 0% 85%)"; // 服务器形状
+        return "rounded"; // 小圆角矩形 - 服务器
       case "database":
-        return "clip-path: ellipse(60% 40% at 50% 50%)"; // 椭圆形
+        return "rounded-xl"; // 大圆角矩形 - 数据库
       case "firewall":
-        return "clip-path: polygon(50% 0%, 90% 20%, 100% 60%, 75% 100%, 25% 100%, 0% 60%, 10% 20%)"; // 盾形
+        return "rounded-md"; // 中等圆角矩形 - 防火墙
       case "internet":
-        return "clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)"; // 星形
+        return "rounded-2xl"; // 超大圆角矩形 - 网关
       case "cloud":
-        return "border-radius: 20px 40px 30px 35px"; // 云朵形状
+        return "rounded-full"; // 圆形 - 云端
       default:
-        return "clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)"; // 切角矩形
+        return "rounded"; // 默认圆角矩形
     }
   };
 
   return (
     <div
       className={cn(
-        "irregular-node relative px-3 py-2 shadow-lg border min-w-[100px] max-w-[130px] bg-matrix-surface text-center transition-all duration-300 hover:scale-110",
+        "relative px-3 py-2 shadow-lg border min-w-[100px] max-w-[130px] bg-matrix-surface text-center transition-all duration-300 hover:scale-105",
         getRiskColor(data.risk),
-        data.isTarget && "ring-2 ring-quantum-500 ring-opacity-75 node-glow",
-        isHovered && "shadow-2xl node-glow",
+        getNodeStyle(data.type),
+        data.isTarget && "ring-2 ring-quantum-500 ring-opacity-75",
+        isHovered && "shadow-xl",
       )}
-      style={{
-        ...{
-          [getNodeShape(data.type).includes("clip-path")
-            ? "clipPath"
-            : "borderRadius"]: getNodeShape(data.type).includes("clip-path")
-            ? getNodeShape(data.type).replace("clip-path: ", "")
-            : getNodeShape(data.type).replace("border-radius: ", ""),
-        },
-      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* 背景装饰 */}
       <div
-        className="absolute inset-0 opacity-10"
+        className={cn("absolute inset-0 opacity-10", getNodeStyle(data.type))}
         style={{
           background: data.isTarget
             ? "radial-gradient(circle, rgba(0,245,255,0.3) 0%, transparent 70%)"
@@ -173,7 +165,7 @@ const OptimizedNode = ({ data }: { data: any }) => {
       />
 
       <div className="relative flex flex-col items-center gap-1">
-        <div className="p-1.5 rounded-full bg-current/20 backdrop-blur-sm">
+        <div className="p-1.5 rounded-full bg-current/15 backdrop-blur-sm">
           {getNodeIcon(data.type)}
         </div>
 

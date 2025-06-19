@@ -534,6 +534,7 @@ export const NetworkTopologyOptimized: React.FC<
             label: `Threat ${index + 1}`,
             type: "cloud",
             risk: "critical",
+            ports: [6667, 8080, 9999], // 常见恶意端口
           });
 
           networkEdges.push({

@@ -3,7 +3,7 @@ import { Home, AlertTriangle } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <div className="ml-64 min-h-screen matrix-bg flex items-center justify-center">
+    <div className="min-h-screen matrix-bg flex items-center justify-center">
       <div className="text-center space-y-6">
         {/* 404 动画效果 */}
         <div className="relative">

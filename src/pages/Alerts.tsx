@@ -9,6 +9,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { InvestigationTrigger } from "@/components/InvestigationTrigger";
 
 interface Alert {
   id: string;
@@ -167,7 +168,7 @@ export default function Alerts() {
 
   return (
     <div className="min-h-screen matrix-bg">
-      <div className="ml-64 p-8">
+      <div className="p-8">
         {/* 页面标题 */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white glow-text mb-2">
@@ -348,6 +349,13 @@ export default function Alerts() {
                     <button className="px-3 py-1 text-xs border border-neon-blue/30 text-neon-blue rounded hover:bg-neon-blue/10 transition-colors">
                       详情
                     </button>
+                    <InvestigationTrigger
+                      ip={alert.source}
+                      variant="button"
+                      className="px-3 py-1 text-xs"
+                    >
+                      开始调查
+                    </InvestigationTrigger>
                     <button className="px-3 py-1 text-xs border border-threat-medium/30 text-threat-medium rounded hover:bg-threat-medium/10 transition-colors">
                       处理
                     </button>

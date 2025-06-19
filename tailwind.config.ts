@@ -52,7 +52,7 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // 网络安全主题色彩
+        // 网络安全主题色彩 - 增��版
         cyber: {
           50: "#f0f9ff",
           100: "#e0f2fe",
@@ -73,19 +73,59 @@ const config: Config = {
           pink: "#ff1493",
           orange: "#ff6600",
           yellow: "#ffff00",
+          cyan: "#00ffff",
+          red: "#ff0040",
+          lime: "#ccff00",
+          magenta: "#ff00ff",
         },
         threat: {
           critical: "#ff0040",
-          high: "#ff6600",
-          medium: "#ffcc00",
+          high: "#ff3366",
+          medium: "#ff8800",
           low: "#39ff14",
           info: "#00f5ff",
+          quantum: "#bf00ff",
+          neural: "#ff1493",
         },
         matrix: {
-          bg: "#0d1117",
-          surface: "#161b22",
-          accent: "#21262d",
-          border: "#30363d",
+          bg: "#0a0e1a",
+          surface: "#111827",
+          accent: "#1f2937",
+          border: "#374151",
+          deep: "#0f172a",
+        },
+        tech: {
+          primary: "#0052ff",
+          secondary: "#0066ff",
+          accent: "#00d4ff",
+          light: "#3d7bff",
+          dark: "#003acc",
+        },
+        quantum: {
+          50: "#faf5ff",
+          100: "#f3e8ff",
+          200: "#e9d5ff",
+          300: "#d8b4fe",
+          400: "#c084fc",
+          500: "#bf00ff",
+          600: "#a855f7",
+          700: "#9333ea",
+          800: "#7c3aed",
+          900: "#6b21a8",
+          950: "#581c87",
+        },
+        neural: {
+          50: "#f0fdf4",
+          100: "#dcfce7",
+          200: "#bbf7d0",
+          300: "#86efac",
+          400: "#4ade80",
+          500: "#00ff88",
+          600: "#16a34a",
+          700: "#15803d",
+          800: "#166534",
+          900: "#14532d",
+          950: "#052e16",
         },
       },
       borderRadius: {
@@ -124,6 +164,86 @@ const config: Config = {
           "0%": { transform: "translateY(-100%)" },
           "100%": { transform: "translateY(100vh)" },
         },
+        "neon-glow": {
+          "0%, 100%": {
+            boxShadow:
+              "0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor",
+          },
+          "50%": {
+            boxShadow:
+              "0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor",
+          },
+        },
+        "hologram-flicker": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.8" },
+          "75%": { opacity: "0.9" },
+        },
+        "quantum-phase": {
+          "0%": {
+            transform: "scale(1) rotate(0deg)",
+            filter: "hue-rotate(0deg)",
+          },
+          "33%": {
+            transform: "scale(1.05) rotate(120deg)",
+            filter: "hue-rotate(120deg)",
+          },
+          "66%": {
+            transform: "scale(0.95) rotate(240deg)",
+            filter: "hue-rotate(240deg)",
+          },
+          "100%": {
+            transform: "scale(1) rotate(360deg)",
+            filter: "hue-rotate(360deg)",
+          },
+        },
+        "neural-pulse": {
+          "0%, 100%": {
+            transform: "scale(1)",
+            opacity: "1",
+          },
+          "50%": {
+            transform: "scale(1.1)",
+            opacity: "0.7",
+          },
+        },
+        "energy-flow": {
+          "0%": {
+            transform: "translateX(-100%)",
+            opacity: "0",
+          },
+          "10%": {
+            opacity: "1",
+          },
+          "90%": {
+            opacity: "1",
+          },
+          "100%": {
+            transform: "translateX(100%)",
+            opacity: "0",
+          },
+        },
+        "float-3d": {
+          "0%, 100%": {
+            transform: "translateY(0px) rotateX(0deg)",
+          },
+          "50%": {
+            transform: "translateY(-20px) rotateX(10deg)",
+          },
+        },
+        "cyber-scan": {
+          "0%": {
+            transform: "translateY(-100%)",
+            opacity: "0",
+          },
+          "50%": {
+            opacity: "1",
+          },
+          "100%": {
+            transform: "translateY(100%)",
+            opacity: "0",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -132,11 +252,21 @@ const config: Config = {
         "scan-line": "scan-line 2s linear infinite",
         "data-flow": "data-flow 3s linear infinite",
         "matrix-rain": "matrix-rain 5s linear infinite",
+        "neon-glow": "neon-glow 2s ease-in-out infinite",
+        "hologram-flicker": "hologram-flicker 0.1s linear infinite",
+        "quantum-phase": "quantum-phase 3s ease-in-out infinite",
+        "neural-pulse": "neural-pulse 2s ease-in-out infinite",
+        "energy-flow": "energy-flow 2s linear infinite",
+        "float-3d": "float-3d 6s ease-in-out infinite",
+        "cyber-scan": "cyber-scan 3s linear infinite",
       },
       fontFamily: {
         mono: [
           "JetBrains Mono",
           "Fira Code",
+          "Noto Sans SC",
+          "Microsoft YaHei",
+          "SimHei",
           "Consolas",
           "Monaco",
           "monospace",

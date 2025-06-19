@@ -14,6 +14,7 @@ import {
   Database,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { InvestigationTrigger } from "@/components/InvestigationTrigger";
 import {
   BarChart,
   Bar,
@@ -218,7 +219,7 @@ export default function ThreatIntelligence() {
   };
 
   return (
-    <div className="ml-64 p-8 min-h-screen matrix-bg">
+    <div className="p-8 min-h-screen matrix-bg">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white glow-text mb-2">
           威胁情报中心
@@ -544,11 +545,21 @@ export default function ThreatIntelligence() {
                       {selectedThreat.indicators.map((indicator, index) => (
                         <div
                           key={index}
-                          className="bg-matrix-surface p-3 rounded"
+                          className="bg-matrix-surface p-3 rounded flex items-center justify-between"
                         >
                           <code className="text-neon-blue font-mono">
                             {indicator}
                           </code>
+                          {/* 检查是否为IP地址格式 */}
+                          {/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(
+                            indicator,
+                          ) && (
+                            <InvestigationTrigger
+                              ip={indicator}
+                              variant="icon"
+                              className="ml-2"
+                            />
+                          )}
                         </div>
                       ))}
                     </div>

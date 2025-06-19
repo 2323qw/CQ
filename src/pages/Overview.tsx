@@ -17,7 +17,7 @@ import {
 const features = [
   {
     title: "仪表板",
-    description: "实时威胁监控和系统状态概览",
+    description: "实时威胁监控和系����状态概览",
     path: "/",
     icon: Activity,
     color: "neon-blue",
@@ -124,7 +124,7 @@ const highlights = [
 
 export default function Overview() {
   return (
-    <div className="ml-64 p-8 min-h-screen matrix-bg">
+    <div className="p-8 min-h-screen matrix-bg">
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-white glow-text mb-4">
           CyberGuard 网络安全监控系统

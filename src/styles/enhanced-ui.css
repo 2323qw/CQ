@@ -1,0 +1,351 @@
+/* Enhanced UI Styles for Beautiful Consistent Design */
+
+/* Smooth scrolling and improved typography */
+* {
+  scroll-behavior: smooth;
+}
+
+html {
+  font-feature-settings:
+    "kern" 1,
+    "liga" 1,
+    "calt" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enhanced glass morphism effects */
+.glass-effect {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.glass-effect-strong {
+  background: rgba(30, 41, 59, 0.9);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+/* Enhanced gradients */
+.gradient-background {
+  background: linear-gradient(
+    135deg,
+    #0f172a 0%,
+    #1e293b 25%,
+    #334155 50%,
+    #1e293b 75%,
+    #0f172a 100%
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 10s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Improved button styles */
+.enhanced-button {
+  @apply relative overflow-hidden rounded-xl px-6 py-3 font-medium transition-all duration-300;
+  @apply bg-gradient-to-r from-blue-500 to-purple-600;
+  @apply hover:from-blue-600 hover:to-purple-700;
+  @apply shadow-lg hover:shadow-xl hover:shadow-blue-500/25;
+  @apply transform hover:scale-105 active:scale-95;
+}
+
+.enhanced-button::before {
+  content: "";
+  @apply absolute inset-0 bg-white opacity-0;
+  @apply transition-opacity duration-300;
+}
+
+.enhanced-button:hover::before {
+  @apply opacity-10;
+}
+
+.enhanced-button-secondary {
+  @apply relative overflow-hidden rounded-xl px-6 py-3 font-medium transition-all duration-300;
+  @apply bg-slate-700/50 hover:bg-slate-600/60;
+  @apply border border-slate-600/50 hover:border-slate-500/60;
+  @apply text-slate-300 hover:text-white;
+  @apply transform hover:scale-105 active:scale-95;
+}
+
+/* Enhanced card styles */
+.enhanced-card {
+  @apply rounded-2xl bg-gradient-to-br from-slate-800/80 to-slate-900/80;
+  @apply backdrop-blur-sm border border-slate-700/50;
+  @apply hover:border-slate-600/50 transition-all duration-300;
+  @apply shadow-lg hover:shadow-xl;
+}
+
+.enhanced-card-interactive {
+  @apply enhanced-card cursor-pointer;
+  @apply hover:transform hover:scale-[1.02] hover:shadow-2xl;
+  @apply active:scale-[0.98];
+}
+
+/* Enhanced input styles */
+.enhanced-input {
+  @apply w-full px-4 py-3 rounded-xl;
+  @apply bg-slate-800/50 border border-slate-600/50;
+  @apply text-white placeholder-slate-400;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50;
+  @apply transition-all duration-200;
+}
+
+.enhanced-select {
+  @apply enhanced-input;
+  @apply cursor-pointer;
+}
+
+/* Enhanced table styles */
+.enhanced-table {
+  @apply w-full border-separate border-spacing-0;
+}
+
+.enhanced-table th {
+  @apply text-left p-6 text-slate-300 font-semibold text-sm tracking-wide;
+  @apply bg-slate-800/30 border-b border-slate-700/50;
+  @apply first:rounded-tl-2xl last:rounded-tr-2xl;
+}
+
+.enhanced-table tr {
+  @apply border-b border-slate-700/30 hover:bg-slate-700/20;
+  @apply transition-all duration-200;
+}
+
+.enhanced-table tr:last-child {
+  @apply border-b-0;
+}
+
+.enhanced-table tr:last-child td:first-child {
+  @apply rounded-bl-2xl;
+}
+
+.enhanced-table tr:last-child td:last-child {
+  @apply rounded-br-2xl;
+}
+
+.enhanced-table td {
+  @apply p-6;
+}
+
+/* Enhanced status badges */
+.status-badge {
+  @apply inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium border;
+}
+
+.status-badge-success {
+  @apply status-badge bg-emerald-500/20 text-emerald-400 border-emerald-500/30;
+}
+
+.status-badge-warning {
+  @apply status-badge bg-amber-500/20 text-amber-400 border-amber-500/30;
+}
+
+.status-badge-error {
+  @apply status-badge bg-red-500/20 text-red-400 border-red-500/30;
+}
+
+.status-badge-info {
+  @apply status-badge bg-blue-500/20 text-blue-400 border-blue-500/30;
+}
+
+/* Enhanced animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-fade-in-left {
+  animation: fadeInLeft 0.6s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInFromRight 0.6s ease-out;
+}
+
+/* Staggered animation delays */
+.animate-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.animate-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animate-delay-300 {
+  animation-delay: 0.3s;
+}
+
+.animate-delay-400 {
+  animation-delay: 0.4s;
+}
+
+/* Enhanced hover effects */
+.hover-lift {
+  @apply transition-all duration-300;
+}
+
+.hover-lift:hover {
+  @apply transform -translate-y-2 shadow-xl;
+}
+
+.hover-glow {
+  @apply transition-all duration-300;
+}
+
+.hover-glow:hover {
+  @apply shadow-lg shadow-blue-500/25;
+}
+
+/* Enhanced loading states */
+.loading-shimmer {
+  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Enhanced scrollbar */
+.enhanced-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.enhanced-scrollbar::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.3);
+  border-radius: 4px;
+}
+
+.enhanced-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 4px;
+}
+
+.enhanced-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+
+/* Enhanced tooltips */
+.tooltip {
+  @apply absolute z-50 px-3 py-2 text-sm;
+  @apply bg-slate-800/95 text-white rounded-lg;
+  @apply border border-slate-600/50 shadow-xl;
+  @apply opacity-0 pointer-events-none transition-all duration-200;
+}
+
+.tooltip-show {
+  @apply opacity-100 pointer-events-auto;
+}
+
+/* Enhanced focus rings */
+.enhanced-focus {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-slate-900;
+}
+
+/* Enhanced grid layouts */
+.enhanced-grid {
+  @apply grid gap-6;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.enhanced-grid-dense {
+  @apply grid gap-4;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+/* Responsive utilities */
+@screen sm {
+  .enhanced-grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+}
+
+@screen lg {
+  .enhanced-grid {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .enhanced-card {
+    @apply border border-gray-300 shadow-none;
+    break-inside: avoid;
+  }
+}
+
+/* Dark mode enhancements */
+@media (prefers-color-scheme: dark) {
+  .auto-dark {
+    @apply bg-slate-900 text-white;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

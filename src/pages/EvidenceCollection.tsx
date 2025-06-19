@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { useIPInvestigation } from "@/hooks/useIPInvestigation";
 import { useAdvancedInvestigation } from "@/hooks/useAdvancedInvestigation";
-import { TopologyAnalysis } from "@/components/TopologyAnalysis";
+import { TopologyAnalysisEnhanced } from "@/components/TopologyAnalysisEnhanced";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -376,7 +376,7 @@ const EvidenceCollection: React.FC = () => {
                 </TabsList>
 
                 <TabsContent value="topology" className="space-y-4">
-                  <TopologyAnalysis
+                  <TopologyAnalysisEnhanced
                     investigation={investigation}
                     centerIP={selectedIP}
                   />
@@ -613,7 +613,7 @@ const EvidenceCollection: React.FC = () => {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {/* 左侧：网络拓扑 */}
                 <div className="lg:col-span-2">
-                  <TopologyAnalysis
+                  <TopologyAnalysisEnhanced
                     investigation={investigation}
                     centerIP={selectedIP}
                   />

@@ -355,7 +355,17 @@ const generateOptimizedLayout = (
         type: edge.status === "active" ? "smoothstep" : "straight",
         animated: edge.status === "active" && edge.bandwidth > 50,
         style: edgeStyle,
-        // 移除标签，只保留连接线
+        label: `${edge.protocol}:${edge.destPort}`,
+        labelStyle: {
+          fill: "#9ca3af",
+          fontSize: "10px",
+          backgroundColor: "rgba(0, 0, 0, 0.7)",
+          padding: "2px 4px",
+          borderRadius: "3px",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+        },
+        labelBgPadding: [1, 1],
+        labelBgBorderRadius: 3,
         markerEnd: {
           type: "arrowclosed",
           width: 12,

@@ -340,7 +340,7 @@ export default function ThreatIntelligence() {
         <div className="cyber-card p-6">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
             <Shield className="w-5 h-5 text-threat-critical" />
-            <span>威胁���型分布</span>
+            <span>威胁类型分布</span>
           </h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -545,11 +545,21 @@ export default function ThreatIntelligence() {
                       {selectedThreat.indicators.map((indicator, index) => (
                         <div
                           key={index}
-                          className="bg-matrix-surface p-3 rounded"
+                          className="bg-matrix-surface p-3 rounded flex items-center justify-between"
                         >
                           <code className="text-neon-blue font-mono">
                             {indicator}
                           </code>
+                          {/* 检查是否为IP地址格式 */}
+                          {/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(
+                            indicator,
+                          ) && (
+                            <InvestigationTrigger
+                              ip={indicator}
+                              variant="icon"
+                              className="ml-2"
+                            />
+                          )}
                         </div>
                       ))}
                     </div>

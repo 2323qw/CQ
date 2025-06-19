@@ -1,7 +1,6 @@
 import React, { useMemo, useCallback, useState, useEffect } from "react";
 import {
   ReactFlow,
-  MiniMap,
   Controls,
   Background,
   useNodesState,
@@ -227,7 +226,7 @@ const generateOptimizedLayout = (
   // 分层布局算法
   const layers = [
     { radius: 180, maxNodes: 6 }, // 内层 - 重要基础设施
-    { radius: 280, maxNodes: 12 }, // 中层 - 一般设���
+    { radius: 280, maxNodes: 12 }, // 中层 - 一般设备
     { radius: 380, maxNodes: 18 }, // 外层 - 边缘设备
   ];
 

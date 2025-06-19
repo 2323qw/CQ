@@ -101,11 +101,18 @@ const OptimizedNode = ({ data }: { data: any }) => {
           {getNodeIcon(data.type)}
         </div>
 
-        <div className="font-medium text-xs truncate w-full" title={data.label}>
+        <div
+          className="font-medium text-xs truncate w-full font-mono"
+          title={data.ip}
+        >
+          {data.ip}
+        </div>
+
+        <div className="text-xs opacity-60 truncate w-full">
           {data.type === "target"
             ? "目标"
             : data.type === "router"
-              ? "路由"
+              ? "路由器"
               : data.type === "server"
                 ? "服务器"
                 : data.type === "database"
@@ -115,13 +122,6 @@ const OptimizedNode = ({ data }: { data: any }) => {
                     : data.type === "internet"
                       ? "网关"
                       : "设备"}
-        </div>
-
-        <div
-          className="text-xs opacity-75 font-mono truncate w-full"
-          title={data.ip}
-        >
-          {data.ip.split(".").slice(-2).join(".")}
         </div>
       </div>
     </div>

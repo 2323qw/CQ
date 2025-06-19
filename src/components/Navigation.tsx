@@ -18,6 +18,7 @@ import {
   Globe,
   Crown,
   BarChart3,
+  Search,
 } from "lucide-react";
 
 const navItems = [
@@ -25,6 +26,7 @@ const navItems = [
   { name: "3D态势大屏", path: "/situation", icon: Globe },
   { name: "系统监控", path: "/system-monitor", icon: Monitor },
   { name: "威胁告警", path: "/alerts", icon: AlertTriangle },
+  { name: "证据收集", path: "/evidence-collection", icon: Search },
   { name: "安全报告", path: "/reports", icon: FileText },
   { name: "威胁情报", path: "/threat-intelligence", icon: Shield },
   { name: "资产管理", path: "/assets", icon: Server },

@@ -87,71 +87,42 @@ const OptimizedNode = ({ data }: { data: any }) => {
   return (
     <div
       className={cn(
-        "px-3 py-2 shadow-lg rounded-lg border min-w-[100px] max-w-[140px] cyber-card text-center transition-all duration-300 hover:scale-105",
+        "px-2 py-1.5 shadow-md rounded-md border min-w-[80px] max-w-[100px] cyber-card text-center transition-all duration-200 hover:scale-105",
         getRiskColor(data.risk),
         getNodeSize(),
-        data.isTarget &&
-          "ring-2 ring-quantum-500 ring-opacity-75 animate-pulse",
-        isHovered && "shadow-2xl",
+        data.isTarget && "ring-2 ring-quantum-500 ring-opacity-75",
+        isHovered && "shadow-lg",
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex flex-col items-center gap-1.5">
+      <div className="flex flex-col items-center gap-1">
         <div className="p-1 rounded-full bg-current/10">
           {getNodeIcon(data.type)}
         </div>
 
         <div className="font-medium text-xs truncate w-full" title={data.label}>
-          {data.label}
+          {data.type === "target"
+            ? "目标"
+            : data.type === "router"
+              ? "路由"
+              : data.type === "server"
+                ? "服务器"
+                : data.type === "database"
+                  ? "数据库"
+                  : data.type === "firewall"
+                    ? "防火墙"
+                    : data.type === "internet"
+                      ? "网关"
+                      : "设备"}
         </div>
 
         <div
           className="text-xs opacity-75 font-mono truncate w-full"
           title={data.ip}
         >
-          {data.ip}
+          {data.ip.split(".").slice(-2).join(".")}
         </div>
-
-        {/* 性能指标显示 */}
-        {data.performance && (
-          <div className="flex gap-1 text-xs">
-            <Badge className="bg-current/20 text-current border-current/40 text-xs">
-              CPU: {data.performance.cpu}%
-            </Badge>
-            {data.performance.bandwidth && (
-              <Badge className="bg-current/20 text-current border-current/40 text-xs">
-                {data.performance.bandwidth}MB/s
-              </Badge>
-            )}
-          </div>
-        )}
-
-        {/* 端口信息 */}
-        {data.ports && data.ports.length > 0 && (
-          <div className="text-xs opacity-60 truncate w-full">
-            :{data.ports.slice(0, 2).join(", ")}
-            {data.ports.length > 2 && "..."}
-          </div>
-        )}
-
-        {/* 威胁指示器 */}
-        {data.threats && data.threats > 0 && (
-          <div className="absolute -top-1 -right-1">
-            <div className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-xs">{data.threats}</span>
-            </div>
-          </div>
-        )}
-
-        {/* 连接数指示器 */}
-        {data.connections && data.connections > 0 && (
-          <div className="absolute -top-1 -left-1">
-            <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-xs">{data.connections}</span>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -366,7 +337,7 @@ export const NetworkTopologyOptimized: React.FC<
   const [currentViewMode, setCurrentViewMode] = useState(viewMode);
   const [showPerformance, setShowPerformance] = useState(false);
 
-  // 生成优化的网络拓扑���据
+  // 生成优化的���络拓扑数据
   const { nodes: initialNodes, edges: initialEdges } = useMemo(() => {
     if (!investigation) return { nodes: [], edges: [] };
 
@@ -553,7 +524,7 @@ export const NetworkTopologyOptimized: React.FC<
       return generateOptimizedLayout(networkNodes, networkEdges, centerIP);
     }
 
-    // 简单���手动布局作为后备
+    // 简单的手动布局作为后备
     const simpleNodes: Node[] = networkNodes.map((node, index) => ({
       id: node.id,
       type: "custom",

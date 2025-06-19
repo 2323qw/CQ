@@ -24,7 +24,7 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-matrix-bg text-white font-mono">
       <Navigation />
-      {children}
+      <div className="ml-64">{children}</div>
     </div>
   );
 }

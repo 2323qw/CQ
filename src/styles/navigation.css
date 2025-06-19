@@ -1,0 +1,235 @@
+/* Enhanced Navigation Styles */
+
+/* Smooth transitions for navigation elements */
+.nav-item {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-item:hover {
+  transform: translateX(2px);
+}
+
+/* Group header animations */
+.nav-group-header {
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-group-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 245, 255, 0.1),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.nav-group-header:hover::before {
+  left: 100%;
+}
+
+/* Active state glow effect */
+.nav-item-active {
+  position: relative;
+}
+
+.nav-item-active::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 245, 255, 0.1),
+    rgba(0, 245, 255, 0.05)
+  );
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  box-shadow:
+    0 0 20px rgba(0, 245, 255, 0.2),
+    inset 0 1px 0 rgba(0, 245, 255, 0.1);
+  pointer-events: none;
+}
+
+/* Badge animations */
+.nav-badge {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px currentColor;
+  }
+  50% {
+    box-shadow:
+      0 0 15px currentColor,
+      0 0 25px currentColor;
+  }
+}
+
+/* Status indicator animations */
+.status-indicator {
+  position: relative;
+}
+
+.status-indicator::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: status-pulse 2s ease-in-out infinite;
+}
+
+@keyframes status-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Collapsible menu animations */
+.nav-submenu {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-submenu-enter {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+}
+
+.nav-submenu-enter-active {
+  opacity: 1;
+  max-height: 500px;
+}
+
+.nav-submenu-exit {
+  opacity: 1;
+  max-height: 500px;
+}
+
+.nav-submenu-exit-active {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+}
+
+/* User profile area enhancements */
+.user-profile-card {
+  background: linear-gradient(
+    135deg,
+    rgba(31, 41, 55, 0.8),
+    rgba(55, 65, 81, 0.6)
+  );
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 245, 255, 0.1);
+}
+
+.user-role-badge {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 245, 255, 0.2),
+    rgba(191, 0, 255, 0.2)
+  );
+  border: 1px solid rgba(0, 245, 255, 0.3);
+}
+
+/* System stats grid */
+.system-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.system-stat-item {
+  background: rgba(31, 41, 55, 0.5);
+  border: 1px solid rgba(55, 65, 81, 0.5);
+  transition: all 0.2s ease;
+}
+
+.system-stat-item:hover {
+  background: rgba(31, 41, 55, 0.8);
+  border-color: rgba(0, 245, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Logout button enhancement */
+.logout-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.logout-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.1),
+    rgba(239, 68, 68, 0.05)
+  );
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.logout-button:hover::before {
+  opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .navigation-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .navigation-sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* Accessibility improvements */
+.nav-item:focus-visible {
+  outline: 2px solid rgba(0, 245, 255, 0.5);
+  outline-offset: 2px;
+}
+
+.nav-group-header:focus-visible {
+  outline: 2px solid rgba(0, 245, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .nav-item-active {
+    background: #00f5ff !important;
+    color: #000 !important;
+  }
+
+  .nav-item:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .nav-item,
+  .nav-group-header,
+  .nav-submenu,
+  .status-indicator::after {
+    transition: none;
+    animation: none;
+  }
+}

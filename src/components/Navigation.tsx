@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { useDataSource } from "@/contexts/DataSourceContext";
 import { useEffect, useState } from "react";
 import {
   Shield,
@@ -19,29 +20,87 @@ import {
   Crown,
   BarChart3,
   Search,
+  ChevronDown,
+  ChevronRight,
+  Database,
+  TrendingUp,
+  Zap,
+  Eye,
+  Home,
+  Briefcase,
+  Cog,
 } from "lucide-react";
 
-const navItems = [
-  { name: "仪表板", path: "/", icon: Activity },
-  { name: "3D态势大屏", path: "/situation", icon: Globe },
-  { name: "系统监控", path: "/system-monitor", icon: Monitor },
-  { name: "威胁告警", path: "/alerts", icon: AlertTriangle },
-  { name: "证据收集", path: "/evidence-collection", icon: Search },
-  { name: "安全报告", path: "/reports", icon: FileText },
-  { name: "威胁情报", path: "/threat-intelligence", icon: Shield },
-  { name: "资产管理", path: "/assets", icon: Server },
-  { name: "用户管理", path: "/users", icon: Users },
-  { name: "系统日志", path: "/logs", icon: FileText },
-  { name: "API密钥", path: "/api-keys", icon: Key },
-  { name: "系统设置", path: "/settings", icon: Settings },
+// 菜单项类型定义
+interface MenuItem {
+  name: string;
+  path?: string;
+  icon: any;
+  badge?: string;
+  children?: MenuItem[];
+  roles?: string[];
+}
+
+// 分组菜单结构
+const menuGroups: {
+  title: string;
+  icon: any;
+  items: MenuItem[];
+}[] = [
+  {
+    title: "核心监控",
+    icon: Eye,
+    items: [
+      { name: "仪表板", path: "/", icon: Home },
+      { name: "3D态势大屏", path: "/situation", icon: Globe },
+      { name: "系统监控", path: "/system-monitor", icon: Monitor },
+    ],
+  },
+  {
+    title: "威胁管理",
+    icon: Shield,
+    items: [
+      { name: "威胁告警", path: "/alerts", icon: AlertTriangle, badge: "3" },
+      { name: "证据收集", path: "/evidence-collection", icon: Search },
+      { name: "威胁情报", path: "/threat-intelligence", icon: Database },
+    ],
+  },
+  {
+    title: "业务管理",
+    icon: Briefcase,
+    items: [
+      { name: "资产管理", path: "/assets", icon: Server },
+      {
+        name: "用户管理",
+        path: "/users",
+        icon: Users,
+        roles: ["超级管理员", "安全管理员"],
+      },
+      { name: "安全报告", path: "/reports", icon: FileText },
+    ],
+  },
+  {
+    title: "系统配置",
+    icon: Cog,
+    items: [
+      { name: "系统日志", path: "/logs", icon: Activity },
+      { name: "API密钥", path: "/api-keys", icon: Key, roles: ["超级管理员"] },
+      { name: "系统设置", path: "/settings", icon: Settings },
+    ],
+  },
 ];
 
 export function Navigation() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { isApiMode } = useDataSource();
   const [userRole, setUserRole] = useState("");
   const [userColor, setUserColor] = useState("");
+  const [expandedGroups, setExpandedGroups] = useState<string[]>([
+    "核心监控",
+    "威胁管理",
+  ]);
 
   useEffect(() => {
     // 获取用户角色和颜色信息
@@ -68,7 +127,33 @@ export function Navigation() {
     }
   };
 
-  const RoleIcon = getRoleIcon(userRole);
+  // 切换分组展开状态
+  const toggleGroup = (groupTitle: string) => {
+    setExpandedGroups((prev) =>
+      prev.includes(groupTitle)
+        ? prev.filter((title) => title !== groupTitle)
+        : [...prev, groupTitle],
+    );
+  };
+
+  // 检查用户是否有权限访问菜单项
+  const hasPermission = (item: MenuItem) => {
+    if (!item.roles || item.roles.length === 0) return true;
+    return item.roles.includes(userRole);
+  };
+
+  // 检查路径是否匹配当前页面
+  const isActivePath = (path: string) => {
+    if (path === "/") {
+      return location.pathname === "/";
+    }
+    return location.pathname.startsWith(path);
+  };
+
+  // 检查分组是否包含当前活跃路径
+  const isGroupActive = (items: MenuItem[]) => {
+    return items.some((item) => item.path && isActivePath(item.path));
+  };
 
   const handleLogout = () => {
     logout();
@@ -76,131 +161,172 @@ export function Navigation() {
   };
 
   return (
-    <nav className="cyber-card w-64 h-screen fixed left-0 top-0 z-50 flex flex-col matrix-bg">
-      {/* Logo */}
+    <div className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-matrix-bg via-matrix-surface to-matrix-bg border-r border-matrix-border z-40 cyber-card-enhanced">
+      {/* 顶部 Logo 区域 */}
       <div className="p-6 border-b border-matrix-border">
         <div className="flex items-center space-x-3">
-          <div className="relative">
-            <Shield className="w-8 h-8 text-neon-blue glow-text" />
-            <div className="absolute inset-0 animate-pulse-glow">
-              <Shield className="w-8 h-8 text-neon-blue opacity-50" />
-            </div>
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center glow-border">
+            <Shield className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white glow-text">
+            <h1 className="text-lg font-bold text-white neon-text">
               CyberGuard
             </h1>
-            <p className="text-xs text-muted-foreground">态势感知监控系统</p>
+            <p className="text-xs text-muted-foreground">网络安全监控系统</p>
           </div>
         </div>
       </div>
 
-      {/* Navigation Items */}
-      <div className="flex-1 p-4 space-y-2">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = location.pathname === item.path;
-
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={cn(
-                "flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 relative overflow-hidden group",
-                isActive
-                  ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30 glow-border"
-                  : "text-muted-foreground hover:text-white hover:bg-matrix-accent",
-              )}
-            >
-              <Icon className={cn("w-5 h-5", isActive && "glow-text")} />
-              <span className="font-medium">{item.name}</span>
-
-              {isActive && (
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-neon-blue/10 to-transparent animate-scan-line" />
-              )}
-            </Link>
-          );
-        })}
-      </div>
-
-      {/* Status Indicator */}
-      <div className="p-4 border-t border-matrix-border">
-        <div className="flex items-center justify-between text-sm">
-          <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-neon-green rounded-full animate-pulse" />
-            <span className="text-neon-green">系统在线</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Bell className="w-4 h-4 text-threat-medium" />
-            <span className="text-threat-medium">3</span>
-          </div>
-        </div>
-      </div>
-
-      {/* User Profile */}
-      <div className="p-4 border-t border-matrix-border">
-        <div className="flex items-center space-x-3 mb-3">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center border relative"
-            style={{
-              backgroundColor: userColor.includes("purple")
-                ? "rgba(191, 0, 255, 0.1)"
-                : userColor.includes("blue")
-                  ? "rgba(0, 245, 255, 0.1)"
-                  : userColor.includes("green")
-                    ? "rgba(57, 255, 20, 0.1)"
-                    : userColor.includes("orange")
-                      ? "rgba(255, 102, 0, 0.1)"
-                      : "rgba(0, 245, 255, 0.1)",
-              borderColor: userColor.includes("purple")
-                ? "rgba(191, 0, 255, 0.3)"
-                : userColor.includes("blue")
-                  ? "rgba(0, 245, 255, 0.3)"
-                  : userColor.includes("green")
-                    ? "rgba(57, 255, 20, 0.3)"
-                    : userColor.includes("orange")
-                      ? "rgba(255, 102, 0, 0.3)"
-                      : "rgba(0, 245, 255, 0.3)",
-            }}
-          >
-            <RoleIcon className={`w-5 h-5 ${userColor}`} />
+      {/* 快捷状态栏 */}
+      <div className="p-4 border-b border-matrix-border/50">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
             <div
-              className="absolute inset-0 rounded-full animate-pulse"
-              style={{
-                boxShadow: userColor.includes("purple")
-                  ? "0 0 10px rgba(191, 0, 255, 0.3)"
-                  : userColor.includes("blue")
-                    ? "0 0 10px rgba(0, 245, 255, 0.3)"
-                    : userColor.includes("green")
-                      ? "0 0 10px rgba(57, 255, 20, 0.3)"
-                      : userColor.includes("orange")
-                        ? "0 0 10px rgba(255, 102, 0, 0.3)"
-                        : "0 0 10px rgba(0, 245, 255, 0.3)",
-              }}
-            />
+              className={`w-2 h-2 rounded-full ${isApiMode ? "bg-green-400" : "bg-amber-400"} animate-pulse`}
+            ></div>
+            <span className="text-xs text-muted-foreground">
+              {isApiMode ? "API模式" : "模拟模式"}
+            </span>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white truncate">
-              {user?.username || "访客用户"}
-            </p>
-            <p className={`text-xs font-medium truncate ${userColor}`}>
-              {userRole}
-            </p>
-            <p className="text-xs text-muted-foreground truncate">
-              {user?.username || "guest"}@cyberguard.com
-            </p>
+          <div className="flex items-center gap-1">
+            <Bell className="w-4 h-4 text-amber-400" />
+            <span className="text-xs bg-amber-400/20 text-amber-400 px-1 rounded">
+              3
+            </span>
           </div>
         </div>
-
-        {/* 登出按钮 */}
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-muted-foreground hover:text-threat-critical hover:bg-threat-critical/10 rounded transition-colors"
-        >
-          <LogOut className="w-4 h-4" />
-          <span>退出登录</span>
-        </button>
       </div>
-    </nav>
+
+      {/* 主导航菜单 */}
+      <div className="flex-1 overflow-y-auto">
+        <nav className="p-4 space-y-2">
+          {menuGroups.map((group) => {
+            const isExpanded = expandedGroups.includes(group.title);
+            const hasActiveItem = isGroupActive(group.items);
+            const GroupIcon = group.icon;
+
+            return (
+              <div key={group.title} className="space-y-1">
+                {/* 分组标题 */}
+                <button
+                  onClick={() => toggleGroup(group.title)}
+                  className={cn(
+                    "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                    hasActiveItem
+                      ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30"
+                      : "text-muted-foreground hover:text-white hover:bg-matrix-accent",
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <GroupIcon
+                      className={cn(
+                        "w-4 h-4",
+                        hasActiveItem && "text-neon-blue",
+                      )}
+                    />
+                    <span>{group.title}</span>
+                  </div>
+                  {isExpanded ? (
+                    <ChevronDown className="w-4 h-4" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4" />
+                  )}
+                </button>
+
+                {/* 子菜单项 */}
+                {isExpanded && (
+                  <div className="ml-4 space-y-1 border-l border-matrix-border/50 pl-4">
+                    {group.items.filter(hasPermission).map((item) => {
+                      const ItemIcon = item.icon;
+                      const isActive = item.path && isActivePath(item.path);
+
+                      return (
+                        <Link
+                          key={item.name}
+                          to={item.path || "#"}
+                          className={cn(
+                            "flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all duration-200 group",
+                            isActive
+                              ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30 neon-text"
+                              : "text-muted-foreground hover:text-white hover:bg-matrix-accent/50",
+                          )}
+                        >
+                          <div className="flex items-center gap-3">
+                            <ItemIcon
+                              className={cn(
+                                "w-4 h-4 transition-colors",
+                                isActive
+                                  ? "text-neon-blue"
+                                  : "group-hover:text-neon-blue",
+                              )}
+                            />
+                            <span>{item.name}</span>
+                          </div>
+                          {item.badge && (
+                            <span className="bg-red-500/20 text-red-400 text-xs px-1.5 py-0.5 rounded-full border border-red-500/30">
+                              {item.badge}
+                            </span>
+                          )}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </nav>
+      </div>
+
+      {/* 底部用户信息 */}
+      <div className="p-4 border-t border-matrix-border">
+        <div className="space-y-3">
+          {/* 用户信息 */}
+          <div className="flex items-center space-x-3 p-3 bg-matrix-accent/30 rounded-lg">
+            <div className="flex-shrink-0">
+              {(() => {
+                const RoleIcon = getRoleIcon(userRole);
+                return (
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center">
+                    <RoleIcon className="w-4 h-4 text-white" />
+                  </div>
+                );
+              })()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white truncate">
+                {user?.username || "访客用户"}
+              </p>
+              <p className={cn("text-xs truncate", userColor)}>{userRole}</p>
+            </div>
+          </div>
+
+          {/* 系统状态 */}
+          <div className="grid grid-cols-3 gap-2 text-xs">
+            <div className="bg-matrix-surface/50 rounded p-2 text-center">
+              <div className="text-green-400 font-mono">99.9%</div>
+              <div className="text-muted-foreground">正常运行</div>
+            </div>
+            <div className="bg-matrix-surface/50 rounded p-2 text-center">
+              <div className="text-neon-blue font-mono">24/7</div>
+              <div className="text-muted-foreground">监控中</div>
+            </div>
+            <div className="bg-matrix-surface/50 rounded p-2 text-center">
+              <div className="text-amber-400 font-mono">3</div>
+              <div className="text-muted-foreground">待处理</div>
+            </div>
+          </div>
+
+          {/* 登出按钮 */}
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/30 transition-all duration-200 neon-button"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>安全退出</span>
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

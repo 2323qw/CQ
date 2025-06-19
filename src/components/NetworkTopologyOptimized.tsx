@@ -177,7 +177,7 @@ const getEdgeStyle = (edge: any) => {
   }
 };
 
-// 自动布局算法 - 改进的力导��布局
+// 自动布局算法 - 改进的力导向布局
 const generateOptimizedLayout = (
   nodes: any[],
   edges: any[],
@@ -227,7 +227,7 @@ const generateOptimizedLayout = (
   // 分层布局算法
   const layers = [
     { radius: 180, maxNodes: 6 }, // 内层 - 重要基础设施
-    { radius: 280, maxNodes: 12 }, // 中层 - 一般设备
+    { radius: 280, maxNodes: 12 }, // 中层 - 一般设���
     { radius: 380, maxNodes: 18 }, // 外层 - 边缘设备
   ];
 
@@ -597,31 +597,7 @@ export const NetworkTopologyOptimized: React.FC<
           className="bg-matrix-surface border border-matrix-border text-white"
           position="bottom-left"
         />
-        <MiniMap
-          className="bg-matrix-surface border border-matrix-border"
-          style={{
-            backgroundColor: "rgb(31, 41, 55)",
-            width: 140,
-            height: 100,
-          }}
-          nodeColor={(node) => {
-            switch (node.data?.risk) {
-              case "critical":
-                return "#ef4444";
-              case "high":
-                return "#f97316";
-              case "medium":
-                return "#eab308";
-              case "low":
-                return "#22c55e";
-              default:
-                return "#3b82f6";
-            }
-          }}
-          position="bottom-right"
-          pannable
-          zoomable
-        />
+
         <Background
           variant="dots"
           gap={[30, 30]}

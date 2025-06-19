@@ -215,7 +215,7 @@ const generateOptimizedLayout = (
   const layoutNodes: Node[] = [];
   const layoutEdges: Edge[] = [];
 
-  // 计算节点重要性和层级
+  // 计算节点重���性和层级
   const getNodeImportance = (nodeData: any) => {
     let importance = 0;
     if (nodeData.isTarget) importance += 100;
@@ -256,7 +256,7 @@ const generateOptimizedLayout = (
   // 分层布局算法
   const layers = [
     { radius: 180, maxNodes: 6 }, // 内层 - 重要基础设施
-    { radius: 280, maxNodes: 12 }, // 中层 - 一般设备
+    { radius: 280, maxNodes: 12 }, // ��层 - 一般设备
     { radius: 380, maxNodes: 18 }, // 外层 - 边缘设备
   ];
 
@@ -634,7 +634,7 @@ export const NetworkTopologyOptimized: React.FC<
       )}
     >
       {/* 控制面板 */}
-      <Panel position="top-left" className="space-x-2">
+      <div className="absolute top-4 left-4 z-10 flex space-x-2">
         <Button
           size="sm"
           variant={currentViewMode === "default" ? "default" : "outline"}
@@ -662,13 +662,10 @@ export const NetworkTopologyOptimized: React.FC<
           <Activity className="w-3 h-3 mr-1" />
           性能
         </Button>
-      </Panel>
+      </div>
 
       {/* 统计面板 */}
-      <Panel
-        position="top-right"
-        className="bg-matrix-surface/90 backdrop-blur-sm rounded-lg p-3 border border-matrix-border"
-      >
+      <div className="absolute top-4 right-4 z-10 bg-matrix-surface/90 backdrop-blur-sm rounded-lg p-3 border border-matrix-border">
         <div className="grid grid-cols-2 gap-3 text-xs">
           <div className="text-center">
             <div className="text-quantum-400 font-bold">
@@ -695,7 +692,7 @@ export const NetworkTopologyOptimized: React.FC<
             <div className="text-muted-foreground">性能</div>
           </div>
         </div>
-      </Panel>
+      </div>
 
       <ReactFlow
         nodes={nodes}

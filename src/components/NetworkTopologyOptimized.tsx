@@ -288,14 +288,7 @@ const generateOptimizedLayout = (
         type: edge.status === "active" ? "smoothstep" : "straight",
         animated: edge.status === "active" && edge.bandwidth > 50,
         style: edgeStyle,
-        label: edge.protocol,
-        labelStyle: {
-          fill: "#9ca3af",
-          fontSize: "8px",
-          backgroundColor: "rgba(0, 0, 0, 0.6)",
-          padding: "1px 3px",
-          borderRadius: "2px",
-        },
+        // 移除标签，只保留连接线
         markerEnd: {
           type: "arrowclosed",
           width: 12,
@@ -486,7 +479,7 @@ export const NetworkTopologyOptimized: React.FC<
       return generateOptimizedLayout(networkNodes, networkEdges, centerIP);
     }
 
-    // 简单的手动布局作为后备
+    // 简单的手动布局作��后备
     const simpleNodes: Node[] = networkNodes.map((node, index) => ({
       id: node.id,
       type: "custom",

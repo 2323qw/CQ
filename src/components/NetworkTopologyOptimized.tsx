@@ -414,7 +414,6 @@ export const NetworkTopologyOptimized: React.FC<
         label: "Firewall",
         type: "firewall",
         risk: "low",
-        ports: [443, 22],
       },
       {
         id: "router",
@@ -659,7 +658,7 @@ export const NetworkTopologyOptimized: React.FC<
         </div>
       </div>
 
-      {/* 节点详情模态框 */}
+      {/* ��点详情模态框 */}
       <NodeDetailModal
         node={selectedNode}
         isOpen={isModalOpen}

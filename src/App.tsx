@@ -75,6 +75,16 @@ function AppLayout() {
         }
       />
       <Route
+        path="/evidence-collection"
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <EvidenceCollection />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/reports"
         element={
           <ProtectedRoute>

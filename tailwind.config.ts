@@ -52,7 +52,7 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // 网络安全主题色彩 - 增强版
+        // 网络安全主题色彩 - 增��版
         cyber: {
           50: "#f0f9ff",
           100: "#e0f2fe",
@@ -264,6 +264,9 @@ const config: Config = {
         mono: [
           "JetBrains Mono",
           "Fira Code",
+          "Noto Sans SC",
+          "Microsoft YaHei",
+          "SimHei",
           "Consolas",
           "Monaco",
           "monospace",

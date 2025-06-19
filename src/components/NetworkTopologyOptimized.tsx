@@ -382,7 +382,6 @@ export const NetworkTopologyOptimized: React.FC<
                   ? "high"
                   : "medium"
                 : "low",
-            ports: [conn.destPort],
           });
 
           networkEdges.push({
@@ -491,7 +490,7 @@ export const NetworkTopologyOptimized: React.FC<
       return generateOptimizedLayout(networkNodes, networkEdges, centerIP);
     }
 
-    // 简单的手动布局作为后备
+    // 简单的手动布局作为���备
     const simpleNodes: Node[] = networkNodes.map((node, index) => ({
       id: node.id,
       type: "custom",

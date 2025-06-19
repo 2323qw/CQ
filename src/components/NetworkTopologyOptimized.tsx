@@ -149,9 +149,9 @@ const OptimizedNode = ({ data }: { data: any }) => {
 
         <div className="text-xs text-muted-foreground truncate w-full">
           {data.type === "target"
-            ? "目���"
+            ? "目标"
             : data.type === "router"
-              ? "路由器"
+              ? "路由���"
               : data.type === "server"
                 ? "服务器"
                 : data.type === "database"
@@ -291,7 +291,7 @@ const generateOptimizedLayout = (
     (a, b) => getNodeImportance(b) - getNodeImportance(a),
   );
 
-  // 分层��局算法
+  // 分层布局算法
   const layers = [
     { radius: 180, maxNodes: 6 }, // 内层 - 重要基础设施
     { radius: 280, maxNodes: 12 }, // 中层 - 一般设备
@@ -445,6 +445,7 @@ export const NetworkTopologyOptimized: React.FC<
                   ? "high"
                   : "medium"
                 : "low",
+            ports: [conn.destPort],
           });
 
           networkEdges.push({

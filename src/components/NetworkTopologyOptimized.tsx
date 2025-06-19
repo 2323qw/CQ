@@ -387,14 +387,6 @@ export const NetworkTopologyOptimized: React.FC<
                   : "medium"
                 : "low",
             ports: [conn.destPort],
-            threats: Math.floor(Math.random() * 3),
-            connections: Math.floor(Math.random() * 10) + 1,
-            performance: {
-              cpu: Math.floor(Math.random() * 60) + 20,
-              bandwidth: conn.bytes
-                ? Math.floor(conn.bytes / 1024)
-                : Math.floor(Math.random() * 200),
-            },
           });
 
           networkEdges.push({

@@ -193,7 +193,7 @@ function App() {
         <DataSourceProvider>
           <NavigationProvider>
             <KeyboardShortcuts />
-            <AppContent />
+            <AppLayout />
             <ToastContainer />
           </NavigationProvider>
         </DataSourceProvider>

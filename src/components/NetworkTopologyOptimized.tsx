@@ -11,43 +11,6 @@ import {
   Position,
 } from "reactflow";
 import "reactflow/dist/style.css";
-
-// 添加自定义样式
-const customStyles = `
-  .irregular-node {
-    position: relative;
-    overflow: visible;
-  }
-
-  .irregular-node::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-    border-radius: inherit;
-    z-index: -1;
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 0.7; }
-  }
-
-  .node-glow {
-    filter: drop-shadow(0 0 8px currentColor);
-  }
-`;
-
-// 注入样式
-if (typeof document !== "undefined") {
-  const styleSheet = document.createElement("style");
-  styleSheet.innerText = customStyles;
-  document.head.appendChild(styleSheet);
-}
 import {
   Shield,
   AlertTriangle,
@@ -190,7 +153,7 @@ const OptimizedNode = ({ data }: { data: any }) => {
                     : data.type === "internet"
                       ? "网关"
                       : data.type === "cloud"
-                        ? "云端"
+                        ? "云��"
                         : "设备"}
         </div>
 

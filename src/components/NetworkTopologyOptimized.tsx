@@ -87,28 +87,26 @@ const OptimizedNode = ({ data }: { data: any }) => {
   return (
     <div
       className={cn(
-        "px-2 py-1.5 shadow-md rounded-md border min-w-[80px] max-w-[100px] cyber-card text-center transition-all duration-200 hover:scale-105",
+        "px-2 py-2 shadow rounded border min-w-[90px] max-w-[120px] bg-matrix-surface text-center transition-all duration-200 hover:scale-105",
         getRiskColor(data.risk),
-        getNodeSize(),
-        data.isTarget && "ring-2 ring-quantum-500 ring-opacity-75",
-        isHovered && "shadow-lg",
+        data.isTarget && "ring-2 ring-quantum-500",
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex flex-col items-center gap-1">
-        <div className="p-1 rounded-full bg-current/10">
+        <div className="p-1 rounded bg-current/10">
           {getNodeIcon(data.type)}
         </div>
 
         <div
-          className="font-medium text-xs truncate w-full font-mono"
+          className="font-mono text-xs font-medium text-white truncate w-full"
           title={data.ip}
         >
           {data.ip}
         </div>
 
-        <div className="text-xs opacity-60 truncate w-full">
+        <div className="text-xs text-muted-foreground truncate w-full">
           {data.type === "target"
             ? "目标"
             : data.type === "router"
@@ -121,7 +119,9 @@ const OptimizedNode = ({ data }: { data: any }) => {
                     ? "防火墙"
                     : data.type === "internet"
                       ? "网关"
-                      : "设备"}
+                      : data.type === "cloud"
+                        ? "云端"
+                        : "设备"}
         </div>
       </div>
     </div>
@@ -177,7 +177,7 @@ const getEdgeStyle = (edge: any) => {
   }
 };
 
-// 自动布局算法 - 改进的力导向布局
+// 自动布局算法 - 改进的力导��布局
 const generateOptimizedLayout = (
   nodes: any[],
   edges: any[],
@@ -479,7 +479,7 @@ export const NetworkTopologyOptimized: React.FC<
       return generateOptimizedLayout(networkNodes, networkEdges, centerIP);
     }
 
-    // 简单的手动布局作��后备
+    // 简单的手动布局作为后备
     const simpleNodes: Node[] = networkNodes.map((node, index) => ({
       id: node.id,
       type: "custom",

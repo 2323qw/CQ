@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NetworkTopology } from "./NetworkTopology";
+import { generateTopologyDemoData } from "@/utils/topologyDemoData";
 import { cn } from "@/lib/utils";
 
 interface TopologyAnalysisProps {
@@ -32,12 +33,15 @@ export const TopologyAnalysis: React.FC<TopologyAnalysisProps> = ({
     "topology" | "analysis" | "paths"
   >("topology");
 
+  // 如果没有调查数据，使用演示数据
+  const displayData = investigation || generateTopologyDemoData(centerIP);
+
   // 分析网络路径
   const analyzeNetworkPaths = () => {
     const paths = [];
 
-    if (investigation?.networkAnalysis?.connections) {
-      investigation.networkAnalysis.connections
+    if (displayData?.networkAnalysis?.connections) {
+      displayData.networkAnalysis.connections
         .slice(0, 5)
         .forEach((conn: any, index: number) => {
           paths.push({
@@ -59,8 +63,8 @@ export const TopologyAnalysis: React.FC<TopologyAnalysisProps> = ({
 
   // 计算网络统计
   const getNetworkStats = () => {
-    const connections = investigation?.networkAnalysis?.connections || [];
-    const openPorts = investigation?.networkAnalysis?.openPorts || [];
+    const connections = displayData?.networkAnalysis?.connections || [];
+    const openPorts = displayData?.networkAnalysis?.openPorts || [];
 
     return {
       totalConnections: connections.length,
@@ -168,7 +172,7 @@ export const TopologyAnalysis: React.FC<TopologyAnalysisProps> = ({
               </div>
             </div>
             <NetworkTopology
-              investigation={investigation}
+              investigation={displayData}
               centerIP={centerIP}
               className="h-96 border border-matrix-border rounded-lg"
             />
@@ -201,9 +205,9 @@ export const TopologyAnalysis: React.FC<TopologyAnalysisProps> = ({
               网络流量分析
             </h3>
 
-            {investigation?.networkAnalysis?.connections ? (
+            {displayData?.networkAnalysis?.connections ? (
               <div className="space-y-3">
-                {investigation.networkAnalysis.connections
+                {displayData.networkAnalysis.connections
                   .slice(0, 8)
                   .map((conn: any, index: number) => (
                     <div
@@ -257,7 +261,7 @@ export const TopologyAnalysis: React.FC<TopologyAnalysisProps> = ({
           </div>
         </TabsContent>
 
-        {/* 路径追��� */}
+        {/* 路径追踪 */}
         <TabsContent value="paths" className="space-y-4">
           <div className="cyber-card p-4">
             <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
@@ -308,14 +312,14 @@ export const TopologyAnalysis: React.FC<TopologyAnalysisProps> = ({
       </Tabs>
 
       {/* 威胁传播分析 */}
-      {investigation?.threatIntelligence?.relatedThreats?.length > 0 && (
+      {displayData?.threatIntelligence?.relatedThreats?.length > 0 && (
         <div className="cyber-card p-4">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <Zap className="w-5 h-5 text-red-400" />
             威胁传播分析
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {investigation.threatIntelligence.relatedThreats
+            {displayData.threatIntelligence.relatedThreats
               .slice(0, 4)
               .map((threat: any, index: number) => (
                 <div

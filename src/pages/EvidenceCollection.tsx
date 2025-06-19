@@ -324,7 +324,7 @@ const EvidenceCollection: React.FC = () => {
                     : (investigation as any).reputation === "malicious"
                       ? "恶意"
                       : (investigation as any).reputation === "suspicious"
-                        ? "���疑"
+                        ? "可疑"
                         : (investigation as any).reputation === "clean"
                           ? "干净"
                           : "未知"}

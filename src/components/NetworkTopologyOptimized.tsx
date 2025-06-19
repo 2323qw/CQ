@@ -601,65 +601,9 @@ export const NetworkTopologyOptimized: React.FC<
         className,
       )}
     >
-      {/* 控制面板 */}
-      <div className="absolute top-4 left-4 z-10 flex space-x-2">
-        <Button
-          size="sm"
-          variant={currentViewMode === "default" ? "default" : "outline"}
-          onClick={() => setCurrentViewMode("default")}
-          className="text-xs"
-        >
-          <Network className="w-3 h-3 mr-1" />
-          默认
-        </Button>
-        <Button
-          size="sm"
-          variant={currentViewMode === "threats" ? "default" : "outline"}
-          onClick={() => setCurrentViewMode("threats")}
-          className="text-xs"
-        >
-          <AlertTriangle className="w-3 h-3 mr-1" />
-          威胁
-        </Button>
-        <Button
-          size="sm"
-          variant={showPerformance ? "default" : "outline"}
-          onClick={() => setShowPerformance(!showPerformance)}
-          className="text-xs"
-        >
-          <Activity className="w-3 h-3 mr-1" />
-          性能
-        </Button>
-      </div>
-
-      {/* 统计面板 */}
-      <div className="absolute top-4 right-4 z-10 bg-matrix-surface/90 backdrop-blur-sm rounded-lg p-3 border border-matrix-border">
-        <div className="grid grid-cols-2 gap-3 text-xs">
-          <div className="text-center">
-            <div className="text-quantum-400 font-bold">
-              {networkStats.totalNodes}
-            </div>
-            <div className="text-muted-foreground">节点</div>
-          </div>
-          <div className="text-center">
-            <div className="text-red-400 font-bold">
-              {networkStats.threatNodes}
-            </div>
-            <div className="text-muted-foreground">威胁</div>
-          </div>
-          <div className="text-center">
-            <div className="text-green-400 font-bold">
-              {networkStats.activeConnections}
-            </div>
-            <div className="text-muted-foreground">活跃</div>
-          </div>
-          <div className="text-center">
-            <div className="text-blue-400 font-bold">
-              {networkStats.avgPerformance}%
-            </div>
-            <div className="text-muted-foreground">性能</div>
-          </div>
-        </div>
+      {/* 简化标题 */}
+      <div className="absolute top-4 left-4 z-10 bg-matrix-surface/80 backdrop-blur-sm rounded px-3 py-1 border border-matrix-border">
+        <div className="text-sm text-white font-medium">网络拓扑关系图</div>
       </div>
 
       <ReactFlow

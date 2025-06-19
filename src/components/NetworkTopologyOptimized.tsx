@@ -288,17 +288,14 @@ const generateOptimizedLayout = (
         type: edge.status === "active" ? "smoothstep" : "straight",
         animated: edge.status === "active" && edge.bandwidth > 50,
         style: edgeStyle,
-        label: `${edge.protocol}:${edge.destPort}`,
+        label: edge.protocol,
         labelStyle: {
-          fill: "#ffffff",
-          fontSize: "10px",
-          backgroundColor: "rgba(0, 0, 0, 0.8)",
-          padding: "2px 6px",
-          borderRadius: "4px",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
+          fill: "#9ca3af",
+          fontSize: "8px",
+          backgroundColor: "rgba(0, 0, 0, 0.6)",
+          padding: "1px 3px",
+          borderRadius: "2px",
         },
-        labelBgPadding: [2, 1],
-        labelBgBorderRadius: 4,
         markerEnd: {
           type: "arrowclosed",
           width: 12,
@@ -337,7 +334,7 @@ export const NetworkTopologyOptimized: React.FC<
   const [currentViewMode, setCurrentViewMode] = useState(viewMode);
   const [showPerformance, setShowPerformance] = useState(false);
 
-  // 生成优化的���络拓扑数据
+  // 生成优化的网络拓扑数据
   const { nodes: initialNodes, edges: initialEdges } = useMemo(() => {
     if (!investigation) return { nodes: [], edges: [] };
 

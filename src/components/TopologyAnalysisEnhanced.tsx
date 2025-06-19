@@ -271,26 +271,26 @@ export const TopologyAnalysisEnhanced: React.FC<
           <TabsList className="bg-matrix-surface border border-matrix-border">
             <TabsTrigger value="topology" className="flex items-center gap-2">
               <Network className="w-4 h-4" />
-              智能拓扑
+              Topology
             </TabsTrigger>
             <TabsTrigger value="analysis" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
-              深度分析
+              Analysis
             </TabsTrigger>
             <TabsTrigger
               value="performance"
               className="flex items-center gap-2"
             >
               <Activity className="w-4 h-4" />
-              性能监控
+              Performance
             </TabsTrigger>
             <TabsTrigger value="paths" className="flex items-center gap-2">
               <Share2 className="w-4 h-4" />
-              威胁路径
+              Threat Paths
             </TabsTrigger>
             <TabsTrigger value="devices" className="flex items-center gap-2">
               <Server className="w-4 h-4" />
-              设备分析
+              Devices
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -355,7 +355,7 @@ export const TopologyAnalysisEnhanced: React.FC<
         {/* 深度网络分析 */}
         <TabsContent value="analysis" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* 协议分析 */}
+            {/* 协议分�� */}
             <div className="cyber-card p-4">
               <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                 <Layers className="w-5 h-5 text-neural-500" />
@@ -845,7 +845,7 @@ export const TopologyAnalysisEnhanced: React.FC<
                   </div>
                   <div>
                     <div className="text-xl font-bold text-amber-400">3</div>
-                    <div className="text-muted-foreground">警���</div>
+                    <div className="text-muted-foreground">警告</div>
                   </div>
                   <div>
                     <div className="text-xl font-bold text-red-400">2</div>

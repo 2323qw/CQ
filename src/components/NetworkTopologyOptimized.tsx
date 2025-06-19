@@ -467,7 +467,6 @@ export const NetworkTopologyOptimized: React.FC<
             label: `Threat ${index + 1}`,
             type: "cloud",
             risk: "critical",
-            ports: [],
           });
 
           networkEdges.push({

@@ -1,8 +1,11 @@
+import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { DataSourceProvider } from "@/contexts/DataSourceContext";
+import { NavigationProvider } from "@/contexts/NavigationContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Navigation } from "@/components/Navigation";
+import { MobileNavigationTrigger } from "@/components/MobileNavigationTrigger";
 import { ToastContainer } from "@/components/ui/toast";
 import Index from "@/pages/Index";
 import Alerts from "@/pages/Alerts";
@@ -22,11 +25,27 @@ import AuthDebug from "@/components/AuthDebug";
 
 // 受保护的布局组件
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleMobileToggle = (isOpen: boolean) => {
+    setIsMobileMenuOpen(isOpen);
+  };
+
+  const handleMobileClose = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-matrix-bg text-white font-mono">
-      <Navigation />
+      <Navigation
+        isMobileOpen={isMobileMenuOpen}
+        onMobileClose={handleMobileClose}
+      />
+      <MobileNavigationTrigger onToggle={handleMobileToggle} />
       {/* 为固定导航栏预留空间：ml-64 = 256px，与导航栏宽度w-64匹配 */}
-      <div className="ml-64 min-h-screen">{children}</div>
+      <div className="ml-0 md:ml-64 min-h-screen">
+        {children}
+      </div>
     </div>
   );
 }
@@ -171,15 +190,17 @@ function AppLayout() {
 function App() {
   return (
     <BrowserRouter>
-      <DataSourceProvider>
-        <AuthProvider>
-          <div className="min-h-screen bg-gradient-to-br from-matrix-bg via-matrix-surface to-matrix-accent text-white">
-            <AppLayout />
+      <AuthProvider>
+        <DataSourceProvider>
+          <NavigationProvider>
+            <AppContent />
             <ToastContainer />
-            <AuthDebug />
-          </div>
-        </AuthProvider>
-      </DataSourceProvider>
+          </NavigationProvider>
+        </DataSourceProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
     </BrowserRouter>
   );
 }

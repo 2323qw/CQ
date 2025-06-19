@@ -356,10 +356,6 @@ export const NetworkTopologyOptimized: React.FC<
             : investigation.riskScore > 30
               ? "medium"
               : "low",
-      ports:
-        investigation.networkAnalysis?.openPorts
-          ?.slice(0, 3)
-          .map((p: any) => p.port) || [],
     });
 
     // 生成网络连接节点

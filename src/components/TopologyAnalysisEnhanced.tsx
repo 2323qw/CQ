@@ -20,7 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { NetworkTopologyOptimized } from "./NetworkTopologyOptimized";
+import { NetworkTopologyInternational } from "./NetworkTopologyInternational";
 import { generateTopologyDemoData } from "@/utils/topologyDemoData";
 import { cn } from "@/lib/utils";
 import {
@@ -791,7 +791,7 @@ export const TopologyAnalysisEnhanced: React.FC<
           </div>
         </TabsContent>
 
-        {/* 设备分�� */}
+        {/* 设备分析 */}
         <TabsContent value="devices" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* 设备类型分布 */}

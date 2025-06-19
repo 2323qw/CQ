@@ -5,7 +5,7 @@ export function AuthDebug() {
   const { isAuthenticated, user, loading } = useAuth();
 
   // 只在开发环境显示
-  if (process.env.NODE_ENV !== "development") {
+  if (import.meta.env.MODE !== "development") {
     return null;
   }
 

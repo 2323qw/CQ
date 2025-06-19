@@ -256,79 +256,81 @@ const EvidenceCollection: React.FC = () => {
           </div>
         )}
 
-        {/* 调查结果 */}
+        {/* 调查结果 - 紧凑布局 */}
         {investigation && !loading && (
-          <div className="space-y-6">
-            {/* 基础信息卡片 */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="cyber-card p-4 text-center">
-                <div className="text-2xl font-bold text-quantum-400 mb-1">
-                  {investigationMode === "advanced"
-                    ? (investigation as any).basicInfo?.riskScore || 0
-                    : (investigation as any).riskScore || 0}
-                  /100
+          <div className="space-y-4">
+            {/* 基础信息卡片 - 水平布局 */}
+            <div className="cyber-card p-4">
+              <div className="grid grid-cols-4 gap-6 text-center">
+                <div>
+                  <div className="text-2xl font-bold text-quantum-400 mb-1">
+                    {investigationMode === "advanced"
+                      ? (investigation as any).basicInfo?.riskScore || 0
+                      : (investigation as any).riskScore || 0}
+                    /100
+                  </div>
+                  <div className="text-sm text-muted-foreground">风险评分</div>
                 </div>
-                <div className="text-sm text-muted-foreground">风险评分</div>
-              </div>
 
-              <div className="cyber-card p-4 text-center">
-                <div className="text-2xl font-bold text-tech-accent mb-1">
-                  {investigationMode === "advanced"
-                    ? (investigation as any).networkAnalysis?.connections
-                        ?.length || 0
-                    : (investigation as any).totalAttacks || 0}
+                <div>
+                  <div className="text-2xl font-bold text-tech-accent mb-1">
+                    {investigationMode === "advanced"
+                      ? (investigation as any).networkAnalysis?.connections
+                          ?.length || 0
+                      : (investigation as any).totalAttacks || 0}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {investigationMode === "advanced" ? "网络连接" : "攻击次数"}
+                  </div>
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  {investigationMode === "advanced" ? "网络连接" : "攻击次数"}
-                </div>
-              </div>
 
-              <div className="cyber-card p-4 text-center">
-                <div className="text-2xl font-bold text-neural-500 mb-1">
-                  {investigationMode === "advanced"
-                    ? (investigation as any).threatIntelligence?.blacklists
-                        ?.length || 0
-                    : Object.keys((investigation as any).attackTypes || {})
-                        .length}
+                <div>
+                  <div className="text-2xl font-bold text-neural-500 mb-1">
+                    {investigationMode === "advanced"
+                      ? (investigation as any).threatIntelligence?.blacklists
+                          ?.length || 0
+                      : Object.keys((investigation as any).attackTypes || {})
+                          .length}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {investigationMode === "advanced" ? "威胁情报" : "攻击类型"}
+                  </div>
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  {investigationMode === "advanced" ? "黑名单" : "攻击类型"}
-                </div>
-              </div>
 
-              <div className="cyber-card p-4 text-center">
-                <Badge
-                  className={cn(
-                    "px-3 py-1",
-                    investigationMode === "advanced"
-                      ? getReputationColor(
-                          (investigation as any).basicInfo?.reputation ||
-                            "unknown",
-                        )
-                      : getReputationColor(
-                          (investigation as any).reputation || "unknown",
-                        ),
-                  )}
-                >
-                  {investigationMode === "advanced"
-                    ? (investigation as any).basicInfo?.reputation ===
-                      "malicious"
-                      ? "恶意"
-                      : (investigation as any).basicInfo?.reputation ===
-                          "suspicious"
-                        ? "可疑"
+                <div>
+                  <Badge
+                    className={cn(
+                      "px-3 py-1",
+                      investigationMode === "advanced"
+                        ? getReputationColor(
+                            (investigation as any).basicInfo?.reputation ||
+                              "unknown",
+                          )
+                        : getReputationColor(
+                            (investigation as any).reputation || "unknown",
+                          ),
+                    )}
+                  >
+                    {investigationMode === "advanced"
+                      ? (investigation as any).basicInfo?.reputation ===
+                        "malicious"
+                        ? "恶意"
                         : (investigation as any).basicInfo?.reputation ===
-                            "clean"
-                          ? "干净"
-                          : "未知"
-                    : (investigation as any).reputation === "malicious"
-                      ? "恶意"
-                      : (investigation as any).reputation === "suspicious"
-                        ? "可疑"
-                        : (investigation as any).reputation === "clean"
-                          ? "干净"
-                          : "未知"}
-                </Badge>
+                            "suspicious"
+                          ? "可疑"
+                          : (investigation as any).basicInfo?.reputation ===
+                              "clean"
+                            ? "干净"
+                            : "未知"
+                      : (investigation as any).reputation === "malicious"
+                        ? "恶意"
+                        : (investigation as any).reputation === "suspicious"
+                          ? "可疑"
+                          : (investigation as any).reputation === "clean"
+                            ? "干净"
+                            : "未知"}
+                  </Badge>
+                </div>
               </div>
             </div>
 
@@ -607,26 +609,23 @@ const EvidenceCollection: React.FC = () => {
                 </TabsContent>
               </Tabs>
             ) : (
-              /* 基础模式简化展示 */
-              <div className="space-y-6">
-                {/* 基础网络拓扑 */}
-                <div className="cyber-card p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                    <Target className="w-5 h-5 text-quantum-500" />
-                    网络关系图
-                  </h3>
+              /* 基础模式 - 包含拓扑图的简化展示 */
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                {/* 左侧：网络拓扑 */}
+                <div className="lg:col-span-2">
                   <TopologyAnalysis
                     investigation={investigation}
                     centerIP={selectedIP}
                   />
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="cyber-card p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4">
+                {/* 右侧：基础信息 */}
+                <div className="space-y-4">
+                  <div className="cyber-card p-4">
+                    <h3 className="text-lg font-semibold text-white mb-3">
                       基础信息
                     </h3>
-                    <div className="space-y-3 text-sm">
+                    <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">IP地址:</span>
                         <span className="text-white font-mono">
@@ -664,18 +663,18 @@ const EvidenceCollection: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="cyber-card p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4">
-                      攻击类型分布
+                  <div className="cyber-card p-4">
+                    <h3 className="text-lg font-semibold text-white mb-3">
+                      攻击类型
                     </h3>
                     {attackTypeData.length > 0 ? (
-                      <ResponsiveContainer width="100%" height={200}>
+                      <ResponsiveContainer width="100%" height={180}>
                         <PieChart>
                           <Pie
                             data={attackTypeData}
                             cx="50%"
                             cy="50%"
-                            outerRadius={80}
+                            outerRadius={70}
                             dataKey="value"
                             label={({ name, value }) => `${name}: ${value}`}
                           >
@@ -697,9 +696,9 @@ const EvidenceCollection: React.FC = () => {
                         </PieChart>
                       </ResponsiveContainer>
                     ) : (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <Activity className="w-12 h-12 mx-auto mb-2" />
-                        <p>暂无攻击数据</p>
+                      <div className="text-center py-6 text-muted-foreground">
+                        <Activity className="w-8 h-8 mx-auto mb-2" />
+                        <p className="text-sm">暂无攻击数据</p>
                       </div>
                     )}
                   </div>
@@ -707,14 +706,15 @@ const EvidenceCollection: React.FC = () => {
               </div>
             )}
 
-            {/* 导出按钮 */}
-            <div className="flex justify-center">
+            {/* 导出按钮 - 移到右上角 */}
+            <div className="fixed bottom-6 right-6 z-50">
               <Button
                 onClick={() => handleExport("JSON")}
-                className="neon-button-green"
+                className="neon-button-green shadow-lg"
+                size="lg"
               >
                 <Download className="w-4 h-4 mr-2" />
-                导出调查报告
+                导出报告
               </Button>
             </div>
           </div>
@@ -729,7 +729,7 @@ const EvidenceCollection: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-white mb-2">
-                  开始威胁��查
+                  开始威胁调查
                 </h3>
                 <p className="text-muted-foreground">输入IP地址开始安全分析</p>
               </div>

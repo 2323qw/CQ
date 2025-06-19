@@ -83,23 +83,65 @@ const OptimizedNode = ({ data }: { data: any }) => {
     return "scale-100";
   }, [data.isTarget, data.importance]);
 
+  // 根据设备类型选择不规则形状
+  const getNodeShape = (type: string) => {
+    switch (type) {
+      case "target":
+        return "clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)"; // 六边形
+      case "router":
+        return "clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)"; // 八角形
+      case "server":
+        return "clip-path: polygon(0% 15%, 15% 15%, 15% 0%, 85% 0%, 85% 15%, 100% 15%, 100% 85%, 85% 85%, 85% 100%, 15% 100%, 15% 85%, 0% 85%)"; // 服务器形状
+      case "database":
+        return "clip-path: ellipse(60% 40% at 50% 50%)"; // 椭圆形
+      case "firewall":
+        return "clip-path: polygon(50% 0%, 90% 20%, 100% 60%, 75% 100%, 25% 100%, 0% 60%, 10% 20%)"; // 盾形
+      case "internet":
+        return "clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)"; // 星形
+      case "cloud":
+        return "border-radius: 20px 40px 30px 35px"; // 云朵形状
+      default:
+        return "clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)"; // 切角矩形
+    }
+  };
+
   return (
     <div
       className={cn(
-        "px-2 py-2 shadow rounded border min-w-[90px] max-w-[120px] bg-matrix-surface text-center transition-all duration-200 hover:scale-105",
+        "relative px-3 py-2 shadow-lg border min-w-[100px] max-w-[130px] bg-matrix-surface text-center transition-all duration-300 hover:scale-110",
         getRiskColor(data.risk),
-        data.isTarget && "ring-2 ring-quantum-500",
+        data.isTarget && "ring-2 ring-quantum-500 ring-opacity-75",
+        isHovered && "shadow-2xl",
       )}
+      style={{
+        ...{
+          [getNodeShape(data.type).includes("clip-path")
+            ? "clipPath"
+            : "borderRadius"]: getNodeShape(data.type).includes("clip-path")
+            ? getNodeShape(data.type).replace("clip-path: ", "")
+            : getNodeShape(data.type).replace("border-radius: ", ""),
+        },
+      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex flex-col items-center gap-1">
-        <div className="p-1 rounded bg-current/10">
+      {/* 背景装饰 */}
+      <div
+        className="absolute inset-0 opacity-10"
+        style={{
+          background: data.isTarget
+            ? "radial-gradient(circle, rgba(0,245,255,0.3) 0%, transparent 70%)"
+            : "radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)",
+        }}
+      />
+
+      <div className="relative flex flex-col items-center gap-1">
+        <div className="p-1.5 rounded-full bg-current/20 backdrop-blur-sm">
           {getNodeIcon(data.type)}
         </div>
 
         <div
-          className="font-mono text-xs font-medium text-white truncate w-full"
+          className="font-mono text-xs font-bold text-white truncate w-full"
           title={data.ip}
         >
           {data.ip}
@@ -122,6 +164,32 @@ const OptimizedNode = ({ data }: { data: any }) => {
                         ? "云端"
                         : "设备"}
         </div>
+
+        {/* 端口信息 */}
+        {data.ports && data.ports.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-1">
+            {data.ports.slice(0, 3).map((port: number, index: number) => (
+              <div
+                key={index}
+                className={cn(
+                  "px-1.5 py-0.5 rounded text-xs font-mono",
+                  port < 1024
+                    ? "bg-red-500/20 text-red-400 border border-red-500/40"
+                    : port < 49152
+                      ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
+                      : "bg-green-500/20 text-green-400 border border-green-500/40",
+                )}
+              >
+                {port}
+              </div>
+            ))}
+            {data.ports.length > 3 && (
+              <div className="px-1.5 py-0.5 rounded text-xs bg-gray-500/20 text-gray-400 border border-gray-500/40">
+                +{data.ports.length - 3}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

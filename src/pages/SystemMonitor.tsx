@@ -565,7 +565,7 @@ const SystemMonitor: React.FC = () => {
         <div className="mt-8 text-center text-gray-500 text-sm">
           <p>
             API服务器:{" "}
-            {process.env.REACT_APP_API_URL || "http://jq41030xx76.vicp.fun"} |
+            {import.meta.env.VITE_API_URL || "http://jq41030xx76.vicp.fun"} |
             数据源: {isUsingMockData ? "模拟数据" : "真实API"} | 最后��新:{" "}
             {realTimeData?.timestamp
               ? new Date(realTimeData.timestamp).toLocaleString()

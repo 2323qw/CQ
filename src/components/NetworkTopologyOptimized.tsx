@@ -487,6 +487,7 @@ export const NetworkTopologyOptimized: React.FC<
         label: "Router",
         type: "router",
         risk: "low",
+        ports: [80, 443, 22, 23],
       },
     ];
 
@@ -552,7 +553,7 @@ export const NetworkTopologyOptimized: React.FC<
       return generateOptimizedLayout(networkNodes, networkEdges, centerIP);
     }
 
-    // 简单的���动布局作为后备
+    // 简单的手动布局作为后备
     const simpleNodes: Node[] = networkNodes.map((node, index) => ({
       id: node.id,
       type: "custom",

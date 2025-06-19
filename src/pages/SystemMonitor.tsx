@@ -427,10 +427,17 @@ const SystemMonitor: React.FC = () => {
                   key={index}
                   className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg"
                 >
-                  <div>
+                  <div className="flex-1">
                     <div className="font-medium">{iface.interface_name}</div>
-                    <div className="text-sm text-gray-400">
+                    <div className="text-sm text-gray-400 flex items-center gap-2">
                       {iface.config?.ip_address || "无IP地址"}
+                      {iface.config?.ip_address && (
+                        <InvestigationTrigger
+                          ip={iface.config.ip_address}
+                          variant="icon"
+                          className="text-xs"
+                        />
+                      )}
                     </div>
                   </div>
                   <div className="text-right">

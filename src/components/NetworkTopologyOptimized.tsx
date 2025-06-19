@@ -360,12 +360,6 @@ export const NetworkTopologyOptimized: React.FC<
         investigation.networkAnalysis?.openPorts
           ?.slice(0, 3)
           .map((p: any) => p.port) || [],
-      threats: investigation.threatIntelligence?.blacklists?.length || 0,
-      connections: investigation.networkAnalysis?.connections?.length || 0,
-      performance: {
-        cpu: Math.floor(Math.random() * 80) + 10,
-        bandwidth: Math.floor(Math.random() * 100) + 50,
-      },
     });
 
     // 生成网络连接节点

@@ -37,23 +37,23 @@ const CustomNode = ({ data }: { data: any }) => {
   const getNodeIcon = (type: string) => {
     switch (type) {
       case "target":
-        return <Shield className="w-6 h-6" />;
+        return <Shield className="w-5 h-5 text-quantum-500" />;
       case "router":
-        return <Router className="w-5 h-5" />;
+        return <Router className="w-4 h-4 text-tech-accent" />;
       case "server":
-        return <Server className="w-5 h-5" />;
+        return <Server className="w-4 h-4 text-neural-500" />;
       case "internet":
-        return <Globe className="w-5 h-5" />;
+        return <Globe className="w-4 h-4 text-blue-400" />;
       case "device":
-        return <Monitor className="w-5 h-5" />;
+        return <Monitor className="w-4 h-4 text-green-400" />;
       case "mobile":
-        return <Smartphone className="w-5 h-5" />;
+        return <Smartphone className="w-4 h-4 text-purple-400" />;
       case "database":
-        return <Database className="w-5 h-5" />;
+        return <Database className="w-4 h-4 text-amber-400" />;
       case "cloud":
-        return <Cloud className="w-5 h-5" />;
+        return <Cloud className="w-4 h-4 text-red-400" />;
       default:
-        return <Wifi className="w-5 h-5" />;
+        return <Wifi className="w-4 h-4 text-gray-400" />;
     }
   };
 
@@ -75,28 +75,24 @@ const CustomNode = ({ data }: { data: any }) => {
   return (
     <div
       className={cn(
-        "px-3 py-2 shadow-lg rounded-lg border-2 min-w-[100px] max-w-[140px] cyber-card",
+        "px-2 py-1.5 shadow-lg rounded-md border min-w-[90px] max-w-[120px] cyber-card text-center",
         getRiskColor(data.risk),
-        data.isTarget && "ring-2 ring-quantum-500 ring-opacity-50",
+        data.isTarget && "ring-2 ring-quantum-500 ring-opacity-75 scale-110",
       )}
     >
-      <div className="flex items-center gap-1 mb-1">
+      <div className="flex flex-col items-center gap-1">
         {getNodeIcon(data.type)}
-        <div className="font-medium text-xs truncate">{data.label}</div>
+        <div className="font-medium text-xs truncate w-full">{data.label}</div>
+        <div className="text-xs opacity-75 font-mono truncate w-full">
+          {data.ip}
+        </div>
+        {data.ports && data.ports.length > 0 && (
+          <div className="text-xs opacity-60 truncate w-full">
+            :{data.ports[0]}
+            {data.ports.length > 1 && "+"}
+          </div>
+        )}
       </div>
-      <div className="text-xs opacity-75 font-mono truncate">{data.ip}</div>
-      {data.ports && data.ports.length > 0 && (
-        <div className="text-xs mt-1 opacity-60 truncate">
-          :{data.ports.slice(0, 2).join(",")}
-          {data.ports.length > 2 && "..."}
-        </div>
-      )}
-      {data.risk && (
-        <div className="flex items-center gap-1 mt-1">
-          <AlertTriangle className="w-2 h-2" />
-          <span className="text-xs">{data.risk}</span>
-        </div>
-      )}
     </div>
   );
 };
@@ -286,7 +282,7 @@ export const NetworkTopology: React.FC<NetworkTopologyProps> = ({
           }
         });
     } else if (investigation?.timeline) {
-      // 如果没有网络连接数据��基于时间线生成攻击路径节点
+      // 如果没有网络连接数据，基于时间线生成攻击路径节点
       investigation.timeline
         .slice(0, 5)
         .forEach((event: any, index: number) => {

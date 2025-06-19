@@ -29,6 +29,7 @@ import {
   Home,
   Briefcase,
   Cog,
+  X,
 } from "lucide-react";
 
 // 菜单项类型定义
@@ -74,7 +75,7 @@ const menuGroups: {
         name: "用户管理",
         path: "/users",
         icon: Users,
-        roles: ["超级管理员", "安全管理员"],
+        roles: ["超级管���员", "安全管理员"],
       },
       { name: "安全报告", path: "/reports", icon: FileText },
     ],
@@ -90,7 +91,12 @@ const menuGroups: {
   },
 ];
 
-export function Navigation() {
+interface NavigationProps {
+  isMobileOpen?: boolean;
+  onMobileClose?: () => void;
+}
+
+export function Navigation({ isMobileOpen = false, onMobileClose }: NavigationProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -101,6 +107,7 @@ export function Navigation() {
     "核心监控",
     "威胁管理",
   ]);
+  const [lastActiveTime, setLastActiveTime] = useState(new Date());
 
   useEffect(() => {
     // 获取用户角色和颜色信息
@@ -160,20 +167,59 @@ export function Navigation() {
     navigate("/login");
   };
 
+  const handleMobileNavClick = () => {
+    if (onMobileClose) {
+      onMobileClose();
+    }
+  };
+
+  // 更新最后活跃时间
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLastActiveTime(new Date());
+    }, 60000); // 每分钟更新一次
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-matrix-bg via-matrix-surface to-matrix-bg border-r border-matrix-border z-40 cyber-card-enhanced">
+    <>
+      {/* 移动端遮罩层 */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 md:hidden"
+          onClick={onMobileClose}
+        />
+      )}
+
+      {/* 导航侧边栏 */}
+      <div className={cn(
+        "fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-matrix-bg via-matrix-surface to-matrix-bg border-r border-matrix-border z-40 cyber-card-enhanced transition-transform duration-300",
+        // 移动端变换效果
+        isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+      )}>{
       {/* 顶部 Logo 区域 */}
       <div className="p-6 border-b border-matrix-border">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center glow-border">
-            <Shield className="w-6 h-6 text-white" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center glow-border">
+              <Shield className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-white neon-text">
+                CyberGuard
+              </h1>
+              <p className="text-xs text-muted-foreground">网络安全监控系统</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-lg font-bold text-white neon-text">
-              CyberGuard
-            </h1>
-            <p className="text-xs text-muted-foreground">网络安全监控系统</p>
-          </div>
+          {/* 移动端关闭按钮 */}
+          <button
+            onClick={onMobileClose}
+            className="md:hidden p-2 text-muted-foreground hover:text-white transition-colors"
+            aria-label="关闭导航菜单"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
@@ -244,10 +290,11 @@ export function Navigation() {
                         <Link
                           key={item.name}
                           to={item.path || "#"}
+                          onClick={handleMobileNavClick}
                           className={cn(
-                            "flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all duration-200 group",
+                            "flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all duration-200 group nav-item",
                             isActive
-                              ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30 neon-text"
+                              ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30 neon-text nav-item-active"
                               : "text-muted-foreground hover:text-white hover:bg-matrix-accent/50",
                           )}
                         >
@@ -302,17 +349,19 @@ export function Navigation() {
           </div>
 
           {/* 系统状态 */}
-          <div className="grid grid-cols-3 gap-2 text-xs">
-            <div className="bg-matrix-surface/50 rounded p-2 text-center">
+          <div className="system-stats-grid text-xs">
+            <div className="system-stat-item rounded p-2 text-center">
               <div className="text-green-400 font-mono">99.9%</div>
               <div className="text-muted-foreground">正常运行</div>
             </div>
-            <div className="bg-matrix-surface/50 rounded p-2 text-center">
-              <div className="text-neon-blue font-mono">24/7</div>
-              <div className="text-muted-foreground">监控中</div>
+            <div className="system-stat-item rounded p-2 text-center">
+              <div className="text-neon-blue font-mono">
+                {Math.floor((Date.now() - lastActiveTime.getTime()) / 1000)}s
+              </div>
+              <div className="text-muted-foreground">活跃时间</div>
             </div>
-            <div className="bg-matrix-surface/50 rounded p-2 text-center">
-              <div className="text-amber-400 font-mono">3</div>
+            <div className="system-stat-item rounded p-2 text-center">
+              <div className="text-amber-400 font-mono nav-badge">3</div>
               <div className="text-muted-foreground">待处理</div>
             </div>
           </div>
@@ -327,6 +376,7 @@ export function Navigation() {
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

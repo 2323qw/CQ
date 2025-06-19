@@ -413,9 +413,6 @@ export const NetworkTopologyOptimized: React.FC<
         type: "internet",
         risk: "medium",
         ports: [80, 443],
-        threats: 0,
-        connections: networkNodes.length,
-        performance: { cpu: 45, bandwidth: 1000 },
       },
       {
         id: "firewall",

@@ -54,6 +54,7 @@ import {
   collectAllMetrics,
 } from "@/hooks/useRealTimeAPI";
 import { DISPLAY_COLORS } from "@/lib/situationDisplayColors";
+import { InvestigationTrigger } from "@/components/InvestigationTrigger";
 
 // 类型定义
 interface MetricCard {

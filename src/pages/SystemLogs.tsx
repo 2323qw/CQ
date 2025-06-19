@@ -286,7 +286,7 @@ export default function SystemLogs() {
   };
 
   return (
-    <div className="ml-64 p-8 min-h-screen matrix-bg">
+    <div className="p-8 min-h-screen matrix-bg">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white glow-text mb-2">
           系统日志
@@ -296,7 +296,7 @@ export default function SystemLogs() {
         </p>
       </div>
 
-      {/* 统计面板 */}
+      {/* ���计面板 */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="cyber-card p-4 border-l-4 border-l-neon-blue">
           <div className="flex items-center justify-between">

@@ -91,24 +91,24 @@ const SystemMonitor: React.FC = () => {
   } = useSystemSummary();
 
   const {
-    interfaces,
+    data: interfaces,
     loading: interfacesLoading,
     error: interfacesError,
-    refetch: refetchInterfaces,
+    refresh: refetchInterfaces,
   } = useNetworkInterfaces();
 
   const {
-    processes,
+    data: processes,
     loading: processesLoading,
     error: processesError,
-    refetch: refetchProcesses,
-  } = useProcesses(10);
+    refresh: refetchProcesses,
+  } = useProcesses();
 
   const {
-    services,
+    data: services,
     loading: servicesLoading,
     error: servicesError,
-    refetch: refetchServices,
+    refresh: refetchServices,
   } = useServices();
 
   const {
@@ -566,7 +566,7 @@ const SystemMonitor: React.FC = () => {
           <p>
             API服务器:{" "}
             {process.env.REACT_APP_API_URL || "http://jq41030xx76.vicp.fun"} |
-            数据源: {isUsingMockData ? "模拟数据" : "真实API"} | 最后更新:{" "}
+            数据源: {isUsingMockData ? "模拟数据" : "真实API"} | 最后��新:{" "}
             {realTimeData?.timestamp
               ? new Date(realTimeData.timestamp).toLocaleString()
               : "无数据"}

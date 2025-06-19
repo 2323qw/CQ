@@ -421,7 +421,7 @@ const SystemMonitor: React.FC = () => {
               />
             </h3>
             <div className="space-y-3">
-              {interfaces.slice(0, 6).map((iface, index) => (
+              {(interfaces || []).slice(0, 6).map((iface, index) => (
                 <div
                   key={index}
                   className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg"
@@ -459,7 +459,7 @@ const SystemMonitor: React.FC = () => {
               />
             </h3>
             <div className="space-y-2">
-              {processes.slice(0, 8).map((process, index) => (
+              {(processes || []).slice(0, 8).map((process, index) => (
                 <div
                   key={index}
                   className="flex items-center justify-between p-2 bg-gray-700/30 rounded"
@@ -503,7 +503,7 @@ const SystemMonitor: React.FC = () => {
               />
             </h3>
             <div className="space-y-2">
-              {services.slice(0, 8).map((service, index) => (
+              {(services || []).slice(0, 8).map((service, index) => (
                 <div
                   key={index}
                   className="flex items-center justify-between p-2 bg-gray-700/30 rounded"

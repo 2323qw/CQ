@@ -407,7 +407,6 @@ export const NetworkTopologyOptimized: React.FC<
         label: "Internet Gateway",
         type: "internet",
         risk: "medium",
-        ports: [80, 443],
       },
       {
         id: "firewall",
@@ -490,7 +489,7 @@ export const NetworkTopologyOptimized: React.FC<
       return generateOptimizedLayout(networkNodes, networkEdges, centerIP);
     }
 
-    // 简单的手动布局作为���备
+    // 简单的手动布局作为后备
     const simpleNodes: Node[] = networkNodes.map((node, index) => ({
       id: node.id,
       type: "custom",

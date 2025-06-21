@@ -19,7 +19,7 @@ import AssetManagement from "@/pages/AssetManagement";
 import ApiKeys from "@/pages/ApiKeys";
 import SituationDisplay from "@/pages/SituationDisplay";
 import SystemMonitor from "@/pages/SystemMonitor";
-import EvidenceCollection from "@/pages/EvidenceCollection";
+import EvidenceCollectionInternational from "@/pages/EvidenceCollectionInternational";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
 import AuthDebug from "@/components/AuthDebug";

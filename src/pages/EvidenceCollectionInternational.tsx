@@ -294,7 +294,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                 </h3>
                 <p className="text-muted-foreground">
                   {investigationMode === "advanced"
-                    ? "正在执行深度威胁分析��网络映射..."
+                    ? "正在执行深度威胁分析和网络映射..."
                     : "正在收集基础威胁情报数据..."}
                 </p>
                 <div className="w-64 mx-auto">
@@ -869,38 +869,35 @@ const EvidenceCollectionInternational: React.FC = () => {
 
         {/* Empty State */}
         {!selectedIP && !loading && (
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-12">
-              <div className="text-center space-y-6">
-                <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto">
-                  <Search className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+          <div className="cyber-card p-12">
+            <div className="text-center space-y-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-quantum-500 to-neural-500 rounded-full flex items-center justify-center mx-auto">
+                <Search className="w-10 h-10 text-white" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  准备开始调查
+                </h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  在上方输入IP地址开始全面的威胁分析和网络调查
+                </p>
+              </div>
+              <div className="flex justify-center space-x-4 text-sm text-muted-foreground">
+                <div className="flex items-center space-x-1">
+                  <CheckCircle className="w-4 h-4 text-green-400" />
+                  <span>实时分析</span>
                 </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                    Ready to Investigate
-                  </h3>
-                  <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-                    Enter an IP address above to begin comprehensive threat
-                    analysis and network investigation
-                  </p>
+                <div className="flex items-center space-x-1">
+                  <CheckCircle className="w-4 h-4 text-green-400" />
+                  <span>威胁情报</span>
                 </div>
-                <div className="flex justify-center space-x-4 text-sm text-slate-500 dark:text-slate-500">
-                  <div className="flex items-center space-x-1">
-                    <CheckCircle className="w-4 h-4" />
-                    <span>Real-time Analysis</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <CheckCircle className="w-4 h-4" />
-                    <span>Threat Intelligence</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <CheckCircle className="w-4 h-4" />
-                    <span>Network Mapping</span>
-                  </div>
+                <div className="flex items-center space-x-1">
+                  <CheckCircle className="w-4 h-4 text-green-400" />
+                  <span>网络映射</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
       </div>
     </div>

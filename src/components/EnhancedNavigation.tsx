@@ -309,15 +309,7 @@ export function EnhancedNavigation({
   const filteredGroups = menuGroups
     .map((group) => ({
       ...group,
-      items: group.items.filter(
-        (item) =>
-          hasPermission(item) &&
-          (searchQuery === "" ||
-            item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.description
-              ?.toLowerCase()
-              .includes(searchQuery.toLowerCase())),
-      ),
+      items: group.items.filter((item) => hasPermission(item)),
     }))
     .filter((group) => group.items.length > 0);
 

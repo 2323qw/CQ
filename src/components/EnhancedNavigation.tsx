@@ -703,8 +703,8 @@ export function EnhancedNavigation({
           )}
         </div>
 
-        {/* 简化状态栏 */}
-        <div className="p-4 border-b border-matrix-border/50">
+        {/* 增强状态栏 */}
+        <div className="p-4 border-b border-matrix-border/50 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div
@@ -714,13 +714,51 @@ export function EnhancedNavigation({
                 {isOnline ? (isApiMode ? "API模式" : "模拟模式") : "离线模式"}
               </span>
             </div>
-            <div className="flex items-center gap-1">
-              <Bell className="w-4 h-4 text-amber-400" />
-              <span className="text-xs bg-amber-400/20 text-amber-400 px-1 rounded">
-                {systemStatus.threats}
-              </span>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                <Bell className="w-4 h-4 text-amber-400" />
+                <span className="text-xs bg-amber-400/20 text-amber-400 px-1.5 py-0.5 rounded border border-amber-400/30">
+                  {systemStatus.threats}
+                </span>
+              </div>
+              <button
+                onClick={() => setShowQuickActions(!showQuickActions)}
+                className="p-1 rounded text-muted-foreground hover:text-neon-blue transition-colors"
+                title="快速操作"
+              >
+                <Command className="w-4 h-4" />
+              </button>
             </div>
           </div>
+
+          {/* 快速操作面板 */}
+          {showQuickActions && !isCompactMode && (
+            <div className="space-y-3 bg-matrix-surface/30 rounded-lg p-3 border border-matrix-border/30">
+              <div className="text-xs text-muted-foreground font-medium">
+                快速操作
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {Object.entries(quickActionGroups).map(([category, actions]) =>
+                  actions.map((action) => (
+                    <button
+                      key={action.name}
+                      onClick={action.onClick}
+                      className={cn(
+                        "flex flex-col items-center gap-1 p-2 rounded-lg transition-all duration-200 hover:scale-105",
+                        action.bgColor,
+                        action.borderColor,
+                        "border hover:glow-border-subtle",
+                      )}
+                      title={`${action.description} (${action.shortcut})`}
+                    >
+                      <action.icon className={cn("w-4 h-4", action.color)} />
+                      <span className="text-xs text-center">{action.name}</span>
+                    </button>
+                  )),
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 主导航菜单 */}

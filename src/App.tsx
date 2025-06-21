@@ -4,7 +4,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { DataSourceProvider } from "@/contexts/DataSourceContext";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { Navigation } from "@/components/Navigation";
+import { EnhancedNavigation } from "@/components/EnhancedNavigation";
 import { MobileNavigationTrigger } from "@/components/MobileNavigationTrigger";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { ToastContainer } from "@/components/ui/toast";

@@ -501,7 +501,15 @@ const EvidenceCollectionInternational: React.FC = () => {
                   </Button>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div
+                className={cn(
+                  "grid gap-6",
+                  investigationMode === "basic"
+                    ? "grid-cols-1 md:grid-cols-2"
+                    : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
+                )}
+              >
+                {/* 基础模式显示核心信息 */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-muted-foreground">
                     IP地址
@@ -518,26 +526,32 @@ const EvidenceCollectionInternational: React.FC = () => {
                     {(investigation as any).country || "未知"}
                   </p>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">
-                    组织机构
-                  </label>
-                  <p className="text-white">
-                    {(investigation as any).organization || "无数据"}
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">
-                    最后活动
-                  </label>
-                  <p className="text-white">
-                    {(investigation as any).lastActivity
-                      ? new Date(
-                          (investigation as any).lastActivity,
-                        ).toLocaleDateString()
-                      : "最近"}
-                  </p>
-                </div>
+
+                {/* 高级模式显示详细信息 */}
+                {investigationMode === "advanced" && (
+                  <>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-muted-foreground">
+                        组织机构
+                      </label>
+                      <p className="text-white">
+                        {(investigation as any).organization || "无数据"}
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-muted-foreground">
+                        最后活动
+                      </label>
+                      <p className="text-white">
+                        {(investigation as any).lastActivity
+                          ? new Date(
+                              (investigation as any).lastActivity,
+                            ).toLocaleDateString()
+                          : "最近"}
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 

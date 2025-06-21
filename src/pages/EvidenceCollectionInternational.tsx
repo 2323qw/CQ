@@ -462,7 +462,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                             "unknown"
                         : (investigation as any).reputation || "unknown",
                     ).label === "Malicious"
-                      ? "恶���"
+                      ? "恶意"
                       : getReputationStatus(
                             investigationMode === "advanced"
                               ? (investigation as any).basicInfo?.reputation ||
@@ -537,41 +537,41 @@ const EvidenceCollectionInternational: React.FC = () => {
               }
               className="space-y-6"
             >
-              <TabsList className="grid w-full grid-cols-5">
+              <TabsList className="grid w-full grid-cols-5 bg-matrix-surface border border-matrix-border">
                 <TabsTrigger
                   value="overview"
                   className="flex items-center space-x-2"
                 >
                   <Eye className="w-4 h-4" />
-                  <span>Overview</span>
+                  <span>总览</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="topology"
                   className="flex items-center space-x-2"
                 >
                   <Network className="w-4 h-4" />
-                  <span>Network</span>
+                  <span>网络拓扑</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="threats"
                   className="flex items-center space-x-2"
                 >
                   <Shield className="w-4 h-4" />
-                  <span>Threats</span>
+                  <span>威胁情报</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="analytics"
                   className="flex items-center space-x-2"
                 >
                   <BarChart3 className="w-4 h-4" />
-                  <span>Analytics</span>
+                  <span>数据分析</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="forensics"
                   className="flex items-center space-x-2"
                 >
                   <Bug className="w-4 h-4" />
-                  <span>Forensics</span>
+                  <span>数字取证</span>
                 </TabsTrigger>
               </TabsList>
 

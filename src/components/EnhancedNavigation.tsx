@@ -112,254 +112,57 @@ interface SystemStatus {
   incidents: number;
 }
 
-// 分组菜单结构
+// 简化的分组菜单结构
 const menuGroups: {
   title: string;
   icon: any;
   items: MenuItem[];
-  priority?: number;
 }[] = [
   {
-    title: "智能概览",
+    title: "核心监控",
     icon: Eye,
-    priority: 1,
     items: [
-      {
-        name: "智能仪表板",
-        path: "/",
-        icon: Home,
-        description: "实时威胁态势感知",
-        shortcut: "Ctrl+1",
-      },
-      {
-        name: "3D态势大屏",
-        path: "/situation",
-        icon: Globe,
-        description: "沉浸式3D网络安全可视化",
-        shortcut: "Ctrl+2",
-      },
-      {
-        name: "AI威胁猎捕",
-        path: "/threat-hunting",
-        icon: Target,
-        description: "基于机器学习的主动威胁发现",
-        isNew: true,
-        shortcut: "Ctrl+3",
-      },
-      {
-        name: "安全指挥中心",
-        path: "/command-center",
-        icon: Command,
-        description: "集中化安全运营中心",
-        isPro: true,
-        shortcut: "Ctrl+4",
-      },
+      { name: "仪表板", path: "/", icon: Home },
+      { name: "3D态势大屏", path: "/situation", icon: Globe },
+      { name: "系统监控", path: "/system-monitor", icon: Monitor },
     ],
   },
   {
-    title: "威胁检测",
+    title: "威胁管理",
     icon: Shield,
-    priority: 2,
     items: [
       {
-        name: "实时告警",
+        name: "威胁告警",
         path: "/alerts",
         icon: AlertTriangle,
         badge: "3",
         badgeVariant: "destructive",
-        description: "实时安全事件监控",
       },
-      {
-        name: "高级调查",
-        path: "/evidence-collection",
-        icon: Search,
-        description: "深度威胁分析和取证",
-      },
-      {
-        name: "威胁情报",
-        path: "/threat-intelligence",
-        icon: Database,
-        description: "全球威胁情报聚合",
-      },
-      {
-        name: "恶意软件分析",
-        path: "/malware-analysis",
-        icon: Bug,
-        description: "沙箱恶意软件分析",
-        isNew: true,
-      },
-      {
-        name: "行为分析",
-        path: "/behavior-analysis",
-        icon: Brain,
-        description: "AI驱动的异常行为检测",
-        isBeta: true,
-      },
-      {
-        name: "网络取证",
-        path: "/network-forensics",
-        icon: Fingerprint,
-        description: "深度网络流量分析",
-        isPro: true,
-      },
-    ],
-  },
-  {
-    title: "监控分析",
-    icon: BarChart3,
-    priority: 3,
-    items: [
-      {
-        name: "系统监控",
-        path: "/system-monitor",
-        icon: Monitor,
-        description: "基础设施健康监控",
-      },
-      {
-        name: "网络拓扑",
-        path: "/network-topology",
-        icon: Network,
-        description: "智能网络拓扑映射",
-        isNew: true,
-      },
-      {
-        name: "性能分析",
-        path: "/performance-analysis",
-        icon: TrendingUp,
-        description: "系统性能深度分析",
-      },
-      {
-        name: "漏洞扫描",
-        path: "/vulnerability-scan",
-        icon: ScanLine,
-        description: "自动化漏洞发现",
-        badge: "2",
-        badgeVariant: "warning",
-      },
-      {
-        name: "合规检查",
-        path: "/compliance-check",
-        icon: ShieldCheck,
-        description: "安全合规性审计",
-        isPro: true,
-      },
-    ],
-  },
-  {
-    title: "AI安全",
-    icon: Brain,
-    priority: 4,
-    items: [
-      {
-        name: "智能分析",
-        path: "/ai-analysis",
-        icon: Zap,
-        description: "机器学习威胁分析",
-        isNew: true,
-      },
-      {
-        name: "预测防护",
-        path: "/predictive-defense",
-        icon: Radar,
-        description: "AI驱动的威胁预测",
-        isPro: true,
-      },
-      {
-        name: "自动响应",
-        path: "/auto-response",
-        icon: GitBranch,
-        description: "智能自动化事件响应",
-        isBeta: true,
-      },
-      {
-        name: "模型训练",
-        path: "/model-training",
-        icon: Brain,
-        description: "定制AI安全模型",
-        roles: ["超级管理员", "数据分析师"],
-      },
+      { name: "证据收集", path: "/evidence-collection", icon: Search },
+      { name: "威胁情报", path: "/threat-intelligence", icon: Database },
     ],
   },
   {
     title: "业务管理",
     icon: Briefcase,
-    priority: 5,
     items: [
-      {
-        name: "资产管理",
-        path: "/assets",
-        icon: Server,
-        description: "IT资产清单和管理",
-      },
+      { name: "资产管理", path: "/assets", icon: Server },
       {
         name: "用户管理",
         path: "/users",
         icon: Users,
         roles: ["超级管理员", "安全管理员"],
-        description: "用户权限和角色管理",
       },
-      {
-        name: "安全报告",
-        path: "/reports",
-        icon: FileText,
-        description: "安全态势报告生成",
-      },
-      {
-        name: "事件管理",
-        path: "/incident-management",
-        icon: Calendar,
-        description: "安全事件生命周期管理",
-        badge: "5",
-        badgeVariant: "warning",
-      },
-      {
-        name: "风险评估",
-        path: "/risk-assessment",
-        icon: Target,
-        description: "企业安全风险评估",
-        isPro: true,
-      },
+      { name: "安全报告", path: "/reports", icon: FileText },
     ],
   },
   {
     title: "系统配置",
     icon: Cog,
-    priority: 6,
     items: [
-      {
-        name: "系统日志",
-        path: "/logs",
-        icon: Activity,
-        description: "系统运行日志管理",
-      },
-      {
-        name: "API管理",
-        path: "/api-keys",
-        icon: Key,
-        roles: ["超级管理员"],
-        description: "API密钥和接口管理",
-      },
-      {
-        name: "系统设置",
-        path: "/settings",
-        icon: Settings,
-        description: "系统配置和参数设置",
-      },
-      {
-        name: "备份恢复",
-        path: "/backup",
-        icon: Archive,
-        description: "系统数据备份恢复",
-        roles: ["超级管理员"],
-      },
-      {
-        name: "更新管理",
-        path: "/updates",
-        icon: Download,
-        description: "系统更新和补丁管理",
-        badge: "1",
-        badgeVariant: "success",
-      },
+      { name: "系统日志", path: "/logs", icon: Activity },
+      { name: "API密钥", path: "/api-keys", icon: Key, roles: ["超级管理员"] },
+      { name: "系统设置", path: "/settings", icon: Settings },
     ],
   },
 ];
@@ -437,7 +240,7 @@ export function EnhancedNavigation({
 
   useEffect(() => {
     // 获取用户角色和颜色信息
-    const role = localStorage.getItem("cyberguard_user_role") || "用���";
+    const role = localStorage.getItem("cyberguard_user_role") || "用户";
     const color =
       localStorage.getItem("cyberguard_user_color") || "text-neon-blue";
     setUserRole(role);

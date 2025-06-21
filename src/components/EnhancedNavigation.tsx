@@ -112,24 +112,56 @@ interface SystemStatus {
   incidents: number;
 }
 
-// 简化的分组菜单结构
+// 优化的分组菜单结构 - 保留创新功能但改进组织
 const menuGroups: {
   title: string;
   icon: any;
   items: MenuItem[];
+  priority: number;
+  color: string;
+  description?: string;
 }[] = [
   {
-    title: "核心监控",
-    icon: Eye,
+    title: "智能概览",
+    icon: Home,
+    priority: 1,
+    color: "text-cyan-400",
+    description: "核心监控与态势感知",
     items: [
-      { name: "仪表板", path: "/", icon: Home },
-      { name: "3D态势大屏", path: "/situation", icon: Globe },
-      { name: "系统监控", path: "/system-monitor", icon: Monitor },
+      {
+        name: "仪表板",
+        path: "/",
+        icon: BarChart3,
+        description: "实时安全态势总览",
+      },
+      {
+        name: "3D态势大屏",
+        path: "/situation",
+        icon: Globe,
+        description: "沉浸式威胁可视化",
+        isNew: true,
+      },
+      {
+        name: "智能指挥中心",
+        path: "/command-center",
+        icon: Target,
+        description: "统一安全运营平台",
+        isPro: true,
+      },
+      {
+        name: "系统监控",
+        path: "/system-monitor",
+        icon: Monitor,
+        description: "基础设施状态监控",
+      },
     ],
   },
   {
-    title: "威胁管理",
+    title: "威胁检测",
     icon: Shield,
+    priority: 2,
+    color: "text-red-400",
+    description: "威胁发现与响应",
     items: [
       {
         name: "威胁告警",
@@ -137,32 +169,182 @@ const menuGroups: {
         icon: AlertTriangle,
         badge: "3",
         badgeVariant: "destructive",
+        description: "实时威胁预警",
+        shortcut: "Ctrl+T",
       },
-      { name: "证据收集", path: "/evidence-collection", icon: Search },
-      { name: "威胁情报", path: "/threat-intelligence", icon: Database },
+      {
+        name: "AI威胁狩猎",
+        path: "/threat-hunting",
+        icon: Radar,
+        description: "主动威胁发现",
+        isBeta: true,
+      },
+      {
+        name: "证据收集",
+        path: "/evidence-collection",
+        icon: Search,
+        description: "数字取证分析",
+      },
+      {
+        name: "国际取证",
+        path: "/evidence-collection-international",
+        icon: Globe,
+        description: "跨境安全调查",
+        isPro: true,
+      },
+      {
+        name: "威胁情报",
+        path: "/threat-intelligence",
+        icon: Database,
+        description: "威胁信息汇聚",
+      },
+    ],
+  },
+  {
+    title: "监控分析",
+    icon: Activity,
+    priority: 3,
+    color: "text-green-400",
+    description: "深度分析与洞察",
+    items: [
+      {
+        name: "网络拓扑",
+        path: "/topology",
+        icon: GitBranch,
+        description: "网络架构可视化",
+        isNew: true,
+      },
+      {
+        name: "流量分析",
+        path: "/traffic-analysis",
+        icon: TrendingUp,
+        description: "网络流量深度分析",
+      },
+      {
+        name: "行为分析",
+        path: "/behavior-analysis",
+        icon: Brain,
+        description: "用户行为建模",
+        isBeta: true,
+      },
+      {
+        name: "日志审计",
+        path: "/logs",
+        icon: FileSearch,
+        description: "安全事件追踪",
+      },
+      {
+        name: "合规检查",
+        path: "/compliance",
+        icon: ShieldCheck,
+        description: "法规遵循评估",
+      },
+    ],
+  },
+  {
+    title: "AI安全",
+    icon: Brain,
+    priority: 4,
+    color: "text-purple-400",
+    description: "人工智能驱动的安全能力",
+    items: [
+      {
+        name: "智能分析",
+        path: "/ai-analysis",
+        icon: Lightbulb,
+        description: "机器学习威胁检测",
+        isNew: true,
+      },
+      {
+        name: "自动响应",
+        path: "/auto-response",
+        icon: Zap,
+        description: "智能安全编排",
+        isBeta: true,
+      },
+      {
+        name: "预测建模",
+        path: "/predictive",
+        icon: TrendingUp,
+        description: "风险预测分析",
+        isPro: true,
+      },
+      {
+        name: "知识图谱",
+        path: "/knowledge-graph",
+        icon: Layers,
+        description: "安全知识关联",
+        isBeta: true,
+      },
     ],
   },
   {
     title: "业务管理",
     icon: Briefcase,
+    priority: 5,
+    color: "text-blue-400",
+    description: "企业资产与人员管理",
     items: [
-      { name: "资产管理", path: "/assets", icon: Server },
+      {
+        name: "资产管理",
+        path: "/assets",
+        icon: Server,
+        description: "IT资产全生命周期管理",
+      },
       {
         name: "用户管理",
         path: "/users",
         icon: Users,
         roles: ["超级管理员", "安全管理员"],
+        description: "身份与访问控制",
       },
-      { name: "安全报告", path: "/reports", icon: FileText },
+      {
+        name: "安全报告",
+        path: "/reports",
+        icon: FileText,
+        description: "定制化安全报表",
+      },
+      {
+        name: "风险评估",
+        path: "/risk-assessment",
+        icon: AlertTriangle,
+        description: "业务风险量化分析",
+      },
     ],
   },
   {
     title: "系统配置",
-    icon: Cog,
+    icon: Settings,
+    priority: 6,
+    color: "text-amber-400",
+    description: "系统设置与维护",
     items: [
-      { name: "系统日志", path: "/logs", icon: Activity },
-      { name: "API密钥", path: "/api-keys", icon: Key, roles: ["超级管理员"] },
-      { name: "系统设置", path: "/settings", icon: Settings },
+      {
+        name: "API密钥",
+        path: "/api-keys",
+        icon: Key,
+        roles: ["超级管理员"],
+        description: "接口访问控制",
+      },
+      {
+        name: "系统设置",
+        path: "/settings",
+        icon: Cog,
+        description: "全局配置管理",
+      },
+      {
+        name: "功能展示",
+        path: "/features",
+        icon: Star,
+        description: "平台能力概览",
+        isNew: true,
+      },
+      {
+        name: "帮助中心",
+        path: "/help",
+        icon: HelpCircle,
+        description: "使用指南与支持",
+      },
     ],
   },
 ];
@@ -184,7 +366,7 @@ const quickActions: QuickAction[] = [
     shortcut: "Ctrl+E",
   },
   {
-    name: "创建报告",
+    name: "创���报告",
     icon: FileText,
     color: "text-green-400",
     onClick: () => console.log("Create report"),

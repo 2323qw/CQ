@@ -615,7 +615,7 @@ export function EnhancedNavigation({
                   CyberGuard
                 </h1>
                 <p className="text-xs text-muted-foreground">
-                  智能网络安全平台
+                  智���网络安全平台
                 </p>
               </div>
             </div>
@@ -764,8 +764,11 @@ export function EnhancedNavigation({
         </div>
 
         {/* 主导航菜单 */}
-        <div className="flex-1 overflow-y-auto scrollbar-custom">
-          <nav className="p-4 space-y-3">
+        <div
+          className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-custom"
+          style={{ maxHeight: "calc(100vh - 240px)" }}
+        >
+          <nav className={cn("p-3 space-y-2", isCompactMode && "p-2")}>
             {displayGroups
               .sort((a, b) => (a.priority || 99) - (b.priority || 99))
               .map((group) => {

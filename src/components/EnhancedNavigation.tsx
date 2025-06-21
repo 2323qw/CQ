@@ -392,7 +392,7 @@ const quickActionGroups = {
       borderColor: "border-green-500/30",
       onClick: () => console.log("Create report"),
       shortcut: "Ctrl+R",
-      description: "生成安全报告",
+      description: "生成���全报告",
     },
   ],
 };
@@ -876,10 +876,16 @@ export function EnhancedNavigation({
                                   isCompactMode ? item.name : item.description
                                 }
                               >
-                                <div className="flex items-center gap-3 flex-1">
+                                <div
+                                  className={cn(
+                                    "flex items-center flex-1",
+                                    isCompactMode ? "justify-center" : "gap-3",
+                                  )}
+                                >
                                   <div
                                     className={cn(
-                                      "p-1.5 rounded-lg transition-all duration-200",
+                                      "rounded-lg transition-all duration-200",
+                                      isCompactMode ? "p-1" : "p-1.5",
                                       isActive
                                         ? "bg-neon-blue/20"
                                         : "bg-matrix-surface/30 group-hover:bg-matrix-surface/50",
@@ -896,29 +902,29 @@ export function EnhancedNavigation({
                                   </div>
                                   {!isCompactMode && (
                                     <div className="flex-1 min-w-0">
-                                      <div className="flex items-center gap-2">
-                                        <span className="font-medium">
+                                      <div className="flex items-center gap-2 flex-wrap">
+                                        <span className="font-medium text-sm">
                                           {item.name}
                                         </span>
                                         {/* 状态标签 */}
                                         {item.isNew && (
-                                          <Badge className="text-xs bg-green-500/20 text-green-400 border-green-500/40">
-                                            新功能
+                                          <Badge className="text-xs bg-green-500/20 text-green-400 border-green-500/40 px-1.5 py-0">
+                                            新
                                           </Badge>
                                         )}
                                         {item.isBeta && (
-                                          <Badge className="text-xs bg-yellow-500/20 text-yellow-400 border-yellow-500/40">
-                                            Beta
+                                          <Badge className="text-xs bg-yellow-500/20 text-yellow-400 border-yellow-500/40 px-1.5 py-0">
+                                            β
                                           </Badge>
                                         )}
                                         {item.isPro && (
-                                          <Badge className="text-xs bg-purple-500/20 text-purple-400 border-purple-500/40">
+                                          <Badge className="text-xs bg-purple-500/20 text-purple-400 border-purple-500/40 px-1.5 py-0">
                                             Pro
                                           </Badge>
                                         )}
                                       </div>
                                       {item.description && (
-                                        <div className="text-xs text-muted-foreground/70 mt-0.5">
+                                        <div className="text-xs text-muted-foreground/70 mt-0.5 line-clamp-1">
                                           {item.description}
                                         </div>
                                       )}
@@ -970,7 +976,7 @@ export function EnhancedNavigation({
                                       </Badge>
                                     )}
 
-                                    {/* 快捷键���示 */}
+                                    {/* 快捷键提示 */}
                                     {item.shortcut && (
                                       <span className="text-xs text-muted-foreground/50 font-mono bg-matrix-surface/30 px-1.5 py-0.5 rounded">
                                         {item.shortcut}
@@ -1024,7 +1030,7 @@ export function EnhancedNavigation({
                     {Math.floor(
                       (Date.now() - lastActiveTime.getTime()) / 60000,
                     )}
-                    分钟前
+                    分��前
                   </p>
                 </div>
               )}

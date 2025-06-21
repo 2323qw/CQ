@@ -349,7 +349,7 @@ const menuGroups: {
   },
 ];
 
-// 分类的快速操作
+// 分类的快速操���
 const quickActionGroups = {
   security: [
     {
@@ -416,6 +416,11 @@ export function EnhancedNavigation({
     "智能概览",
     "威胁检测",
   ]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [recentItems, setRecentItems] = useState<string[]>([]);
+  const [favoriteItems, setFavoriteItems] = useState<string[]>([]);
+  const [showQuickActions, setShowQuickActions] = useState(false);
   const [lastActiveTime, setLastActiveTime] = useState(new Date());
   const [isCompactMode, setIsCompactMode] = useState(false);
   const [systemStatus, setSystemStatus] = useState<SystemStatus>({
@@ -734,7 +739,7 @@ export function EnhancedNavigation({
                     {Math.floor((Date.now() - lastActiveTime.getTime()) / 1000)}
                     s
                   </div>
-                  <div className="text-muted-foreground">活跃时���</div>
+                  <div className="text-muted-foreground">活跃时间</div>
                 </div>
                 <div className="system-stat-item rounded p-2 text-center">
                   <div className="text-amber-400 font-mono nav-badge">3</div>

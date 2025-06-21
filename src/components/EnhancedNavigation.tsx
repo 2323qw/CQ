@@ -841,9 +841,10 @@ export function EnhancedNavigation({
                     {(isExpanded || isCompactMode) && (
                       <div
                         className={cn(
-                          "space-y-1 transition-all duration-300",
-                          !isCompactMode &&
-                            "ml-2 pl-4 border-l-2 border-matrix-border/30",
+                          "space-y-1 transition-all duration-300 overflow-hidden",
+                          isCompactMode
+                            ? "space-y-1"
+                            : "ml-2 pl-3 border-l-2 border-matrix-border/30",
                         )}
                       >
                         {group.items.map((item) => {

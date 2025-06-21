@@ -24,6 +24,16 @@ import EvidenceCollectionInternational from "@/pages/EvidenceCollectionInternati
 import ThreatHunting from "@/pages/ThreatHunting";
 import CommandCenter from "@/pages/CommandCenter";
 import FeatureShowcase from "@/pages/FeatureShowcase";
+import NetworkTopology from "@/pages/NetworkTopology";
+import TrafficAnalysis from "@/pages/TrafficAnalysis";
+import BehaviorAnalysis from "@/pages/BehaviorAnalysis";
+import ComplianceCheck from "@/pages/ComplianceCheck";
+import AIAnalysis from "@/pages/AIAnalysis";
+import AutoResponse from "@/pages/AutoResponse";
+import PredictiveModeling from "@/pages/PredictiveModeling";
+import KnowledgeGraph from "@/pages/KnowledgeGraph";
+import RiskAssessment from "@/pages/RiskAssessment";
+import HelpCenter from "@/pages/HelpCenter";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
 import AuthDebug from "@/components/AuthDebug";
@@ -222,6 +232,86 @@ function AppLayout() {
         element={
           <ProtectedRoute>
             <FeatureShowcase />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/topology"
+        element={
+          <ProtectedRoute>
+            <NetworkTopology />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/traffic-analysis"
+        element={
+          <ProtectedRoute>
+            <TrafficAnalysis />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/behavior-analysis"
+        element={
+          <ProtectedRoute>
+            <BehaviorAnalysis />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/compliance"
+        element={
+          <ProtectedRoute>
+            <ComplianceCheck />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/ai-analysis"
+        element={
+          <ProtectedRoute>
+            <AIAnalysis />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/auto-response"
+        element={
+          <ProtectedRoute>
+            <AutoResponse />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/predictive"
+        element={
+          <ProtectedRoute>
+            <PredictiveModeling />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/knowledge-graph"
+        element={
+          <ProtectedRoute>
+            <KnowledgeGraph />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/risk-assessment"
+        element={
+          <ProtectedRoute>
+            <RiskAssessment />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/help"
+        element={
+          <ProtectedRoute>
+            <HelpCenter />
           </ProtectedRoute>
         }
       />

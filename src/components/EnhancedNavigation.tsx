@@ -623,7 +623,16 @@ export function EnhancedNavigation({
             <div className="flex items-center gap-2">
               {/* 紧凑模式切换 */}
               <button
-                onClick={() => setIsCompactMode(!isCompactMode)}
+                onClick={() => {
+                  const newCompactMode = !isCompactMode;
+                  setIsCompactMode(newCompactMode);
+                  // 发送事件通知App.tsx布局变化
+                  window.dispatchEvent(
+                    new CustomEvent("navigationCompactModeChange", {
+                      detail: { isCompact: newCompactMode },
+                    }),
+                  );
+                }}
                 className="hidden md:block p-2 text-muted-foreground hover:text-neon-blue transition-all duration-200 rounded-lg hover:bg-matrix-accent/30"
                 title={isCompactMode ? "展开导航" : "收起导航"}
               >

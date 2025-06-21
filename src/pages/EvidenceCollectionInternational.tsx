@@ -1320,15 +1320,35 @@ const EvidenceCollectionInternational: React.FC = () => {
 
                 <TabsContent value="threats">
                   <div className="space-y-6">
-                    {/* Threat Intelligence Summary */}
+                    {/* Enhanced Threat Intelligence Summary */}
                     <div className="cyber-card p-6">
-                      <h3 className="text-lg font-semibold text-white mb-6 flex items-center space-x-2">
-                        <Shield className="w-5 h-5 text-red-400" />
-                        <span>威��情报分析</span>
-                      </h3>
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
+                          <Shield className="w-5 h-5 text-red-400" />
+                          <span>高级威胁情报分析</span>
+                        </h3>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-cyan-400 hover:text-cyan-300"
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            导出威胁报告
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-green-400 hover:text-green-300"
+                          >
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                            实时更新
+                          </Button>
+                        </div>
+                      </div>
 
                       {/* Threat Intelligence Cards */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                         <div className="cyber-card p-4 bg-gradient-to-br from-red-500/10 to-orange-500/10 border-red-500/30">
                           <div className="flex items-center justify-between">
                             <div>
@@ -1338,6 +1358,12 @@ const EvidenceCollectionInternational: React.FC = () => {
                               <p className="text-2xl font-bold text-white">
                                 {(investigation as any).threatIntelligence
                                   ?.blacklists?.length || 0}
+                              </p>
+                              <p className="text-xs text-red-400">
+                                {(investigation as any).threatIntelligence
+                                  ?.blacklists?.length
+                                  ? "已标记"
+                                  : "清洁"}
                               </p>
                             </div>
                             <AlertTriangle className="w-8 h-8 text-red-400" />
@@ -1356,6 +1382,9 @@ const EvidenceCollectionInternational: React.FC = () => {
                                   ).length
                                 }
                               </p>
+                              <p className="text-xs text-yellow-400">
+                                检测类型
+                              </p>
                             </div>
                             <Eye className="w-8 h-8 text-yellow-400" />
                           </div>
@@ -1369,24 +1398,53 @@ const EvidenceCollectionInternational: React.FC = () => {
                               <p className="text-2xl font-bold text-white">
                                 12
                               </p>
+                              <p className="text-xs text-blue-400">
+                                活跃数据源
+                              </p>
                             </div>
                             <Database className="w-8 h-8 text-blue-400" />
                           </div>
                         </div>
+                        <div className="cyber-card p-4 bg-gradient-to-br from-purple-500/10 to-violet-500/10 border-purple-500/30">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-purple-300">
+                                置信度
+                              </p>
+                              <p className="text-2xl font-bold text-white">
+                                94.5%
+                              </p>
+                              <p className="text-xs text-purple-400">
+                                分析准确性
+                              </p>
+                            </div>
+                            <Target className="w-8 h-8 text-purple-400" />
+                          </div>
+                        </div>
                       </div>
 
+                      {/* Threat Detection Results */}
                       {(investigation as any).threatIntelligence?.blacklists ? (
                         <div className="space-y-4">
-                          <h4 className="font-medium text-white mb-3">
-                            检测到的威胁
-                          </h4>
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-medium text-white">
+                              检测到的威胁
+                            </h4>
+                            <Badge className="bg-red-500/20 text-red-400 border-red-500/40">
+                              {
+                                (investigation as any).threatIntelligence
+                                  .blacklists.length
+                              }{" "}
+                              个威胁源
+                            </Badge>
+                          </div>
                           {(
                             investigation as any
                           ).threatIntelligence.blacklists.map(
                             (blacklist: string, index: number) => (
                               <div
                                 key={index}
-                                className="flex items-center justify-between p-4 bg-red-500/10 border border-red-500/30 rounded-lg"
+                                className="flex items-center justify-between p-4 bg-red-500/10 border border-red-500/30 rounded-lg hover:bg-red-500/15 transition-colors"
                               >
                                 <div className="flex items-center space-x-3">
                                   <AlertTriangle className="w-5 h-5 text-red-400" />
@@ -1397,11 +1455,23 @@ const EvidenceCollectionInternational: React.FC = () => {
                                     <p className="text-sm text-red-300">
                                       威胁数据库匹配
                                     </p>
+                                    <p className="text-xs text-muted-foreground">
+                                      检测时间: {new Date().toLocaleString()}
+                                    </p>
                                   </div>
                                 </div>
-                                <Badge className="bg-red-500/20 text-red-400 border-red-500/40">
-                                  已列入黑名单
-                                </Badge>
+                                <div className="flex items-center space-x-2">
+                                  <Badge className="bg-red-500/20 text-red-400 border-red-500/40">
+                                    已列入黑名单
+                                  </Badge>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-400 hover:text-red-300"
+                                  >
+                                    详情
+                                  </Button>
+                                </div>
                               </div>
                             ),
                           )}
@@ -1416,12 +1486,159 @@ const EvidenceCollectionInternational: React.FC = () => {
                             <h3 className="text-lg font-semibold text-white mb-2">
                               未检测到活跃威胁
                             </h3>
-                            <p className="text-muted-foreground">
+                            <p className="text-muted-foreground mb-4">
                               该IP地址当前未被列入已知威胁数据库
                             </p>
+                            <div className="flex justify-center space-x-2">
+                              <Badge className="bg-green-500/20 text-green-400 border-green-500/40">
+                                清洁状态
+                              </Badge>
+                              <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/40">
+                                低风险
+                              </Badge>
+                            </div>
                           </div>
                         </div>
                       )}
+                    </div>
+
+                    {/* Advanced Threat Analysis */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* IOC Analysis */}
+                      <div className="cyber-card p-6">
+                        <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                          <Bug className="w-5 h-5 text-orange-400" />
+                          <span>IOC指标分析</span>
+                        </h3>
+                        <div className="space-y-4">
+                          {[
+                            {
+                              type: "IP地址",
+                              value: selectedIP,
+                              status: "监控中",
+                              risk: "medium",
+                            },
+                            {
+                              type: "端口特征",
+                              value: "22,80,443,8080",
+                              status: "已检测",
+                              risk: "low",
+                            },
+                            {
+                              type: "TLS证书",
+                              value: "自签名证书",
+                              status: "可疑",
+                              risk: "high",
+                            },
+                            {
+                              type: "HTTP头部",
+                              value: "异常User-Agent",
+                              status: "分析中",
+                              risk: "medium",
+                            },
+                          ].map((ioc, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between p-3 bg-matrix-surface/30 rounded-lg"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <div
+                                  className={cn(
+                                    "w-3 h-3 rounded-full",
+                                    ioc.risk === "high"
+                                      ? "bg-red-400"
+                                      : ioc.risk === "medium"
+                                        ? "bg-orange-400"
+                                        : "bg-green-400",
+                                  )}
+                                />
+                                <div>
+                                  <p className="text-sm font-medium text-white">
+                                    {ioc.type}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {ioc.value}
+                                  </p>
+                                </div>
+                              </div>
+                              <Badge
+                                className={cn(
+                                  "text-xs",
+                                  ioc.risk === "high"
+                                    ? "bg-red-500/20 text-red-400 border-red-500/40"
+                                    : ioc.risk === "medium"
+                                      ? "bg-orange-500/20 text-orange-400 border-orange-500/40"
+                                      : "bg-green-500/20 text-green-400 border-green-500/40",
+                                )}
+                              >
+                                {ioc.status}
+                              </Badge>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Threat Attribution */}
+                      <div className="cyber-card p-6">
+                        <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                          <Target className="w-5 h-5 text-purple-400" />
+                          <span>威胁溯源分析</span>
+                        </h3>
+                        <div className="space-y-4">
+                          <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-medium text-white">
+                                可能的威胁组织
+                              </span>
+                              <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/40">
+                                中等可信度
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-2">
+                              基于TTPs分析，可能与APT28组织相关的活动模式
+                            </p>
+                            <div className="flex items-center space-x-2">
+                              <Badge variant="outline" className="text-xs">
+                                APT28
+                              </Badge>
+                              <Badge variant="outline" className="text-xs">
+                                Fancy Bear
+                              </Badge>
+                              <Badge variant="outline" className="text-xs">
+                                国家级威胁
+                              </Badge>
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">
+                                战术匹配度
+                              </span>
+                              <span className="text-white">78%</span>
+                            </div>
+                            <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-gradient-to-r from-purple-500 to-purple-400 rounded-full"
+                                style={{ width: "78%" }}
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">
+                                技术相似性
+                              </span>
+                              <span className="text-white">65%</span>
+                            </div>
+                            <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full"
+                                style={{ width: "65%" }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     {/* Threat Intelligence Sources */}
@@ -2239,7 +2456,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white">
-                        输入目标IP
+                        ���入目标IP
                       </p>
                       <p className="text-xs text-blue-300">
                         在搜索框中输入要调查的IP地址

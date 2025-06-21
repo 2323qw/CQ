@@ -46,8 +46,10 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
         onMobileClose={handleMobileClose}
       />
       <MobileNavigationTrigger onToggle={handleMobileToggle} />
-      {/* 为导航栏预留空间：ml-64 = 256px，与导航栏宽度w-64匹配 */}
-      <div className="ml-0 md:ml-64 min-h-screen">{children}</div>
+      {/* 为导航栏预留空间：ml-72 = 288px，与导航栏宽度w-72匹配 */}
+      <div className="ml-0 md:ml-72 min-h-screen transition-all duration-300">
+        {children}
+      </div>
     </div>
   );
 }

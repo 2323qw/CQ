@@ -174,6 +174,30 @@ function AppLayout() {
         }
       />
       <Route
+        path="/threat-hunting"
+        element={
+          <ProtectedRoute>
+            <ThreatHunting />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/command-center"
+        element={
+          <ProtectedRoute>
+            <CommandCenter />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/features"
+        element={
+          <ProtectedRoute>
+            <FeatureShowcase />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="*"
         element={
           <ProtectedRoute>

@@ -169,7 +169,7 @@ const menuGroups: {
         icon: AlertTriangle,
         badge: "3",
         badgeVariant: "destructive",
-        description: "实时威胁预警",
+        description: "实时威���预警",
         shortcut: "Ctrl+T",
       },
       {
@@ -762,9 +762,9 @@ export function EnhancedNavigation({
         </div>
 
         {/* 主导航菜单 */}
-        <div className="flex-1 overflow-y-auto">
-          <nav className="p-4 space-y-2">
-            {filteredGroups
+        <div className="flex-1 overflow-y-auto scrollbar-custom">
+          <nav className="p-4 space-y-3">
+            {displayGroups
               .sort((a, b) => (a.priority || 99) - (b.priority || 99))
               .map((group) => {
                 const isExpanded = expandedGroups.includes(group.title);
@@ -772,89 +772,197 @@ export function EnhancedNavigation({
                 const GroupIcon = group.icon;
 
                 return (
-                  <div key={group.title} className="space-y-1">
-                    {/* 分组标题 */}
+                  <div key={group.title} className="space-y-2">
+                    {/* 分组标题 - 优化样式 */}
                     <button
                       onClick={() => toggleGroup(group.title)}
                       className={cn(
-                        "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                        "w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 nav-group-header",
                         hasActiveItem
-                          ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30"
-                          : "text-muted-foreground hover:text-white hover:bg-matrix-accent",
+                          ? `bg-gradient-to-r from-matrix-surface/80 to-matrix-accent/60 ${group.color} border border-current/20 shadow-lg nav-group-active`
+                          : "text-muted-foreground hover:text-white hover:bg-matrix-accent/60 hover:shadow-md",
                         isCompactMode && "justify-center",
                       )}
-                      title={isCompactMode ? group.title : undefined}
+                      title={isCompactMode ? group.title : group.description}
                     >
                       <div className="flex items-center gap-3">
-                        <GroupIcon
+                        <div
                           className={cn(
-                            "w-4 h-4",
-                            hasActiveItem && "text-neon-blue",
+                            "p-1.5 rounded-lg transition-all duration-300",
+                            hasActiveItem
+                              ? "bg-current/20"
+                              : "bg-matrix-surface/50",
                           )}
-                        />
-                        {!isCompactMode && <span>{group.title}</span>}
+                        >
+                          <GroupIcon
+                            className={cn(
+                              "w-4 h-4 transition-colors",
+                              hasActiveItem
+                                ? "text-current"
+                                : "text-muted-foreground",
+                            )}
+                          />
+                        </div>
+                        {!isCompactMode && (
+                          <div className="text-left">
+                            <div className="font-semibold">{group.title}</div>
+                            {group.description && (
+                              <div className="text-xs text-muted-foreground/80 font-normal">
+                                {group.description}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
-                      {!isCompactMode &&
-                        (isExpanded ? (
-                          <ChevronDown className="w-4 h-4" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4" />
-                        ))}
+                      {!isCompactMode && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs bg-current/10 text-current px-2 py-1 rounded-full">
+                            {group.items.length}
+                          </span>
+                          {isExpanded ? (
+                            <ChevronDown className="w-4 h-4 transition-transform duration-300" />
+                          ) : (
+                            <ChevronRight className="w-4 h-4 transition-transform duration-300" />
+                          )}
+                        </div>
+                      )}
                     </button>
 
-                    {/* 子菜单项 */}
+                    {/* 子菜单项 - 优化布局 */}
                     {(isExpanded || isCompactMode) && (
                       <div
                         className={cn(
-                          "space-y-1",
+                          "space-y-1 transition-all duration-300",
                           !isCompactMode &&
-                            "ml-4 border-l border-matrix-border/50 pl-4",
+                            "ml-2 pl-4 border-l-2 border-matrix-border/30",
                         )}
                       >
                         {group.items.map((item) => {
                           const ItemIcon = item.icon;
                           const isActive = item.path && isActivePath(item.path);
+                          const isFavorite = favoriteItems.includes(
+                            item.path || "",
+                          );
+                          const isRecent = recentItems.includes(
+                            item.path || "",
+                          );
 
                           return (
-                            <Link
-                              key={item.name}
-                              to={item.path || "#"}
-                              onClick={handleMobileNavClick}
-                              className={cn(
-                                "flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all duration-200 group nav-item",
-                                isActive
-                                  ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30 neon-text nav-item-active"
-                                  : "text-muted-foreground hover:text-white hover:bg-matrix-accent/50",
-                              )}
-                            >
-                              <div className="flex items-center gap-3">
-                                <ItemIcon
-                                  className={cn(
-                                    "w-4 h-4 transition-colors",
-                                    isActive
-                                      ? "text-neon-blue"
-                                      : "group-hover:text-neon-blue",
+                            <div key={item.name} className="relative group">
+                              <Link
+                                to={item.path || "#"}
+                                onClick={() => handleMobileNavClick(item.path)}
+                                className={cn(
+                                  "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 nav-item-enhanced",
+                                  isActive
+                                    ? "bg-gradient-to-r from-neon-blue/20 to-neon-purple/10 text-neon-blue border border-neon-blue/30 shadow-lg nav-item-active"
+                                    : "text-muted-foreground hover:text-white hover:bg-matrix-accent/60 hover:translate-x-1 hover:shadow-md",
+                                )}
+                              >
+                                <div className="flex items-center gap-3 flex-1">
+                                  <div
+                                    className={cn(
+                                      "p-1.5 rounded-lg transition-all duration-200",
+                                      isActive
+                                        ? "bg-neon-blue/20"
+                                        : "bg-matrix-surface/30 group-hover:bg-matrix-surface/50",
+                                    )}
+                                  >
+                                    <ItemIcon
+                                      className={cn(
+                                        "w-4 h-4 transition-colors",
+                                        isActive
+                                          ? "text-neon-blue"
+                                          : "text-muted-foreground group-hover:text-neon-blue",
+                                      )}
+                                    />
+                                  </div>
+                                  {!isCompactMode && (
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2">
+                                        <span className="font-medium">
+                                          {item.name}
+                                        </span>
+                                        {/* 状态标签 */}
+                                        {item.isNew && (
+                                          <Badge className="text-xs bg-green-500/20 text-green-400 border-green-500/40">
+                                            新功能
+                                          </Badge>
+                                        )}
+                                        {item.isBeta && (
+                                          <Badge className="text-xs bg-yellow-500/20 text-yellow-400 border-yellow-500/40">
+                                            Beta
+                                          </Badge>
+                                        )}
+                                        {item.isPro && (
+                                          <Badge className="text-xs bg-purple-500/20 text-purple-400 border-purple-500/40">
+                                            Pro
+                                          </Badge>
+                                        )}
+                                      </div>
+                                      {item.description && (
+                                        <div className="text-xs text-muted-foreground/70 mt-0.5">
+                                          {item.description}
+                                        </div>
+                                      )}
+                                    </div>
                                   )}
-                                />
-                                {!isCompactMode && <span>{item.name}</span>}
-                              </div>
-                              {!isCompactMode && item.badge && (
-                                <Badge
-                                  className={cn(
-                                    "text-xs",
-                                    item.badgeVariant === "destructive"
-                                      ? "bg-red-500/20 text-red-400 border-red-500/40"
-                                      : item.badgeVariant === "warning"
-                                        ? "bg-orange-500/20 text-orange-400 border-orange-500/40"
-                                        : item.badgeVariant === "success"
-                                          ? "bg-green-500/20 text-green-400 border-green-500/40"
-                                          : "bg-blue-500/20 text-blue-400 border-blue-500/40",
-                                  )}
-                                >
-                                  {item.badge}
-                                </Badge>
-                              )}
-                            </Link>
+                                </div>
+
+                                {/* 右侧指示器 */}
+                                {!isCompactMode && (
+                                  <div className="flex items-center gap-2">
+                                    {/* 收藏按钮 */}
+                                    <button
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        if (item.path)
+                                          toggleFavorite(item.path);
+                                      }}
+                                      className={cn(
+                                        "p-1 rounded transition-all duration-200 favorite-star",
+                                        isFavorite
+                                          ? "text-yellow-400 active"
+                                          : "text-muted-foreground/50 hover:text-yellow-400",
+                                      )}
+                                    >
+                                      <Star className="w-3 h-3" />
+                                    </button>
+
+                                    {/* 最近访问指示器 */}
+                                    {isRecent && (
+                                      <div className="w-2 h-2 bg-neon-blue rounded-full animate-pulse" />
+                                    )}
+
+                                    {/* 徽章 */}
+                                    {item.badge && (
+                                      <Badge
+                                        className={cn(
+                                          "text-xs px-2 py-0.5",
+                                          item.badgeVariant === "destructive"
+                                            ? "bg-red-500/20 text-red-400 border-red-500/40"
+                                            : item.badgeVariant === "warning"
+                                              ? "bg-orange-500/20 text-orange-400 border-orange-500/40"
+                                              : item.badgeVariant === "success"
+                                                ? "bg-green-500/20 text-green-400 border-green-500/40"
+                                                : "bg-blue-500/20 text-blue-400 border-blue-500/40",
+                                        )}
+                                      >
+                                        {item.badge}
+                                      </Badge>
+                                    )}
+
+                                    {/* 快捷键提示 */}
+                                    {item.shortcut && (
+                                      <span className="text-xs text-muted-foreground/50 font-mono bg-matrix-surface/30 px-1.5 py-0.5 rounded">
+                                        {item.shortcut}
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+                              </Link>
+                            </div>
                           );
                         })}
                       </div>

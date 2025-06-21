@@ -732,136 +732,145 @@ const EvidenceCollectionInternational: React.FC = () => {
 
               <TabsContent value="analytics">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <Card className="border-0 shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <TrendingUp className="w-5 h-5 text-green-600" />
-                        <span>Protocol Analysis</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {protocolData.length > 0 ? (
-                        <ResponsiveContainer width="100%" height={300}>
-                          <BarChart data={protocolData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Bar dataKey="value" fill="#3b82f6" />
-                          </BarChart>
-                        </ResponsiveContainer>
-                      ) : (
-                        <div className="h-[300px] flex items-center justify-center text-slate-500">
-                          No protocol data available
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-
-                  <Card className="border-0 shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <Activity className="w-5 h-5 text-purple-600" />
-                        <span>Network Activity</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                          <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                            Active Connections
-                          </span>
-                          <span className="text-lg font-bold text-slate-900 dark:text-slate-100">
-                            {(
-                              investigation as any
-                            ).networkAnalysis?.connections?.filter(
-                              (c: any) => c.status === "active",
-                            ).length || 0}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                          <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                            Open Ports
-                          </span>
-                          <span className="text-lg font-bold text-slate-900 dark:text-slate-100">
-                            {(investigation as any).networkAnalysis?.openPorts
-                              ?.length || 0}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                          <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                            Security Events
-                          </span>
-                          <span className="text-lg font-bold text-slate-900 dark:text-slate-100">
-                            {(investigation as any).timeline?.length || 0}
-                          </span>
-                        </div>
+                  <div className="cyber-card p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                      <TrendingUp className="w-5 h-5 text-green-400" />
+                      <span>协议分析</span>
+                    </h3>
+                    {protocolData.length > 0 ? (
+                      <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={protocolData}>
+                          <CartesianGrid
+                            strokeDasharray="3 3"
+                            stroke="#30363d"
+                          />
+                          <XAxis
+                            dataKey="name"
+                            stroke="#6b7280"
+                            fontSize={12}
+                            tickLine={false}
+                            axisLine={false}
+                          />
+                          <YAxis
+                            stroke="#6b7280"
+                            fontSize={12}
+                            tickLine={false}
+                            axisLine={false}
+                          />
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: "#1f2937",
+                              border: "1px solid #374151",
+                              borderRadius: "8px",
+                              color: "#f8fafc",
+                            }}
+                          />
+                          <Bar dataKey="value" fill="#00f5ff" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                        暂无协议数据
                       </div>
-                    </CardContent>
-                  </Card>
+                    )}
+                  </div>
+
+                  <div className="cyber-card p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                      <Activity className="w-5 h-5 text-neural-500" />
+                      <span>网络活动</span>
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-matrix-surface/50 rounded-lg">
+                        <span className="text-sm font-medium text-muted-foreground">
+                          活跃连接
+                        </span>
+                        <span className="text-lg font-bold text-white">
+                          {(
+                            investigation as any
+                          ).networkAnalysis?.connections?.filter(
+                            (c: any) => c.status === "active",
+                          ).length || 0}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-matrix-surface/50 rounded-lg">
+                        <span className="text-sm font-medium text-muted-foreground">
+                          开放端口
+                        </span>
+                        <span className="text-lg font-bold text-white">
+                          {(investigation as any).networkAnalysis?.openPorts
+                            ?.length || 0}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-matrix-surface/50 rounded-lg">
+                        <span className="text-sm font-medium text-muted-foreground">
+                          安全事件
+                        </span>
+                        <span className="text-lg font-bold text-white">
+                          {(investigation as any).timeline?.length || 0}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </TabsContent>
 
               <TabsContent value="forensics">
-                <Card className="border-0 shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <Bug className="w-5 h-5 text-orange-600" />
-                      <span>Digital Forensics</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {investigationMode === "advanced" &&
-                    (investigation as any).forensics?.artifacts ? (
-                      <div className="space-y-4">
-                        {(investigation as any).forensics.artifacts
-                          .slice(0, 10)
-                          .map((artifact: any, index: number) => (
-                            <div
-                              key={index}
-                              className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg"
-                            >
-                              <div className="flex-1">
-                                <div className="flex items-center space-x-3 mb-2">
-                                  <Badge
-                                    variant={
-                                      artifact.risk === "critical"
-                                        ? "destructive"
-                                        : artifact.risk === "high"
-                                          ? "secondary"
-                                          : "outline"
-                                    }
-                                  >
-                                    {artifact.type}
-                                  </Badge>
-                                  <span className="font-medium text-slate-900 dark:text-slate-100">
-                                    {artifact.artifact}
-                                  </span>
-                                </div>
-                                <p className="text-sm text-slate-600 dark:text-slate-400">
-                                  {artifact.description}
-                                </p>
+                <div className="cyber-card p-6">
+                  <h3 className="text-lg font-semibold text-white mb-6 flex items-center space-x-2">
+                    <Bug className="w-5 h-5 text-orange-400" />
+                    <span>数字取证</span>
+                  </h3>
+                  {investigationMode === "advanced" &&
+                  (investigation as any).forensics?.artifacts ? (
+                    <div className="space-y-4">
+                      {(investigation as any).forensics.artifacts
+                        .slice(0, 10)
+                        .map((artifact: any, index: number) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between p-4 bg-matrix-surface/50 rounded-lg"
+                          >
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-3 mb-2">
+                                <Badge
+                                  className={cn(
+                                    "px-2 py-1",
+                                    artifact.risk === "critical"
+                                      ? "bg-red-500/20 text-red-400 border-red-500/40"
+                                      : artifact.risk === "high"
+                                        ? "bg-orange-500/20 text-orange-400 border-orange-500/40"
+                                        : "bg-gray-500/20 text-gray-400 border-gray-500/40",
+                                  )}
+                                >
+                                  {artifact.type}
+                                </Badge>
+                                <span className="font-medium text-white">
+                                  {artifact.artifact}
+                                </span>
                               </div>
-                              <div className="text-right text-sm text-slate-500 dark:text-slate-500">
-                                {new Date(artifact.timestamp).toLocaleString()}
-                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                {artifact.description}
+                              </p>
                             </div>
-                          ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-12">
-                        <Bug className="w-12 h-12 mx-auto mb-4 text-slate-400" />
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
-                          No Forensic Artifacts Found
-                        </h3>
-                        <p className="text-slate-600 dark:text-slate-400">
-                          No suspicious artifacts detected in the current
-                          investigation
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                            <div className="text-right text-sm text-muted-foreground">
+                              {new Date(artifact.timestamp).toLocaleString()}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <Bug className="w-12 h-12 mx-auto mb-4 text-orange-400" />
+                      <h3 className="text-lg font-semibold text-white mb-2">
+                        未发现取证工件
+                      </h3>
+                      <p className="text-muted-foreground">
+                        当前调查中未检测到可疑工件
+                      </p>
+                    </div>
+                  )}
+                </div>
               </TabsContent>
             </Tabs>
           </div>

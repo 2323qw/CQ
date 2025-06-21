@@ -332,11 +332,11 @@ const EvidenceCollectionInternational: React.FC = () => {
                 className={cn(
                   "grid gap-6",
                   investigationMode === "basic"
-                    ? "grid-cols-1 md:grid-cols-2"
+                    ? "grid-cols-1 md:grid-cols-3"
                     : "grid-cols-1 md:grid-cols-4",
                 )}
               >
-                {/* 基础模式只显示风险评分和威胁检测 */}
+                {/* 基础模式显示三个核心指标 */}
                 <div className="cyber-card p-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -376,6 +376,33 @@ const EvidenceCollectionInternational: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* 基础模式增加安全评分 */}
+                {investigationMode === "basic" && (
+                  <div className="cyber-card p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">
+                          安全评分
+                        </p>
+                        <p className="text-3xl font-bold text-white">
+                          {metrics.securityScore}/100
+                        </p>
+                      </div>
+                      <div className="p-3 bg-green-500/20 rounded-xl">
+                        <CheckCircle className="w-6 h-6 text-green-400" />
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all duration-300"
+                          style={{ width: `${metrics.securityScore}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* 高级模式显示额外的指标 */}
                 {investigationMode === "advanced" && (
@@ -881,7 +908,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                     <div className="cyber-card p-6">
                       <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
                         <Activity className="w-5 h-5 text-green-400" />
-                        <span>安全时间线</span>
+                        <span>安全时��线</span>
                       </h3>
                       <div className="space-y-4">
                         {(investigation as any).timeline

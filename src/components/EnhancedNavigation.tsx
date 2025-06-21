@@ -554,7 +554,10 @@ export function EnhancedNavigation({
     navigate("/login");
   };
 
-  const handleMobileNavClick = () => {
+  const handleMobileNavClick = (itemPath?: string) => {
+    if (itemPath) {
+      addToRecent(itemPath);
+    }
     if (onMobileClose) {
       onMobileClose();
     }

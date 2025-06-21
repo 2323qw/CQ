@@ -506,7 +506,7 @@ export function EnhancedNavigation({
     );
   };
 
-  // 记录最近访问
+  // ��录最近访问
   const recordRecentAccess = (path: string) => {
     setRecentItems((prev) => {
       const filtered = prev.filter((p) => p !== path);
@@ -641,22 +641,7 @@ export function EnhancedNavigation({
           </div>
         </div>
 
-        {/* 搜索栏 */}
-        {!isCompactMode && (
-          <div className="p-4 border-b border-matrix-border/50">
-            <div className="relative">
-              <Input
-                placeholder="搜索功能..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-matrix-surface/50 border-matrix-border text-white placeholder-muted-foreground"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            </div>
-          </div>
-        )}
-
-        {/* 快捷状态栏 */}
+        {/* 简化状态栏 */}
         <div className="p-4 border-b border-matrix-border/50">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -669,46 +654,11 @@ export function EnhancedNavigation({
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2">
-              {!isCompactMode && (
-                <>
-                  {/* 声音控制 */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsSoundEnabled(!isSoundEnabled)}
-                    className="text-muted-foreground hover:text-white"
-                  >
-                    {isSoundEnabled ? (
-                      <Volume2 className="w-4 h-4" />
-                    ) : (
-                      <VolumeX className="w-4 h-4" />
-                    )}
-                  </Button>
-
-                  {/* 暗黑模式切换 */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsDarkMode(!isDarkMode)}
-                    className="text-muted-foreground hover:text-white"
-                  >
-                    {isDarkMode ? (
-                      <Sun className="w-4 h-4" />
-                    ) : (
-                      <Moon className="w-4 h-4" />
-                    )}
-                  </Button>
-                </>
-              )}
-
-              {/* 通知 */}
-              <div className="relative">
-                <Bell className="w-4 h-4 text-amber-400" />
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                  {systemStatus.threats}
-                </span>
-              </div>
+            <div className="flex items-center gap-1">
+              <Bell className="w-4 h-4 text-amber-400" />
+              <span className="text-xs bg-amber-400/20 text-amber-400 px-1 rounded">
+                {systemStatus.threats}
+              </span>
             </div>
           </div>
         </div>

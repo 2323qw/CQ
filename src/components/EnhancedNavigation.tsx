@@ -375,11 +375,9 @@ export function EnhancedNavigation({
               <div
                 className={`w-2 h-2 rounded-full ${isOnline ? "bg-green-400" : "bg-red-400"} animate-pulse`}
               />
-              {!isCompactMode && (
-                <span className="text-xs text-muted-foreground">
-                  {isOnline ? (isApiMode ? "API模式" : "模拟模式") : "离线模式"}
-                </span>
-              )}
+              <span className="text-xs text-muted-foreground">
+                {isOnline ? (isApiMode ? "API模式" : "模拟模式") : "离线模式"}
+              </span>
             </div>
             <div className="flex items-center gap-1">
               <Bell className="w-4 h-4 text-amber-400" />

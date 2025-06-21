@@ -866,7 +866,6 @@ const EvidenceCollectionInternational: React.FC = () => {
                   </div>
                 </div>
               </TabsContent>
-              </TabsContent>
 
               <TabsContent value="topology">
                 <div className="cyber-card p-6">

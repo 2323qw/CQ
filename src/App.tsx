@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { DataSourceProvider } from "@/contexts/DataSourceContext";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { Navigation } from "@/components/Navigation";
+import { EnhancedNavigation } from "@/components/EnhancedNavigation";
 import { MobileNavigationTrigger } from "@/components/MobileNavigationTrigger";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { ToastContainer } from "@/components/ui/toast";
@@ -19,7 +20,10 @@ import AssetManagement from "@/pages/AssetManagement";
 import ApiKeys from "@/pages/ApiKeys";
 import SituationDisplay from "@/pages/SituationDisplay";
 import SystemMonitor from "@/pages/SystemMonitor";
-import EvidenceCollection from "@/pages/EvidenceCollection";
+import EvidenceCollectionInternational from "@/pages/EvidenceCollectionInternational";
+import ThreatHunting from "@/pages/ThreatHunting";
+import CommandCenter from "@/pages/CommandCenter";
+import FeatureShowcase from "@/pages/FeatureShowcase";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
 import AuthDebug from "@/components/AuthDebug";
@@ -27,6 +31,7 @@ import AuthDebug from "@/components/AuthDebug";
 // 受保护的布局组件
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCompactMode, setIsCompactMode] = useState(false);
 
   const handleMobileToggle = (isOpen: boolean) => {
     setIsMobileMenuOpen(isOpen);
@@ -36,15 +41,41 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
     setIsMobileMenuOpen(false);
   };
 
+  // 监听导航栏紧凑模式状态变化
+  React.useEffect(() => {
+    const handleCompactModeChange = (event: CustomEvent) => {
+      setIsCompactMode(event.detail.isCompact);
+    };
+
+    window.addEventListener(
+      "navigationCompactModeChange",
+      handleCompactModeChange as EventListener,
+    );
+    return () => {
+      window.removeEventListener(
+        "navigationCompactModeChange",
+        handleCompactModeChange as EventListener,
+      );
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-matrix-bg text-white font-mono">
-      <Navigation
+      <EnhancedNavigation
         isMobileOpen={isMobileMenuOpen}
         onMobileClose={handleMobileClose}
       />
       <MobileNavigationTrigger onToggle={handleMobileToggle} />
-      {/* 为固定导航栏预留空间：ml-64 = 256px，与导航栏宽度w-64匹配 */}
-      <div className="ml-0 md:ml-64 min-h-screen">{children}</div>
+      {/* 动态调整margin以适应导航栏宽度变化 */}
+      <div
+        className={cn(
+          "min-h-screen transition-all duration-300",
+          "ml-0", // 移动端无margin
+          isCompactMode ? "md:ml-16" : "md:ml-72", // 桌面端根据紧凑模式调整
+        )}
+      >
+        {children}
+      </div>
     </div>
   );
 }
@@ -96,9 +127,7 @@ function AppLayout() {
         path="/evidence-collection"
         element={
           <ProtectedRoute>
-            <ProtectedLayout>
-              <EvidenceCollection />
-            </ProtectedLayout>
+            <EvidenceCollectionInternational />
           </ProtectedRoute>
         }
       />
@@ -169,6 +198,30 @@ function AppLayout() {
             <ProtectedLayout>
               <ApiKeys />
             </ProtectedLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/threat-hunting"
+        element={
+          <ProtectedRoute>
+            <ThreatHunting />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/command-center"
+        element={
+          <ProtectedRoute>
+            <CommandCenter />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/features"
+        element={
+          <ProtectedRoute>
+            <FeatureShowcase />
           </ProtectedRoute>
         }
       />

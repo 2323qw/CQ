@@ -3,6 +3,7 @@
 @import "./styles/situation-display.css";
 @import "./styles/enhanced-ui.css";
 @import "./styles/navigation.css";
+@import "./styles/enhanced-navigation.css";
 
 @tailwind base;
 @tailwind components;

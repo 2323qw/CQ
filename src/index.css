@@ -37,11 +37,22 @@
     @apply border-border;
   }
 
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family:
-      ui-monospace, SFMono-Regular, "JetBrains Mono", "Fira Code",
-      "Noto Sans SC", "Microsoft YaHei", "SimHei", Consolas, Monaco, monospace;
+      "Microsoft YaHei", "微软雅黑", "PingFang SC", "Hiragino Sans GB",
+      "Noto Sans SC", "Source Han Sans CN", "WenQuanYi Micro Hei", ui-monospace,
+      SFMono-Regular, "JetBrains Mono", "Fira Code", Consolas, Monaco,
+      monospace, sans-serif;
+    font-feature-settings: "kern" 1;
+    text-rendering: optimizeLegibility;
     background: linear-gradient(
       135deg,
       #0a0e1a 0%,

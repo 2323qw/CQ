@@ -20,7 +20,7 @@ import AssetManagement from "@/pages/AssetManagement";
 import ApiKeys from "@/pages/ApiKeys";
 import SituationDisplay from "@/pages/SituationDisplay";
 import SystemMonitor from "@/pages/SystemMonitor";
-import EvidenceCollectionInternational from "@/pages/EvidenceCollectionInternational";
+import EvidenceCollection from "@/pages/EvidenceCollection";
 import ThreatHunting from "@/pages/ThreatHunting";
 import CommandCenter from "@/pages/CommandCenter";
 import FeatureShowcase from "@/pages/FeatureShowcase";
@@ -61,6 +61,7 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
       "navigationCompactModeChange",
       handleCompactModeChange as EventListener,
     );
+
     return () => {
       window.removeEventListener(
         "navigationCompactModeChange",
@@ -137,7 +138,9 @@ function AppLayout() {
         path="/evidence-collection"
         element={
           <ProtectedRoute>
-            <EvidenceCollectionInternational />
+            <ProtectedLayout>
+              <EvidenceCollection />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -215,7 +218,9 @@ function AppLayout() {
         path="/threat-hunting"
         element={
           <ProtectedRoute>
-            <ThreatHunting />
+            <ProtectedLayout>
+              <ThreatHunting />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -231,7 +236,9 @@ function AppLayout() {
         path="/features"
         element={
           <ProtectedRoute>
-            <FeatureShowcase />
+            <ProtectedLayout>
+              <FeatureShowcase />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -239,7 +246,9 @@ function AppLayout() {
         path="/topology"
         element={
           <ProtectedRoute>
-            <NetworkTopology />
+            <ProtectedLayout>
+              <NetworkTopology />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -247,7 +256,9 @@ function AppLayout() {
         path="/traffic-analysis"
         element={
           <ProtectedRoute>
-            <TrafficAnalysis />
+            <ProtectedLayout>
+              <TrafficAnalysis />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -255,7 +266,9 @@ function AppLayout() {
         path="/behavior-analysis"
         element={
           <ProtectedRoute>
-            <BehaviorAnalysis />
+            <ProtectedLayout>
+              <BehaviorAnalysis />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -263,7 +276,9 @@ function AppLayout() {
         path="/compliance"
         element={
           <ProtectedRoute>
-            <ComplianceCheck />
+            <ProtectedLayout>
+              <ComplianceCheck />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -271,7 +286,9 @@ function AppLayout() {
         path="/ai-analysis"
         element={
           <ProtectedRoute>
-            <AIAnalysis />
+            <ProtectedLayout>
+              <AIAnalysis />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -279,7 +296,9 @@ function AppLayout() {
         path="/auto-response"
         element={
           <ProtectedRoute>
-            <AutoResponse />
+            <ProtectedLayout>
+              <AutoResponse />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -287,7 +306,9 @@ function AppLayout() {
         path="/predictive"
         element={
           <ProtectedRoute>
-            <PredictiveModeling />
+            <ProtectedLayout>
+              <PredictiveModeling />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -295,7 +316,9 @@ function AppLayout() {
         path="/knowledge-graph"
         element={
           <ProtectedRoute>
-            <KnowledgeGraph />
+            <ProtectedLayout>
+              <KnowledgeGraph />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -303,7 +326,9 @@ function AppLayout() {
         path="/risk-assessment"
         element={
           <ProtectedRoute>
-            <RiskAssessment />
+            <ProtectedLayout>
+              <RiskAssessment />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />
@@ -311,7 +336,9 @@ function AppLayout() {
         path="/help"
         element={
           <ProtectedRoute>
-            <HelpCenter />
+            <ProtectedLayout>
+              <HelpCenter />
+            </ProtectedLayout>
           </ProtectedRoute>
         }
       />

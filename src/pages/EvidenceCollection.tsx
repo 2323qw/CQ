@@ -1,741 +1,1382 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import {
   Search,
   Download,
-  AlertTriangle,
-  RefreshCw,
-  Target,
-  Shield,
-  Brain,
-  Activity,
-  Network,
-  Bug,
-  FileSearch,
-  Clock,
-  TrendingUp,
-  CheckCircle,
-  Globe,
-  Server,
-  Zap,
-  Eye,
+  Upload,
+  FileText,
+  Image,
+  Video,
+  Music,
+  Archive,
+  HardDrive,
+  Smartphone,
+  Monitor,
+  Wifi,
   Database,
+  Lock,
+  Unlock,
+  Key,
+  Shield,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Calendar,
+  MapPin,
+  User,
+  Hash,
+  Eye,
+  EyeOff,
+  Filter,
+  Settings,
+  RefreshCw,
+  Play,
+  Pause,
+  Square,
+  RotateCcw,
+  Save,
+  Share2,
+  Copy,
+  Trash2,
+  Edit,
+  Plus,
+  Minus,
+  ChevronDown,
+  ChevronRight,
+  Folder,
+  FolderOpen,
+  FileImage,
+  FileVideo,
+  FileAudio,
+  FileArchive,
+  Fingerprint,
+  Microscope,
+  Network,
+  Terminal,
+  Code,
+  Binary,
+  Cpu,
+  MemoryStick,
+  Camera,
+  Phone,
+  Mail,
+  MessageSquare,
+  Globe,
+  Cloud,
+  Server,
+  Activity,
+  Zap,
+  Target,
+  Layers,
+  GitBranch,
+  BookOpen,
+  Flag,
+  Tag,
+  Star,
+  ThumbsUp,
+  ThumbsDown,
+  ExternalLink,
+  Info,
 } from "lucide-react";
-import { useIPInvestigation } from "@/hooks/useIPInvestigation";
-import { useAdvancedInvestigation } from "@/hooks/useAdvancedInvestigation";
-import { TopologyAnalysisEnhanced } from "@/components/TopologyAnalysisEnhanced";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
+
+// Types for evidence collection
+interface EvidenceCase {
+  id: string;
+  name: string;
+  description: string;
+  status: "active" | "closed" | "suspended" | "pending";
+  priority: "low" | "medium" | "high" | "critical";
+  type: "criminal" | "civil" | "internal" | "compliance";
+  createdDate: string;
+  lastModified: string;
+  investigator: string;
+  evidenceCount: number;
+  tags: string[];
+}
+
+interface DigitalEvidence {
+  id: string;
+  caseId: string;
+  name: string;
+  type:
+    | "file"
+    | "disk_image"
+    | "memory_dump"
+    | "network_capture"
+    | "mobile_backup"
+    | "email"
+    | "document"
+    | "media";
+  source: string;
+  hash: {
+    md5: string;
+    sha1: string;
+    sha256: string;
+  };
+  size: number;
+  createdDate: string;
+  collectedDate: string;
+  collectedBy: string;
+  integrity: "verified" | "corrupted" | "unknown";
+  metadata: Record<string, any>;
+  chainOfCustody: ChainOfCustodyEntry[];
+  analysis: AnalysisResult[];
+  tags: string[];
+  notes: string;
+}
+
+interface ChainOfCustodyEntry {
+  id: string;
+  timestamp: string;
+  action: "collected" | "transferred" | "analyzed" | "stored" | "returned";
+  person: string;
+  location: string;
+  description: string;
+  signature: string;
+}
+
+interface AnalysisResult {
+  id: string;
+  type:
+    | "hash_verification"
+    | "file_recovery"
+    | "metadata_extraction"
+    | "malware_scan"
+    | "content_analysis";
+  status: "pending" | "completed" | "failed";
+  startTime: string;
+  endTime?: string;
+  results: Record<string, any>;
+  notes: string;
+}
+
+interface ForensicTool {
+  id: string;
+  name: string;
+  version: string;
+  type: "imaging" | "analysis" | "recovery" | "verification" | "reporting";
+  status: "available" | "in_use" | "maintenance" | "offline";
+  description: string;
+  capabilities: string[];
+  supportedFormats: string[];
+}
+
+interface ImagingJob {
+  id: string;
+  name: string;
+  sourceDevice: string;
+  targetPath: string;
+  status: "queued" | "running" | "completed" | "failed" | "paused";
+  progress: number;
+  startTime: string;
+  estimatedTime?: string;
+  method: "dd" | "ewf" | "aff" | "raw";
+  verification: boolean;
+  compression: boolean;
+  encryption: boolean;
+}
 
 const EvidenceCollection: React.FC = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const initialIP = searchParams.get("ip") || "";
+  const [selectedTab, setSelectedTab] = useState<
+    | "dashboard"
+    | "cases"
+    | "evidence"
+    | "tools"
+    | "imaging"
+    | "analysis"
+    | "reports"
+  >("dashboard");
 
-  const [searchIP, setSearchIP] = useState(initialIP);
-  const [selectedIP, setSelectedIP] = useState(initialIP);
-  const [investigationMode, setInvestigationMode] = useState<
-    "basic" | "advanced"
-  >("basic");
+  const [cases, setCases] = useState<EvidenceCase[]>([]);
+  const [evidence, setEvidence] = useState<DigitalEvidence[]>([]);
+  const [tools, setTools] = useState<ForensicTool[]>([]);
+  const [imagingJobs, setImagingJobs] = useState<ImagingJob[]>([]);
+  const [selectedCase, setSelectedCase] = useState<EvidenceCase | null>(null);
+  const [selectedEvidence, setSelectedEvidence] =
+    useState<DigitalEvidence | null>(null);
 
-  const {
-    investigation: basicInvestigation,
-    loading: basicLoading,
-    error: basicError,
-    investigateIP: basicInvestigateIP,
-    generateReport: basicGenerateReport,
-  } = useIPInvestigation(
-    investigationMode === "basic" ? selectedIP : undefined,
-  );
+  // Initialize sample data
+  useEffect(() => {
+    setCases([
+      {
+        id: "case-001",
+        name: "网络入侵调查案",
+        description: "针对公司服务器被黑客入侵事件的数字取证调查",
+        status: "active",
+        priority: "high",
+        type: "criminal",
+        createdDate: "2024-01-15",
+        lastModified: "2024-01-20",
+        investigator: "张法医",
+        evidenceCount: 12,
+        tags: ["网络犯罪", "APT", "数据泄露"],
+      },
+      {
+        id: "case-002",
+        name: "员工违规案件",
+        description: "内部员工涉嫌泄露商业机密的取证调查",
+        status: "active",
+        priority: "medium",
+        type: "internal",
+        createdDate: "2024-01-10",
+        lastModified: "2024-01-19",
+        investigator: "李分析师",
+        evidenceCount: 8,
+        tags: ["内部威胁", "数据泄露", "合规"],
+      },
+      {
+        id: "case-003",
+        name: "勒索软件感染调查",
+        description: "企业网络遭受勒索软件攻击的应急取证",
+        status: "closed",
+        priority: "critical",
+        type: "criminal",
+        createdDate: "2024-01-08",
+        lastModified: "2024-01-18",
+        investigator: "王专家",
+        evidenceCount: 15,
+        tags: ["勒索软件", "恶意软件", "应急响应"],
+      },
+    ]);
 
-  const {
-    investigation: advancedInvestigation,
-    loading: advancedLoading,
-    error: advancedError,
-    investigateIP: advancedInvestigateIP,
-    exportInvestigation,
-  } = useAdvancedInvestigation(
-    investigationMode === "advanced" ? selectedIP : undefined,
-  );
+    setEvidence([
+      {
+        id: "evidence-001",
+        caseId: "case-001",
+        name: "受害���务器硬盘镜像",
+        type: "disk_image",
+        source: "Dell PowerEdge R720 - /dev/sda",
+        hash: {
+          md5: "5d41402abc4b2a76b9719d911017c592",
+          sha1: "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d",
+          sha256:
+            "2cf24dba4f21d4288094e9b60de5f0f6ae4c7e7e9b88b5beb1bd4b32a3b77329",
+        },
+        size: 500000000000, // 500GB
+        createdDate: "2024-01-15",
+        collectedDate: "2024-01-15",
+        collectedBy: "张法医",
+        integrity: "verified",
+        metadata: {
+          device: "/dev/sda",
+          model: "SEAGATE ST500DM002",
+          serial: "Z3T6K9QR",
+          capacity: "500GB",
+          filesystem: "NTFS",
+        },
+        chainOfCustody: [],
+        analysis: [],
+        tags: ["服务器", "主证据", "已验证"],
+        notes: "从受攻击的Web服务器获取的完整磁盘镜像，包含操作系统和应用数据",
+      },
+      {
+        id: "evidence-002",
+        caseId: "case-001",
+        name: "网络流量包",
+        type: "network_capture",
+        source: "防火墙日志 - eth0",
+        hash: {
+          md5: "098f6bcd4621d373cade4e832627b4f6",
+          sha1: "356a192b7913b04c54574d18c28d46e6395428ab",
+          sha256:
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        },
+        size: 2500000000, // 2.5GB
+        createdDate: "2024-01-15",
+        collectedDate: "2024-01-15",
+        collectedBy: "张法医",
+        integrity: "verified",
+        metadata: {
+          interface: "eth0",
+          duration: "24小时",
+          protocol: "TCP/UDP/ICMP",
+          packets: 15000000,
+        },
+        chainOfCustody: [],
+        analysis: [],
+        tags: ["网络", "流量分析", "攻击向量"],
+        notes: "攻击期间的完整网络流量捕获，包含入侵相关的所有通信",
+      },
+      {
+        id: "evidence-003",
+        caseId: "case-002",
+        name: "嫌疑人工作电脑",
+        type: "disk_image",
+        source: "Lenovo ThinkPad T480 - C盘",
+        hash: {
+          md5: "d41d8cd98f00b204e9800998ecf8427e",
+          sha1: "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          sha256:
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        },
+        size: 250000000000, // 250GB
+        createdDate: "2024-01-10",
+        collectedDate: "2024-01-10",
+        collectedBy: "李分析师",
+        integrity: "verified",
+        metadata: {
+          device: "C:\\",
+          model: "Samsung SSD 860 EVO",
+          serial: "S3Z9NX0M123456",
+          capacity: "250GB",
+          filesystem: "NTFS",
+        },
+        chainOfCustody: [],
+        analysis: [],
+        tags: ["笔记本", "员工设备", "主证据"],
+        notes: "涉嫌违规员工的工作笔记本电脑完整镜像",
+      },
+    ]);
 
-  const investigation =
-    investigationMode === "advanced"
-      ? advancedInvestigation
-      : basicInvestigation;
-  const loading =
-    investigationMode === "advanced" ? advancedLoading : basicLoading;
-  const error = investigationMode === "advanced" ? advancedError : basicError;
+    setTools([
+      {
+        id: "tool-001",
+        name: "EnCase Forensic",
+        version: "v21.4",
+        type: "analysis",
+        status: "available",
+        description: "专业数字取证分析平台",
+        capabilities: [
+          "磁盘分析",
+          "文件恢复",
+          "时间线分析",
+          "关键词搜索",
+          "报告生成",
+        ],
+        supportedFormats: ["E01", "L01", "DD", "Raw", "VMDK"],
+      },
+      {
+        id: "tool-002",
+        name: "FTK Imager",
+        version: "v4.7.1",
+        type: "imaging",
+        status: "available",
+        description: "数字证据获取和镜像工具",
+        capabilities: ["磁盘镜像", "内存转储", "哈希验证", "预览功能"],
+        supportedFormats: ["E01", "DD", "Raw", "AD1"],
+      },
+      {
+        id: "tool-003",
+        name: "Autopsy",
+        version: "v4.19.3",
+        type: "analysis",
+        status: "in_use",
+        description: "开源数字取证平台",
+        capabilities: [
+          "时间线分析",
+          "文件类型检测",
+          "关键词搜索",
+          "哈希查找",
+          "报告生成",
+        ],
+        supportedFormats: ["E01", "Raw", "VHD", "VMDK"],
+      },
+      {
+        id: "tool-004",
+        name: "X-Ways Forensics",
+        version: "v20.4",
+        type: "analysis",
+        status: "available",
+        description: "高级十六进制编辑器和取证工具",
+        capabilities: ["原始数据分析", "文件恢复", "RAM分析", "注册表分析"],
+        supportedFormats: ["Raw", "E01", "DD", "VHD"],
+      },
+      {
+        id: "tool-005",
+        name: "HashCalc",
+        version: "v2.02",
+        type: "verification",
+        status: "available",
+        description: "文件哈希计算和验证工具",
+        capabilities: ["MD5", "SHA1", "SHA256", "批量计算"],
+        supportedFormats: ["所有文件类型"],
+      },
+    ]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchIP.trim()) {
-      setSelectedIP(searchIP.trim());
-      setSearchParams({ ip: searchIP.trim(), mode: investigationMode });
-    }
-  };
+    setImagingJobs([
+      {
+        id: "job-001",
+        name: "服务器硬盘镜像",
+        sourceDevice: "/dev/sda (500GB)",
+        targetPath: "/forensics/case-001/server_hdd.E01",
+        status: "completed",
+        progress: 100,
+        startTime: "2024-01-15 09:00:00",
+        method: "ewf",
+        verification: true,
+        compression: true,
+        encryption: false,
+      },
+      {
+        id: "job-002",
+        name: "笔记本SSD镜像",
+        sourceDevice: "C:\\ (250GB)",
+        targetPath: "/forensics/case-002/laptop_ssd.E01",
+        status: "running",
+        progress: 67,
+        startTime: "2024-01-20 14:30:00",
+        estimatedTime: "45分钟",
+        method: "ewf",
+        verification: true,
+        compression: true,
+        encryption: true,
+      },
+    ]);
+  }, []);
 
-  const handleExport = (format: string) => {
-    if (investigationMode === "advanced" && advancedInvestigation) {
-      exportInvestigation(format);
-    } else if (basicInvestigation) {
-      const report = basicGenerateReport();
-      if (report) {
-        const content = JSON.stringify(report, null, 2);
-        const blob = new Blob([content], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `investigation_${selectedIP}_${new Date().toISOString().split("T")[0]}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
-    }
-  };
-
-  const getRiskColor = (score: number) => {
-    if (score >= 80) return "text-red-400 bg-red-400/20 border-red-400/40";
-    if (score >= 60)
-      return "text-orange-400 bg-orange-400/20 border-orange-400/40";
-    if (score >= 40)
-      return "text-amber-400 bg-amber-400/20 border-amber-400/40";
-    return "text-green-400 bg-green-400/20 border-green-400/40";
-  };
-
-  const getReputationColor = (reputation: string) => {
-    switch (reputation) {
-      case "malicious":
-        return "text-red-400 bg-red-400/20 border-red-400/40";
-      case "suspicious":
-        return "text-amber-400 bg-amber-400/20 border-amber-400/40";
-      case "unknown":
-        return "text-gray-400 bg-gray-400/20 border-gray-400/40";
-      case "clean":
-        return "text-green-400 bg-green-400/20 border-green-400/40";
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "active":
+      case "running":
+      case "available":
+      case "verified":
+      case "completed":
+        return "bg-green-500/20 text-green-400 border-green-500/40";
+      case "pending":
+      case "queued":
+      case "paused":
+        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/40";
+      case "closed":
+      case "suspended":
+      case "maintenance":
+        return "bg-blue-500/20 text-blue-400 border-blue-500/40";
+      case "failed":
+      case "corrupted":
+      case "offline":
+        return "bg-red-500/20 text-red-400 border-red-500/40";
       default:
-        return "text-gray-400 bg-gray-400/20 border-gray-400/40";
+        return "bg-gray-500/20 text-gray-400 border-gray-500/40";
     }
   };
 
-  // 图表数据准备
-  const pieColors = [
-    "#00f5ff",
-    "#39ff14",
-    "#bf00ff",
-    "#ff1493",
-    "#ff6600",
-    "#ffff00",
-  ];
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "critical":
+        return "bg-red-500/20 text-red-400 border-red-500/40";
+      case "high":
+        return "bg-orange-500/20 text-orange-400 border-orange-500/40";
+      case "medium":
+        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/40";
+      case "low":
+        return "bg-blue-500/20 text-blue-400 border-blue-500/40";
+      default:
+        return "bg-gray-500/20 text-gray-400 border-gray-500/40";
+    }
+  };
 
-  const attackTypeData =
-    investigation && investigationMode === "basic"
-      ? Object.entries((investigation as any).attackTypes || {}).map(
-          ([type, count]) => ({
-            name: type.replace("_", " "),
-            value: count,
-            count,
-          }),
-        )
-      : [];
+  const getEvidenceTypeIcon = (type: string) => {
+    switch (type) {
+      case "disk_image":
+        return HardDrive;
+      case "memory_dump":
+        return MemoryStick;
+      case "network_capture":
+        return Network;
+      case "mobile_backup":
+        return Smartphone;
+      case "email":
+        return Mail;
+      case "document":
+        return FileText;
+      case "media":
+        return Image;
+      default:
+        return FileText;
+    }
+  };
 
-  const protocolData =
-    investigation && investigationMode === "advanced"
-      ? Object.entries(
-          (investigation as any).networkAnalysis?.protocols || {},
-        ).map(([protocol, count]) => ({
-          name: protocol,
-          value: count,
-          count,
-        }))
-      : [];
+  const formatFileSize = (bytes: number) => {
+    const sizes = ["B", "KB", "MB", "GB", "TB"];
+    if (bytes === 0) return "0 B";
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return (bytes / Math.pow(1024, i)).toFixed(2) + " " + sizes[i];
+  };
 
   return (
-    <div className="min-h-screen bg-matrix-bg text-white p-6">
+    <div className="min-h-screen bg-gradient-to-br from-matrix-bg via-matrix-surface to-matrix-bg p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* 页面标题 */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2 neon-text flex items-center justify-center gap-3">
-            <FileSearch className="w-8 h-8 text-quantum-500" />
-            证据收集与威胁调查
-          </h1>
-          <p className="text-muted-foreground">高效IP威胁分析平台</p>
-        </div>
-
-        {/* 搜索区域 */}
-        <div className="cyber-card p-6">
-          <form onSubmit={handleSearch} className="flex gap-4 items-end">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-muted-foreground mb-2">
-                IP 地址
-              </label>
-              <Input
-                type="text"
-                placeholder="输入要调查的IP地址"
-                value={searchIP}
-                onChange={(e) => setSearchIP(e.target.value)}
-                className="bg-matrix-surface border-matrix-border text-white h-12"
-              />
-            </div>
-            <div className="w-32">
-              <label className="block text-sm font-medium text-muted-foreground mb-2">
-                模式
-              </label>
-              <select
-                value={investigationMode}
-                onChange={(e) =>
-                  setInvestigationMode(e.target.value as "basic" | "advanced")
-                }
-                className="w-full h-12 px-3 bg-matrix-surface border border-matrix-border rounded-md text-white"
-              >
-                <option value="basic">基础</option>
-                <option value="advanced">高级</option>
-              </select>
-            </div>
-            <Button
-              type="submit"
-              className="neon-button-purple h-12 px-8"
-              disabled={loading}
-            >
-              {loading ? (
-                <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-              ) : (
-                <Search className="w-5 h-5 mr-2" />
-              )}
-              {loading ? "调查中..." : "开始调查"}
+        {/* Page Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-white neon-text flex items-center gap-3">
+              <Search className="w-8 h-8 text-cyan-400" />
+              数字证据收集
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              专业数字取证和证据收集管理平台
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 hover:bg-cyan-500/30">
+              <Plus className="w-4 h-4 mr-2" />
+              新建案件
             </Button>
-          </form>
+            <Button className="bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/30">
+              <Upload className="w-4 h-4 mr-2" />
+              导入证据
+            </Button>
+          </div>
         </div>
 
-        {/* 加载状态 */}
-        {loading && (
-          <div className="cyber-card text-center py-12">
-            <div className="flex flex-col items-center gap-4">
-              <div className="relative">
-                <div className="w-16 h-16 border-4 border-quantum-500/30 border-t-quantum-500 rounded-full animate-spin"></div>
-                <Brain className="w-8 h-8 text-quantum-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-quantum-300">
-                  正在分析 {selectedIP}
-                </h3>
-                <p className="text-muted-foreground">
-                  {investigationMode === "advanced"
-                    ? "执行深度威胁分析..."
-                    : "收集基础威胁信息..."}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 错误状态 */}
-        {error && (
-          <div className="cyber-card border-red-500/30 bg-red-500/10 p-6">
-            <div className="flex items-center gap-3 text-red-400">
-              <AlertTriangle className="w-6 h-6" />
-              <div>
-                <h3 className="font-semibold">调查失败</h3>
-                <p className="text-sm">{error}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 调查结果 - 紧凑布局 */}
-        {investigation && !loading && (
-          <div className="space-y-4">
-            {/* 基础信息卡片 - 水平布局 */}
-            <div className="cyber-card p-4">
-              <div className="grid grid-cols-4 gap-6 text-center">
+        {/* Key Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+          <Card className="cyber-card-enhanced border-cyan-500/30">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-2xl font-bold text-quantum-400 mb-1">
-                    {investigationMode === "advanced"
-                      ? (investigation as any).basicInfo?.riskScore || 0
-                      : (investigation as any).riskScore || 0}
-                    /100
-                  </div>
-                  <div className="text-sm text-muted-foreground">风险评分</div>
+                  <p className="text-sm text-muted-foreground">活跃案件</p>
+                  <p className="text-2xl font-bold text-cyan-400">
+                    {cases.filter((c) => c.status === "active").length}
+                  </p>
+                  <p className="text-xs text-cyan-400 mt-1">进行中</p>
                 </div>
-
-                <div>
-                  <div className="text-2xl font-bold text-tech-accent mb-1">
-                    {investigationMode === "advanced"
-                      ? (investigation as any).networkAnalysis?.connections
-                          ?.length || 0
-                      : (investigation as any).totalAttacks || 0}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {investigationMode === "advanced" ? "网络连接" : "攻击次数"}
-                  </div>
-                </div>
-
-                <div>
-                  <div className="text-2xl font-bold text-neural-500 mb-1">
-                    {investigationMode === "advanced"
-                      ? (investigation as any).threatIntelligence?.blacklists
-                          ?.length || 0
-                      : Object.keys((investigation as any).attackTypes || {})
-                          .length}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {investigationMode === "advanced" ? "威胁情报" : "攻击类型"}
-                  </div>
-                </div>
-
-                <div>
-                  <Badge
-                    className={cn(
-                      "px-3 py-1",
-                      investigationMode === "advanced"
-                        ? getReputationColor(
-                            (investigation as any).basicInfo?.reputation ||
-                              "unknown",
-                          )
-                        : getReputationColor(
-                            (investigation as any).reputation || "unknown",
-                          ),
-                    )}
-                  >
-                    {investigationMode === "advanced"
-                      ? (investigation as any).basicInfo?.reputation ===
-                        "malicious"
-                        ? "恶意"
-                        : (investigation as any).basicInfo?.reputation ===
-                            "suspicious"
-                          ? "可疑"
-                          : (investigation as any).basicInfo?.reputation ===
-                              "clean"
-                            ? "干净"
-                            : "未知"
-                      : (investigation as any).reputation === "malicious"
-                        ? "恶意"
-                        : (investigation as any).reputation === "suspicious"
-                          ? "可疑"
-                          : (investigation as any).reputation === "clean"
-                            ? "干净"
-                            : "未知"}
-                  </Badge>
-                </div>
+                <Folder className="w-8 h-8 text-cyan-400" />
               </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            {/* 详细分析面板 */}
-            {investigationMode === "advanced" ? (
-              <Tabs defaultValue="topology" className="space-y-4">
-                <TabsList className="bg-matrix-surface border border-matrix-border">
-                  <TabsTrigger
-                    value="topology"
-                    className="flex items-center gap-2"
-                  >
-                    <Target className="w-4 h-4" />
-                    网络拓扑
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="network"
-                    className="flex items-center gap-2"
-                  >
-                    <Network className="w-4 h-4" />
-                    网络分析
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="threats"
-                    className="flex items-center gap-2"
-                  >
-                    <Shield className="w-4 h-4" />
-                    威胁情报
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="malware"
-                    className="flex items-center gap-2"
-                  >
-                    <Bug className="w-4 h-4" />
-                    恶意软件
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="forensics"
-                    className="flex items-center gap-2"
-                  >
-                    <FileSearch className="w-4 h-4" />
-                    取证分析
-                  </TabsTrigger>
-                </TabsList>
+          <Card className="cyber-card-enhanced border-green-500/30">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">数字证据</p>
+                  <p className="text-2xl font-bold text-green-400">
+                    {evidence.length}
+                  </p>
+                  <p className="text-xs text-green-400 mt-1">已收集</p>
+                </div>
+                <Database className="w-8 h-8 text-green-400" />
+              </div>
+            </CardContent>
+          </Card>
 
-                <TabsContent value="topology" className="space-y-4">
-                  <TopologyAnalysisEnhanced
-                    investigation={investigation}
-                    centerIP={selectedIP}
-                  />
-                </TabsContent>
+          <Card className="cyber-card-enhanced border-blue-500/30">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">取证工具</p>
+                  <p className="text-2xl font-bold text-blue-400">
+                    {tools.filter((t) => t.status === "available").length}
+                  </p>
+                  <p className="text-xs text-blue-400 mt-1">可用</p>
+                </div>
+                <Settings className="w-8 h-8 text-blue-400" />
+              </div>
+            </CardContent>
+          </Card>
 
-                <TabsContent value="network" className="space-y-4">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="cyber-card p-6">
-                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                        <Server className="w-5 h-5 text-tech-accent" />
-                        开放端口 (
-                        {(investigation as any).networkAnalysis?.openPorts
-                          ?.length || 0}
-                        )
-                      </h3>
-                      <div className="space-y-2 max-h-60 overflow-y-auto">
-                        {(
-                          (investigation as any).networkAnalysis?.openPorts ||
-                          []
-                        )
-                          .slice(0, 8)
-                          .map((port: any, index: number) => (
-                            <div
-                              key={index}
-                              className="flex items-center justify-between p-2 bg-matrix-surface/50 rounded"
-                            >
-                              <div className="flex items-center gap-2">
-                                <Badge
-                                  className={cn(
-                                    "px-2 py-1 text-xs",
-                                    port.status === "open"
-                                      ? "bg-green-500/20 text-green-400 border-green-500/40"
-                                      : port.status === "closed"
-                                        ? "bg-red-500/20 text-red-400 border-red-500/40"
-                                        : "bg-amber-500/20 text-amber-400 border-amber-500/40",
-                                  )}
-                                >
-                                  {port.port}/{port.protocol}
-                                </Badge>
-                                <span className="text-white text-sm">
-                                  {port.service}
-                                </span>
-                              </div>
-                              <span className="text-muted-foreground text-xs">
-                                {new Date(port.timestamp).toLocaleTimeString()}
-                              </span>
-                            </div>
-                          ))}
+          <Card className="cyber-card-enhanced border-purple-500/30">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">镜像任务</p>
+                  <p className="text-2xl font-bold text-purple-400">
+                    {imagingJobs.filter((j) => j.status === "running").length}
+                  </p>
+                  <p className="text-xs text-purple-400 mt-1">执行中</p>
+                </div>
+                <Copy className="w-8 h-8 text-purple-400" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="cyber-card-enhanced border-amber-500/30">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">完整性</p>
+                  <p className="text-2xl font-bold text-amber-400">100%</p>
+                  <p className="text-xs text-amber-400 mt-1">验证通过</p>
+                </div>
+                <Shield className="w-8 h-8 text-amber-400" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Content Tabs */}
+        <Tabs
+          value={selectedTab}
+          onValueChange={(v) => setSelectedTab(v as any)}
+          className="w-full"
+        >
+          <TabsList className="grid w-full grid-cols-7 bg-matrix-surface/50">
+            <TabsTrigger
+              value="dashboard"
+              className="data-[state=active]:bg-cyan-400/20"
+            >
+              总览
+            </TabsTrigger>
+            <TabsTrigger
+              value="cases"
+              className="data-[state=active]:bg-cyan-400/20"
+            >
+              案件管理
+            </TabsTrigger>
+            <TabsTrigger
+              value="evidence"
+              className="data-[state=active]:bg-cyan-400/20"
+            >
+              证据库
+            </TabsTrigger>
+            <TabsTrigger
+              value="tools"
+              className="data-[state=active]:bg-cyan-400/20"
+            >
+              取证工具
+            </TabsTrigger>
+            <TabsTrigger
+              value="imaging"
+              className="data-[state=active]:bg-cyan-400/20"
+            >
+              镜像任务
+            </TabsTrigger>
+            <TabsTrigger
+              value="analysis"
+              className="data-[state=active]:bg-cyan-400/20"
+            >
+              分析报告
+            </TabsTrigger>
+            <TabsTrigger
+              value="reports"
+              className="data-[state=active]:bg-cyan-400/20"
+            >
+              法庭报告
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Dashboard Tab */}
+          <TabsContent value="dashboard" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Recent Cases */}
+              <Card className="cyber-card-enhanced">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Folder className="w-5 h-5 text-cyan-400" />
+                    最近案件
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {cases.slice(0, 3).map((case_) => (
+                    <div
+                      key={case_.id}
+                      className="flex items-center justify-between p-3 bg-matrix-surface/30 rounded-lg hover:bg-matrix-surface/50 transition-colors cursor-pointer"
+                      onClick={() => setSelectedCase(case_)}
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-medium text-sm">
+                            {case_.name}
+                          </span>
+                          <Badge className={getStatusColor(case_.status)}>
+                            {case_.status}
+                          </Badge>
+                          <Badge className={getPriorityColor(case_.priority)}>
+                            {case_.priority}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground mb-2">
+                          {case_.description}
+                        </p>
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                          <span>证据: {case_.evidenceCount}件</span>
+                          <span>调查员: {case_.investigator}</span>
+                          <span>更新: {case_.lastModified}</span>
+                        </div>
                       </div>
                     </div>
+                  ))}
+                </CardContent>
+              </Card>
 
-                    <div className="cyber-card p-6">
-                      <h3 className="text-lg font-semibold text-white mb-4">
-                        协议分布
-                      </h3>
-                      {protocolData.length > 0 ? (
-                        <ResponsiveContainer width="100%" height={200}>
-                          <PieChart>
-                            <Pie
-                              data={protocolData}
-                              cx="50%"
-                              cy="50%"
-                              outerRadius={80}
-                              dataKey="value"
-                              label={({ name, value }) => `${name}: ${value}`}
-                            >
-                              {protocolData.map((entry, index) => (
-                                <Cell
-                                  key={`cell-${index}`}
-                                  fill={pieColors[index % pieColors.length]}
-                                />
-                              ))}
-                            </Pie>
-                            <Tooltip
-                              contentStyle={{
-                                backgroundColor: "#1f2937",
-                                border: "1px solid #374151",
-                                borderRadius: "8px",
-                                color: "#f8fafc",
-                              }}
-                            />
-                          </PieChart>
-                        </ResponsiveContainer>
-                      ) : (
-                        <div className="text-center py-8 text-muted-foreground">
-                          <Activity className="w-12 h-12 mx-auto mb-2" />
-                          <p>暂无协议数据</p>
+              {/* Recent Evidence */}
+              <Card className="cyber-card-enhanced">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Database className="w-5 h-5 text-green-400" />
+                    最新证据
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {evidence.slice(0, 3).map((item) => {
+                    const IconComponent = getEvidenceTypeIcon(item.type);
+                    return (
+                      <div
+                        key={item.id}
+                        className="flex items-start gap-3 p-3 bg-matrix-surface/30 rounded-lg hover:bg-matrix-surface/50 transition-colors cursor-pointer"
+                        onClick={() => setSelectedEvidence(item)}
+                      >
+                        <IconComponent className="w-8 h-8 text-green-400 mt-1" />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-medium text-sm">
+                              {item.name}
+                            </span>
+                            <Badge className={getStatusColor(item.integrity)}>
+                              {item.integrity}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground mb-2">
+                            {item.source}
+                          </p>
+                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <span>大小: {formatFileSize(item.size)}</span>
+                            <span>收集: {item.collectedBy}</span>
+                            <span>日期: {item.collectedDate}</span>
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  </div>
-                </TabsContent>
+                      </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            </div>
 
-                <TabsContent value="threats" className="space-y-4">
-                  <div className="cyber-card p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                      <Database className="w-5 h-5 text-red-400" />
-                      威胁检测结果
-                    </h3>
-                    {(
-                      (investigation as any).threatIntelligence?.blacklists ||
-                      []
-                    ).length > 0 ? (
-                      <div className="space-y-3">
-                        {(
-                          investigation as any
-                        ).threatIntelligence.blacklists.map(
-                          (blacklist: string, index: number) => (
-                            <div
-                              key={index}
-                              className="flex items-center gap-3 p-3 bg-red-500/10 border border-red-500/30 rounded"
-                            >
-                              <AlertTriangle className="w-4 h-4 text-red-400" />
-                              <span className="text-white">{blacklist}</span>
-                              <Badge className="bg-red-500/20 text-red-400 border-red-500/40">
-                                已列入
+            {/* Active Imaging Jobs */}
+            <Card className="cyber-card-enhanced">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Copy className="w-5 h-5 text-purple-400" />
+                  活跃镜像任务
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {imagingJobs
+                    .filter(
+                      (job) =>
+                        job.status === "running" || job.status === "queued",
+                    )
+                    .map((job) => (
+                      <div
+                        key={job.id}
+                        className="p-4 bg-matrix-surface/30 rounded-lg border border-matrix-border"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <h3 className="font-medium">{job.name}</h3>
+                            <Badge className={getStatusColor(job.status)}>
+                              {job.status}
+                            </Badge>
+                          </div>
+                          <span className="text-sm text-muted-foreground">
+                            {job.progress}%
+                          </span>
+                        </div>
+                        <div className="space-y-2 mb-3">
+                          <div className="flex justify-between text-sm">
+                            <span>源设备: {job.sourceDevice}</span>
+                            <span>目标: {job.targetPath}</span>
+                          </div>
+                          <Progress value={job.progress} className="h-2" />
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span>开始时间: {job.startTime}</span>
+                          {job.estimatedTime && (
+                            <span>预计剩余: {job.estimatedTime}</span>
+                          )}
+                          <div className="flex gap-2">
+                            <span>方法: {job.method.toUpperCase()}</span>
+                            {job.verification && <span>✓验证</span>}
+                            {job.compression && <span>✓压缩</span>}
+                            {job.encryption && <span>✓加密</span>}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Cases Tab */}
+          <TabsContent value="cases" className="space-y-6">
+            <Card className="cyber-card-enhanced">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Folder className="w-5 h-5 text-cyan-400" />
+                    案件管理
+                  </CardTitle>
+                  <div className="flex items-center gap-3">
+                    <Select defaultValue="all">
+                      <SelectTrigger className="w-40 bg-matrix-surface/50 border-matrix-border">
+                        <SelectValue placeholder="筛选状态" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">所有状态</SelectItem>
+                        <SelectItem value="active">进行中</SelectItem>
+                        <SelectItem value="closed">已关闭</SelectItem>
+                        <SelectItem value="suspended">暂停</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30">
+                      <Plus className="w-4 h-4 mr-2" />
+                      新建案件
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {cases.map((case_) => (
+                    <Card
+                      key={case_.id}
+                      className="cyber-card-enhanced border-matrix-border hover:border-cyan-400/30 transition-colors cursor-pointer"
+                      onClick={() => setSelectedCase(case_)}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h3 className="font-medium text-lg">
+                                {case_.name}
+                              </h3>
+                              <Badge className={getStatusColor(case_.status)}>
+                                {case_.status}
+                              </Badge>
+                              <Badge
+                                className={getPriorityColor(case_.priority)}
+                              >
+                                {case_.priority}
+                              </Badge>
+                              <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/40">
+                                {case_.type}
                               </Badge>
                             </div>
-                          ),
-                        )}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <Shield className="w-12 h-12 mx-auto mb-2 text-green-400" />
-                        <p>未发现威胁</p>
-                      </div>
-                    )}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="malware" className="space-y-4">
-                  <div className="cyber-card p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                      <Bug className="w-5 h-5 text-red-400" />
-                      恶意软件检测
-                    </h3>
-                    {((investigation as any).malwareAnalysis?.signatures || [])
-                      .length > 0 ? (
-                      <div className="space-y-4">
-                        {(investigation as any).malwareAnalysis.signatures.map(
-                          (signature: any, index: number) => (
-                            <div
-                              key={index}
-                              className="p-4 bg-red-500/5 border border-red-500/20 rounded-lg"
-                            >
-                              <div className="flex justify-between items-start mb-2">
-                                <div>
-                                  <h4 className="font-semibold text-white">
-                                    {signature.name}
-                                  </h4>
-                                  <p className="text-sm text-muted-foreground">
-                                    {signature.family} - {signature.type}
-                                  </p>
-                                </div>
-                                <Badge className="bg-red-500/20 text-red-400 border-red-500/40">
-                                  {signature.confidence}% 置信度
-                                </Badge>
+                            <p className="text-sm text-muted-foreground mb-3">
+                              {case_.description}
+                            </p>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+                              <div>
+                                <p className="text-xs text-muted-foreground">
+                                  创建日期
+                                </p>
+                                <p className="text-sm">{case_.createdDate}</p>
                               </div>
-                              <div className="text-xs text-muted-foreground">
-                                MD5:{" "}
-                                <code className="text-neon-blue">
-                                  {signature.md5}
-                                </code>
+                              <div>
+                                <p className="text-xs text-muted-foreground">
+                                  最后修改
+                                </p>
+                                <p className="text-sm">{case_.lastModified}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-muted-foreground">
+                                  调查员
+                                </p>
+                                <p className="text-sm">{case_.investigator}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-muted-foreground">
+                                  证据数量
+                                </p>
+                                <p className="text-sm font-bold text-green-400">
+                                  {case_.evidenceCount}件
+                                </p>
                               </div>
                             </div>
-                          ),
-                        )}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <Shield className="w-12 h-12 mx-auto mb-2 text-green-400" />
-                        <p>未发现恶意软件</p>
-                      </div>
-                    )}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="forensics" className="space-y-4">
-                  <div className="cyber-card p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                      <FileSearch className="w-5 h-5 text-tech-accent" />
-                      取证工件 (
-                      {
-                        ((investigation as any).forensics?.artifacts || [])
-                          .length
-                      }
-                      )
-                    </h3>
-                    <div className="space-y-3 max-h-80 overflow-y-auto">
-                      {((investigation as any).forensics?.artifacts || [])
-                        .slice(0, 10)
-                        .map((artifact: any, index: number) => (
-                          <div
-                            key={index}
-                            className="flex items-center justify-between p-3 bg-matrix-surface/50 rounded"
-                          >
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-1">
+                            <div className="flex flex-wrap gap-1">
+                              {case_.tags.map((tag, index) => (
                                 <Badge
-                                  className={cn(
-                                    "px-2 py-1 text-xs",
-                                    getRiskColor(
-                                      artifact.risk === "critical"
-                                        ? 90
-                                        : artifact.risk === "high"
-                                          ? 70
-                                          : artifact.risk === "medium"
-                                            ? 50
-                                            : 20,
-                                    ),
-                                  )}
+                                  key={index}
+                                  className="bg-matrix-surface/50 text-muted-foreground border-matrix-border text-xs"
                                 >
-                                  {artifact.type}
+                                  {tag}
                                 </Badge>
-                                <span className="font-medium text-white">
-                                  {artifact.artifact}
-                                </span>
-                              </div>
-                              <p className="text-sm text-muted-foreground">
-                                {artifact.description}
-                              </p>
-                            </div>
-                            <div className="text-right text-xs text-muted-foreground">
-                              {new Date(artifact.timestamp).toLocaleString()}
+                              ))}
                             </div>
                           </div>
-                        ))}
-                    </div>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            ) : (
-              /* 基础模式 - 包含拓扑图的简化展示 */
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                {/* 左侧：网络拓扑 */}
-                <div className="lg:col-span-2">
-                  <TopologyAnalysisEnhanced
-                    investigation={investigation}
-                    centerIP={selectedIP}
-                  />
+                          <div className="flex flex-col gap-2">
+                            <Button
+                              size="sm"
+                              className="bg-cyan-400/20 text-cyan-400 border-cyan-400/30"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="bg-green-500/20 text-green-400 border-green-500/30"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="bg-amber-500/20 text-amber-400 border-amber-500/30"
+                            >
+                              <FileText className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-                {/* 右侧：基础信息 */}
+          {/* Evidence Tab */}
+          <TabsContent value="evidence" className="space-y-6">
+            <Card className="cyber-card-enhanced">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Database className="w-5 h-5 text-green-400" />
+                    数字证据库
+                  </CardTitle>
+                  <div className="flex items-center gap-3">
+                    <Select defaultValue="all">
+                      <SelectTrigger className="w-40 bg-matrix-surface/50 border-matrix-border">
+                        <SelectValue placeholder="证据类型" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">所有类型</SelectItem>
+                        <SelectItem value="disk_image">磁盘镜像</SelectItem>
+                        <SelectItem value="memory_dump">内存转储</SelectItem>
+                        <SelectItem value="network_capture">
+                          网络捕获
+                        </SelectItem>
+                        <SelectItem value="mobile_backup">移动设备</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button className="bg-green-500/20 text-green-400 border-green-500/30">
+                      <Upload className="w-4 h-4 mr-2" />
+                      添加证据
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
                 <div className="space-y-4">
-                  <div className="cyber-card p-4">
-                    <h3 className="text-lg font-semibold text-white mb-3">
-                      基础信息
-                    </h3>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">IP地址:</span>
-                        <span className="text-white font-mono">
-                          {(investigation as any).ip}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">地理位置:</span>
-                        <span className="text-white">
-                          {(investigation as any).country}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">组织:</span>
-                        <span className="text-white">
-                          {(investigation as any).organization}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">首次发现:</span>
-                        <span className="text-white">
-                          {new Date(
-                            (investigation as any).firstSeen,
-                          ).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">最后活动:</span>
-                        <span className="text-white">
-                          {new Date(
-                            (investigation as any).lastActivity,
-                          ).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                  {evidence.map((item) => {
+                    const IconComponent = getEvidenceTypeIcon(item.type);
+                    return (
+                      <Card
+                        key={item.id}
+                        className="cyber-card-enhanced border-matrix-border hover:border-green-400/30 transition-colors cursor-pointer"
+                        onClick={() => setSelectedEvidence(item)}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-4">
+                            <div className="p-3 bg-green-500/20 rounded-lg">
+                              <IconComponent className="w-8 h-8 text-green-400" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <h3 className="font-medium text-lg">
+                                  {item.name}
+                                </h3>
+                                <Badge
+                                  className={getStatusColor(item.integrity)}
+                                >
+                                  {item.integrity}
+                                </Badge>
+                                <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/40">
+                                  {item.type}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-muted-foreground mb-3">
+                                来源: {item.source}
+                              </p>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+                                <div>
+                                  <p className="text-xs text-muted-foreground">
+                                    文件大小
+                                  </p>
+                                  <p className="text-sm font-bold">
+                                    {formatFileSize(item.size)}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-muted-foreground">
+                                    收集者
+                                  </p>
+                                  <p className="text-sm">{item.collectedBy}</p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-muted-foreground">
+                                    收集日期
+                                  </p>
+                                  <p className="text-sm">
+                                    {item.collectedDate}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-muted-foreground">
+                                    SHA256
+                                  </p>
+                                  <p className="text-xs font-mono">
+                                    {item.hash.sha256.substring(0, 16)}...
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex flex-wrap gap-1 mb-3">
+                                {item.tags.map((tag, index) => (
+                                  <Badge
+                                    key={index}
+                                    className="bg-matrix-surface/50 text-muted-foreground border-matrix-border text-xs"
+                                  >
+                                    {tag}
+                                  </Badge>
+                                ))}
+                              </div>
+                              {item.notes && (
+                                <div className="bg-matrix-surface/30 p-3 rounded-lg">
+                                  <p className="text-xs text-muted-foreground mb-1">
+                                    备注:
+                                  </p>
+                                  <p className="text-sm">{item.notes}</p>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex flex-col gap-2">
+                              <Button
+                                size="sm"
+                                className="bg-cyan-400/20 text-cyan-400 border-cyan-400/30"
+                              >
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                className="bg-purple-500/20 text-purple-400 border-purple-500/30"
+                              >
+                                <Microscope className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                className="bg-amber-500/20 text-amber-400 border-amber-500/30"
+                              >
+                                <Download className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-                  <div className="cyber-card p-4">
-                    <h3 className="text-lg font-semibold text-white mb-3">
-                      攻击类型
-                    </h3>
-                    {attackTypeData.length > 0 ? (
-                      <ResponsiveContainer width="100%" height={180}>
-                        <PieChart>
-                          <Pie
-                            data={attackTypeData}
-                            cx="50%"
-                            cy="50%"
-                            outerRadius={70}
-                            dataKey="value"
-                            label={({ name, value }) => `${name}: ${value}`}
-                          >
-                            {attackTypeData.map((entry, index) => (
-                              <Cell
-                                key={`cell-${index}`}
-                                fill={pieColors[index % pieColors.length]}
-                              />
+          {/* Tools Tab */}
+          <TabsContent value="tools" className="space-y-6">
+            <Card className="cyber-card-enhanced">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="w-5 h-5 text-blue-400" />
+                  数字取证工具
+                </CardTitle>
+                <CardDescription>管理和监控数字取证分析工具</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {tools.map((tool) => (
+                    <Card
+                      key={tool.id}
+                      className="cyber-card-enhanced border-matrix-border"
+                    >
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-base">
+                            {tool.name}
+                          </CardTitle>
+                          <Badge className={getStatusColor(tool.status)}>
+                            {tool.status}
+                          </Badge>
+                        </div>
+                        <CardDescription>{tool.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <p className="text-sm text-muted-foreground">
+                              版本
+                            </p>
+                            <p className="font-mono text-sm">{tool.version}</p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-muted-foreground">
+                              类型
+                            </p>
+                            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/40">
+                              {tool.type}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            功能
+                          </p>
+                          <div className="flex flex-wrap gap-1">
+                            {tool.capabilities.map((capability, index) => (
+                              <Badge
+                                key={index}
+                                className="bg-green-500/20 text-green-400 border-green-500/40 text-xs"
+                              >
+                                {capability}
+                              </Badge>
                             ))}
-                          </Pie>
-                          <Tooltip
-                            contentStyle={{
-                              backgroundColor: "#1f2937",
-                              border: "1px solid #374151",
-                              borderRadius: "8px",
-                              color: "#f8fafc",
-                            }}
-                          />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    ) : (
-                      <div className="text-center py-6 text-muted-foreground">
-                        <Activity className="w-8 h-8 mx-auto mb-2" />
-                        <p className="text-sm">暂无攻击数据</p>
-                      </div>
-                    )}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            支持格式
+                          </p>
+                          <div className="flex flex-wrap gap-1">
+                            {tool.supportedFormats.map((format, index) => (
+                              <Badge
+                                key={index}
+                                className="bg-purple-500/20 text-purple-400 border-purple-500/40 text-xs"
+                              >
+                                {format}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            className="flex-1 bg-green-500/20 text-green-400 border-green-500/30"
+                          >
+                            <Play className="w-4 h-4 mr-1" />
+                            启动
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="flex-1 bg-cyan-400/20 text-cyan-400 border-cyan-400/30"
+                          >
+                            <Settings className="w-4 h-4 mr-1" />
+                            配置
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Imaging Tab */}
+          <TabsContent value="imaging" className="space-y-6">
+            <Card className="cyber-card-enhanced">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Copy className="w-5 h-5 text-purple-400" />
+                    磁盘镜像任务
+                  </CardTitle>
+                  <Button className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                    <Plus className="w-4 h-4 mr-2" />
+                    新建任务
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {imagingJobs.map((job) => (
+                    <Card
+                      key={job.id}
+                      className="cyber-card-enhanced border-matrix-border"
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h3 className="font-medium text-lg">
+                                {job.name}
+                              </h3>
+                              <Badge className={getStatusColor(job.status)}>
+                                {job.status}
+                              </Badge>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                              <div>
+                                <p className="text-xs text-muted-foreground">
+                                  源设备
+                                </p>
+                                <p className="text-sm font-mono">
+                                  {job.sourceDevice}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-muted-foreground">
+                                  目标路径
+                                </p>
+                                <p className="text-sm font-mono text-xs">
+                                  {job.targetPath}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-muted-foreground">
+                                  开始时间
+                                </p>
+                                <p className="text-sm">{job.startTime}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-muted-foreground">
+                                  镜像方法
+                                </p>
+                                <p className="text-sm font-mono">
+                                  {job.method.toUpperCase()}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-purple-400 mb-1">
+                              {job.progress}%
+                            </div>
+                            {job.estimatedTime && (
+                              <p className="text-xs text-muted-foreground">
+                                剩余: {job.estimatedTime}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <Progress value={job.progress} className="h-3" />
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex gap-4 text-xs">
+                              {job.verification && (
+                                <div className="flex items-center gap-1 text-green-400">
+                                  <CheckCircle className="w-3 h-3" />
+                                  <span>哈希验证</span>
+                                </div>
+                              )}
+                              {job.compression && (
+                                <div className="flex items-center gap-1 text-blue-400">
+                                  <Archive className="w-3 h-3" />
+                                  <span>压缩</span>
+                                </div>
+                              )}
+                              {job.encryption && (
+                                <div className="flex items-center gap-1 text-amber-400">
+                                  <Lock className="w-3 h-3" />
+                                  <span>加密</span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex gap-2">
+                              {job.status === "running" && (
+                                <Button
+                                  size="sm"
+                                  className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                                >
+                                  <Pause className="w-4 h-4" />
+                                </Button>
+                              )}
+                              {job.status === "paused" && (
+                                <Button
+                                  size="sm"
+                                  className="bg-green-500/20 text-green-400 border-green-500/30"
+                                >
+                                  <Play className="w-4 h-4" />
+                                </Button>
+                              )}
+                              <Button
+                                size="sm"
+                                className="bg-red-500/20 text-red-400 border-red-500/30"
+                              >
+                                <Square className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Analysis Tab */}
+          <TabsContent value="analysis" className="space-y-6">
+            <Card className="cyber-card-enhanced">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Microscope className="w-5 h-5 text-amber-400" />
+                  取证分析报告
+                </CardTitle>
+                <CardDescription>自动化和手动��析结果汇总</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-12">
+                  <Microscope className="w-20 h-20 text-amber-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-medium text-white mb-2">
+                    分析功能开发中
+                  </h3>
+                  <p className="text-muted-foreground mb-6">
+                    即将支持自动化恶意软件检测、时间线分析、关键词搜索等功能
+                  </p>
+                  <Button className="bg-amber-500/20 text-amber-400 border-amber-500/30">
+                    查看计划功能
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Reports Tab */}
+          <TabsContent value="reports" className="space-y-6">
+            <Card className="cyber-card-enhanced">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-cyan-400" />
+                  法庭报告生成
+                </CardTitle>
+                <CardDescription>符合法律要求的取证报告和文档</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-12">
+                  <FileText className="w-20 h-20 text-cyan-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-medium text-white mb-2">
+                    报告生成器
+                  </h3>
+                  <p className="text-muted-foreground mb-6">
+                    自动生成符合法庭要求的取证报告，包含完整的���据链和分析结果
+                  </p>
+                  <div className="flex justify-center gap-3">
+                    <Button className="bg-cyan-400/20 text-cyan-400 border-cyan-400/30">
+                      生成详细报告
+                    </Button>
+                    <Button className="bg-green-500/20 text-green-400 border-green-500/30">
+                      导出PDF
+                    </Button>
                   </div>
                 </div>
-              </div>
-            )}
-
-            {/* 导出按钮 - 移到右上角 */}
-            <div className="fixed bottom-6 right-6 z-50">
-              <Button
-                onClick={() => handleExport("JSON")}
-                className="neon-button-green shadow-lg"
-                size="lg"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                导出报告
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* 无调查状态 */}
-        {!selectedIP && !loading && (
-          <div className="cyber-card text-center py-16">
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-quantum-500 to-neural-500 flex items-center justify-center">
-                <Target className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  开始威胁调查
-                </h3>
-                <p className="text-muted-foreground">输入IP地址开始安全分析</p>
-              </div>
-            </div>
-          </div>
-        )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

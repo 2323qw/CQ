@@ -1,5 +1,59 @@
 /* Enhanced UI Styles for Beautiful Consistent Design */
 
+/* Threat Hunting Specific Styles */
+.threat-hunting-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    rgba(17, 24, 39, 0.9),
+    rgba(31, 41, 55, 0.8),
+    rgba(15, 23, 42, 0.9)
+  );
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  transition: all 0.3s ease;
+}
+
+.threat-hunting-card:hover {
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow:
+    0 8px 25px rgba(239, 68, 68, 0.2),
+    0 0 20px rgba(239, 68, 68, 0.1);
+}
+
+.hunting-progress-bar {
+  background: linear-gradient(90deg, #ef4444, #f97316, #eab308, #22c55e);
+  border-radius: 8px;
+  height: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.hunting-progress-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: progress-shine 2s infinite;
+}
+
+@keyframes progress-shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 /* Smooth scrolling and improved typography */
 * {
   scroll-behavior: smooth;

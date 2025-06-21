@@ -335,8 +335,7 @@ export function EnhancedNavigation({
       {/* 导航侧边栏 */}
       <div
         className={cn(
-          "fixed left-0 top-0 h-full bg-gradient-to-b from-matrix-bg via-matrix-surface to-matrix-bg border-r border-matrix-border z-40 cyber-card-enhanced transition-all duration-300",
-          isCompactMode ? "w-16" : "w-80",
+          "fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-matrix-bg via-matrix-surface to-matrix-bg border-r border-matrix-border z-40 cyber-card-enhanced transition-transform duration-300",
           // 移动端变换效果
           isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
         )}

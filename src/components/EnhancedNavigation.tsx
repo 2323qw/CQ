@@ -863,11 +863,18 @@ export function EnhancedNavigation({
                                 to={item.path || "#"}
                                 onClick={() => handleMobileNavClick(item.path)}
                                 className={cn(
-                                  "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 nav-item-enhanced",
+                                  "flex items-center rounded-lg text-sm transition-all duration-200 nav-item-enhanced group",
+                                  isCompactMode
+                                    ? "gap-0 p-2 justify-center"
+                                    : "gap-3 px-3 py-2",
                                   isActive
                                     ? "bg-gradient-to-r from-neon-blue/20 to-neon-purple/10 text-neon-blue border border-neon-blue/30 shadow-lg nav-item-active"
-                                    : "text-muted-foreground hover:text-white hover:bg-matrix-accent/60 hover:translate-x-1 hover:shadow-md",
+                                    : "text-muted-foreground hover:text-white hover:bg-matrix-accent/60 hover:shadow-md",
+                                  !isCompactMode && "hover:translate-x-1",
                                 )}
+                                title={
+                                  isCompactMode ? item.name : item.description
+                                }
                               >
                                 <div className="flex items-center gap-3 flex-1">
                                   <div
@@ -963,7 +970,7 @@ export function EnhancedNavigation({
                                       </Badge>
                                     )}
 
-                                    {/* 快捷键提示 */}
+                                    {/* 快捷键���示 */}
                                     {item.shortcut && (
                                       <span className="text-xs text-muted-foreground/50 font-mono bg-matrix-surface/30 px-1.5 py-0.5 rounded">
                                         {item.shortcut}

@@ -312,21 +312,15 @@ const EvidenceCollectionInternational: React.FC = () => {
 
         {/* Error State */}
         {error && (
-          <Card className="border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-3">
-                <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
-                <div>
-                  <h3 className="font-semibold text-red-900 dark:text-red-100">
-                    Investigation Failed
-                  </h3>
-                  <p className="text-sm text-red-700 dark:text-red-300">
-                    {error}
-                  </p>
-                </div>
+          <div className="cyber-card border-red-500/30 bg-red-500/10 p-6">
+            <div className="flex items-center space-x-3">
+              <AlertTriangle className="w-6 h-6 text-red-400" />
+              <div>
+                <h3 className="font-semibold text-red-400">调查失败</h3>
+                <p className="text-sm text-red-300">{error}</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         {/* Investigation Results */}

@@ -404,7 +404,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                   </div>
                 )}
 
-                {/* 高级模式显示额外的指标 */}
+                {/* 高级模式显示额外的��标 */}
                 {investigationMode === "advanced" && (
                   <>
                     <div className="cyber-card p-6">
@@ -983,7 +983,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                                 data={[
                                   { name: "端口扫描", value: 45, count: 45 },
                                   { name: "暴力破解", value: 23, count: 23 },
-                                  { name: "Web���击", value: 18, count: 18 },
+                                  { name: "Web攻击", value: 18, count: 18 },
                                   { name: "恶意软件", value: 14, count: 14 },
                                 ]}
                                 cx="50%"
@@ -1303,18 +1303,502 @@ const EvidenceCollectionInternational: React.FC = () => {
                 </TabsContent>
 
                 <TabsContent value="topology">
-                  <div className="cyber-card p-6">
-                    <h3 className="text-lg font-semibold text-white mb-2 flex items-center space-x-2">
-                      <Network className="w-5 h-5 text-quantum-500" />
-                      <span>网络拓扑分析</span>
-                    </h3>
-                    <p className="text-muted-foreground mb-6">
-                      交互式网络连接关系可视化
-                    </p>
-                    <TopologyAnalysisEnhanced
-                      investigation={investigation}
-                      centerIP={selectedIP}
-                    />
+                  <div className="space-y-6">
+                    {/* Enhanced Network Topology Dashboard */}
+                    <div className="cyber-card p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
+                          <Network className="w-5 h-5 text-quantum-500" />
+                          <span>智能网络拓扑分析</span>
+                        </h3>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-cyan-400 hover:text-cyan-300"
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            导出拓扑图
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-green-400 hover:text-green-300"
+                          >
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                            实时更新
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-purple-400 hover:text-purple-300"
+                          >
+                            <Filter className="w-4 h-4 mr-2" />
+                            过滤器
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Network Overview Stats */}
+                      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+                        <div className="cyber-card p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/30">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-blue-300">
+                                网络节点
+                              </p>
+                              <p className="text-xl font-bold text-white">
+                                {(investigation as any).networkAnalysis
+                                  ?.connections?.length || 47}
+                              </p>
+                              <p className="text-xs text-blue-400">活跃设备</p>
+                            </div>
+                            <Server className="w-6 h-6 text-blue-400" />
+                          </div>
+                        </div>
+                        <div className="cyber-card p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/30">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-green-300">
+                                连接关系
+                              </p>
+                              <p className="text-xl font-bold text-white">
+                                156
+                              </p>
+                              <p className="text-xs text-green-400">网络链路</p>
+                            </div>
+                            <Network className="w-6 h-6 text-green-400" />
+                          </div>
+                        </div>
+                        <div className="cyber-card p-4 bg-gradient-to-br from-orange-500/10 to-red-500/10 border-orange-500/30">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-orange-300">
+                                异常节点
+                              </p>
+                              <p className="text-xl font-bold text-white">3</p>
+                              <p className="text-xs text-orange-400">需关注</p>
+                            </div>
+                            <AlertTriangle className="w-6 h-6 text-orange-400" />
+                          </div>
+                        </div>
+                        <div className="cyber-card p-4 bg-gradient-to-br from-purple-500/10 to-violet-500/10 border-purple-500/30">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-purple-300">
+                                网络深度
+                              </p>
+                              <p className="text-xl font-bold text-white">7</p>
+                              <p className="text-xs text-purple-400">
+                                最大跳数
+                              </p>
+                            </div>
+                            <Target className="w-6 h-6 text-purple-400" />
+                          </div>
+                        </div>
+                        <div className="cyber-card p-4 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-yellow-500/30">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-yellow-300">
+                                关键路径
+                              </p>
+                              <p className="text-xl font-bold text-white">12</p>
+                              <p className="text-xs text-yellow-400">
+                                攻击路径
+                              </p>
+                            </div>
+                            <Activity className="w-6 h-6 text-yellow-400" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <p className="text-muted-foreground mb-6">
+                        基于AI的智能网络拓扑分析，实时显示网络连接关系、威胁传播路径和异常行为模式
+                      </p>
+
+                      {/* Enhanced Topology Component */}
+                      <TopologyAnalysisEnhanced
+                        investigation={investigation}
+                        centerIP={selectedIP}
+                      />
+                    </div>
+
+                    {/* Network Analysis Insights */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Attack Path Analysis */}
+                      <div className="cyber-card p-6">
+                        <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                          <Target className="w-5 h-5 text-red-400" />
+                          <span>攻击路径分析</span>
+                        </h3>
+                        <div className="space-y-4">
+                          <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-medium text-white">
+                                关键攻击路径
+                              </span>
+                              <Badge className="bg-red-500/20 text-red-400 border-red-500/40">
+                                高风险
+                              </Badge>
+                            </div>
+                            <div className="space-y-2">
+                              {[
+                                {
+                                  step: 1,
+                                  action: "初始入侵",
+                                  target: selectedIP,
+                                  method: "钓鱼邮件",
+                                },
+                                {
+                                  step: 2,
+                                  action: "横向移动",
+                                  target: "192.168.1.100",
+                                  method: "SMB漏洞",
+                                },
+                                {
+                                  step: 3,
+                                  action: "权限提升",
+                                  target: "DC01.local",
+                                  method: "Kerberoasting",
+                                },
+                                {
+                                  step: 4,
+                                  action: "数据外泄",
+                                  target: "文件服务器",
+                                  method: "域管权限",
+                                },
+                              ].map((pathStep, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center space-x-3 text-sm"
+                                >
+                                  <div className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                                    {pathStep.step}
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="text-white font-medium">
+                                      {pathStep.action}
+                                    </p>
+                                    <p className="text-muted-foreground text-xs">
+                                      {pathStep.target} → {pathStep.method}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="text-center p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                              <p className="text-lg font-bold text-orange-400">
+                                4
+                              </p>
+                              <p className="text-xs text-orange-300">
+                                攻击步骤
+                              </p>
+                            </div>
+                            <div className="text-center p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                              <p className="text-lg font-bold text-red-400">
+                                7.2
+                              </p>
+                              <p className="text-xs text-red-300">风险分数</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Network Anomalies */}
+                      <div className="cyber-card p-6">
+                        <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                          <Eye className="w-5 h-5 text-yellow-400" />
+                          <span>网络异常检测</span>
+                        </h3>
+                        <div className="space-y-4">
+                          {[
+                            {
+                              type: "流量异常",
+                              description: "检测到异常大量的出站流量",
+                              severity: "high",
+                              affected: "3个节点",
+                              timestamp: "2分钟前",
+                            },
+                            {
+                              type: "连接模式",
+                              description: "发现非正常时间的内网扫描行为",
+                              severity: "medium",
+                              affected: "12个节点",
+                              timestamp: "15分钟前",
+                            },
+                            {
+                              type: "协议异常",
+                              description: "检测到加密隧道流量特征",
+                              severity: "high",
+                              affected: "1个节点",
+                              timestamp: "8分钟前",
+                            },
+                            {
+                              type: "地理位置",
+                              description: "发现来自异常地理位置的连接",
+                              severity: "medium",
+                              affected: "5个节点",
+                              timestamp: "32分钟前",
+                            },
+                          ].map((anomaly, index) => (
+                            <div
+                              key={index}
+                              className={cn(
+                                "p-3 border rounded-lg",
+                                anomaly.severity === "high"
+                                  ? "bg-red-500/10 border-red-500/30"
+                                  : "bg-yellow-500/10 border-yellow-500/30",
+                              )}
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="font-medium text-white">
+                                  {anomaly.type}
+                                </span>
+                                <div className="flex items-center space-x-2">
+                                  <Badge
+                                    className={cn(
+                                      "text-xs",
+                                      anomaly.severity === "high"
+                                        ? "bg-red-500/20 text-red-400 border-red-500/40"
+                                        : "bg-yellow-500/20 text-yellow-400 border-yellow-500/40",
+                                    )}
+                                  >
+                                    {anomaly.severity === "high" ? "高" : "中"}
+                                  </Badge>
+                                  <span className="text-xs text-muted-foreground">
+                                    {anomaly.timestamp}
+                                  </span>
+                                </div>
+                              </div>
+                              <p className="text-sm text-muted-foreground mb-1">
+                                {anomaly.description}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                影响范围: {anomaly.affected}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Network Infrastructure Analysis */}
+                    <div className="cyber-card p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                        <Server className="w-5 h-5 text-blue-400" />
+                        <span>网络基础设施分析</span>
+                      </h3>
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Network Segments */}
+                        <div className="space-y-4">
+                          <h4 className="font-medium text-cyan-400">
+                            网络分段
+                          </h4>
+                          <div className="space-y-2">
+                            {[
+                              {
+                                segment: "DMZ区域",
+                                range: "10.0.1.0/24",
+                                devices: 12,
+                                risk: "medium",
+                              },
+                              {
+                                segment: "办公网络",
+                                range: "192.168.1.0/24",
+                                devices: 156,
+                                risk: "low",
+                              },
+                              {
+                                segment: "服务器区",
+                                range: "10.0.10.0/24",
+                                devices: 23,
+                                risk: "high",
+                              },
+                              {
+                                segment: "管理网络",
+                                range: "172.16.0.0/24",
+                                devices: 8,
+                                risk: "critical",
+                              },
+                            ].map((seg, index) => (
+                              <div
+                                key={index}
+                                className="p-3 bg-matrix-surface/30 rounded-lg"
+                              >
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className="text-sm font-medium text-white">
+                                    {seg.segment}
+                                  </span>
+                                  <Badge
+                                    className={cn(
+                                      "text-xs",
+                                      seg.risk === "critical"
+                                        ? "bg-red-500/20 text-red-400 border-red-500/40"
+                                        : seg.risk === "high"
+                                          ? "bg-orange-500/20 text-orange-400 border-orange-500/40"
+                                          : seg.risk === "medium"
+                                            ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/40"
+                                            : "bg-green-500/20 text-green-400 border-green-500/40",
+                                    )}
+                                  >
+                                    {seg.risk === "critical"
+                                      ? "严重"
+                                      : seg.risk === "high"
+                                        ? "高"
+                                        : seg.risk === "medium"
+                                          ? "中"
+                                          : "低"}
+                                  </Badge>
+                                </div>
+                                <p className="text-xs text-muted-foreground font-mono">
+                                  {seg.range}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {seg.devices} 个设备
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Critical Assets */}
+                        <div className="space-y-4">
+                          <h4 className="font-medium text-green-400">
+                            关键资产
+                          </h4>
+                          <div className="space-y-2">
+                            {[
+                              {
+                                name: "域控制器",
+                                ip: "192.168.1.10",
+                                type: "DC",
+                                status: "正常",
+                              },
+                              {
+                                name: "文件服务器",
+                                ip: "10.0.10.50",
+                                type: "FS",
+                                status: "异常",
+                              },
+                              {
+                                name: "数据库服务器",
+                                ip: "10.0.10.100",
+                                type: "DB",
+                                status: "正常",
+                              },
+                              {
+                                name: "Web服务器",
+                                ip: "10.0.1.80",
+                                type: "WEB",
+                                status: "监控中",
+                              },
+                            ].map((asset, index) => (
+                              <div
+                                key={index}
+                                className="p-3 bg-matrix-surface/30 rounded-lg"
+                              >
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className="text-sm font-medium text-white">
+                                    {asset.name}
+                                  </span>
+                                  <Badge
+                                    className={cn(
+                                      "text-xs",
+                                      asset.status === "异常"
+                                        ? "bg-red-500/20 text-red-400 border-red-500/40"
+                                        : asset.status === "监控中"
+                                          ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/40"
+                                          : "bg-green-500/20 text-green-400 border-green-500/40",
+                                    )}
+                                  >
+                                    {asset.status}
+                                  </Badge>
+                                </div>
+                                <p className="text-xs text-muted-foreground font-mono">
+                                  {asset.ip}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {asset.type}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Security Controls */}
+                        <div className="space-y-4">
+                          <h4 className="font-medium text-purple-400">
+                            安全控制
+                          </h4>
+                          <div className="space-y-2">
+                            {[
+                              {
+                                control: "防火墙",
+                                status: "active",
+                                effectiveness: 85,
+                              },
+                              {
+                                control: "IDS/IPS",
+                                status: "active",
+                                effectiveness: 92,
+                              },
+                              {
+                                control: "WAF",
+                                status: "active",
+                                effectiveness: 78,
+                              },
+                              {
+                                control: "EDR",
+                                status: "partial",
+                                effectiveness: 67,
+                              },
+                            ].map((control, index) => (
+                              <div
+                                key={index}
+                                className="p-3 bg-matrix-surface/30 rounded-lg"
+                              >
+                                <div className="flex items-center justify-between mb-2">
+                                  <span className="text-sm font-medium text-white">
+                                    {control.control}
+                                  </span>
+                                  <div
+                                    className={cn(
+                                      "w-2 h-2 rounded-full",
+                                      control.status === "active"
+                                        ? "bg-green-400"
+                                        : control.status === "partial"
+                                          ? "bg-yellow-400"
+                                          : "bg-red-400",
+                                    )}
+                                  />
+                                </div>
+                                <div className="space-y-1">
+                                  <div className="flex justify-between text-xs">
+                                    <span className="text-muted-foreground">
+                                      有效性
+                                    </span>
+                                    <span className="text-white">
+                                      {control.effectiveness}%
+                                    </span>
+                                  </div>
+                                  <div className="h-1 bg-matrix-surface rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-gradient-to-r from-purple-500 to-purple-400 rounded-full"
+                                      style={{
+                                        width: `${control.effectiveness}%`,
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </TabsContent>
 
@@ -1521,7 +2005,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                             {
                               type: "端口特征",
                               value: "22,80,443,8080",
-                              status: "已检测",
+                              status: "已���测",
                               risk: "low",
                             },
                             {
@@ -1591,7 +2075,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                                 可能的威胁组织
                               </span>
                               <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/40">
-                                中等可信度
+                                中等可��度
                               </Badge>
                             </div>
                             <p className="text-sm text-muted-foreground mb-2">
@@ -1737,7 +2221,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                       <div className="cyber-card p-6">
                         <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
                           <Target className="w-5 h-5 text-red-400" />
-                          <span>攻击类型分析</span>
+                          <span>攻击类型分��</span>
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {Object.entries(

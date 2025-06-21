@@ -577,86 +577,93 @@ const EvidenceCollectionInternational: React.FC = () => {
 
               <TabsContent value="overview">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <Card className="border-0 shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <BarChart3 className="w-5 h-5 text-blue-600" />
-                        <span>Attack Distribution</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {attackTypeData.length > 0 ? (
-                        <ResponsiveContainer width="100%" height={300}>
-                          <RechartsPieChart>
-                            <Pie
-                              data={attackTypeData}
-                              cx="50%"
-                              cy="50%"
-                              outerRadius={100}
-                              dataKey="value"
-                              label={({ name, value }) => `${name}: ${value}`}
-                            >
-                              {attackTypeData.map((entry, index) => (
-                                <Cell
-                                  key={`cell-${index}`}
-                                  fill={chartColors[index % chartColors.length]}
-                                />
-                              ))}
-                            </Pie>
-                            <Tooltip />
-                          </RechartsPieChart>
-                        </ResponsiveContainer>
-                      ) : (
-                        <div className="h-[300px] flex items-center justify-center text-slate-500">
-                          No attack data available
+                  <div className="cyber-card p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                      <BarChart3 className="w-5 h-5 text-quantum-500" />
+                      <span>攻击类型分布</span>
+                    </h3>
+                    {attackTypeData.length > 0 ? (
+                      <ResponsiveContainer width="100%" height={300}>
+                        <RechartsPieChart>
+                          <Pie
+                            data={attackTypeData}
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={100}
+                            dataKey="value"
+                            label={({ name, value }) => `${name}: ${value}`}
+                          >
+                            {attackTypeData.map((entry, index) => (
+                              <Cell
+                                key={`cell-${index}`}
+                                fill={
+                                  [
+                                    "#00f5ff",
+                                    "#39ff14",
+                                    "#bf00ff",
+                                    "#ff1493",
+                                    "#ff6600",
+                                    "#ffff00",
+                                  ][index % 6]
+                                }
+                              />
+                            ))}
+                          </Pie>
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: "#1f2937",
+                              border: "1px solid #374151",
+                              borderRadius: "8px",
+                              color: "#f8fafc",
+                            }}
+                          />
+                        </RechartsPieChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                        暂无攻击数据
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="cyber-card p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                      <Activity className="w-5 h-5 text-green-400" />
+                      <span>安全时间线</span>
+                    </h3>
+                    <div className="space-y-4">
+                      {(investigation as any).timeline
+                        ?.slice(0, 5)
+                        .map((event: any, index: number) => (
+                          <div
+                            key={index}
+                            className="flex items-start space-x-3 p-3 bg-matrix-surface/50 rounded-lg"
+                          >
+                            <div className="flex-shrink-0 mt-1">
+                              <div className="w-2 h-2 bg-quantum-500 rounded-full" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-white">
+                                {event.type?.replace(/_/g, " ").toUpperCase() ||
+                                  "安全事件"}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {event.details || "检测到安全事件"}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {new Date(
+                                  event.timestamp || Date.now(),
+                                ).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        )) || (
+                        <div className="text-center py-8 text-muted-foreground">
+                          暂无时间线数据
                         </div>
                       )}
-                    </CardContent>
-                  </Card>
-
-                  <Card className="border-0 shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <Activity className="w-5 h-5 text-green-600" />
-                        <span>Security Timeline</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        {(investigation as any).timeline
-                          ?.slice(0, 5)
-                          .map((event: any, index: number) => (
-                            <div
-                              key={index}
-                              className="flex items-start space-x-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg"
-                            >
-                              <div className="flex-shrink-0 mt-1">
-                                <div className="w-2 h-2 bg-blue-600 rounded-full" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                                  {event.type
-                                    ?.replace(/_/g, " ")
-                                    .toUpperCase() || "Security Event"}
-                                </p>
-                                <p className="text-sm text-slate-600 dark:text-slate-400">
-                                  {event.details || "Security event detected"}
-                                </p>
-                                <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">
-                                  {new Date(
-                                    event.timestamp || Date.now(),
-                                  ).toLocaleString()}
-                                </p>
-                              </div>
-                            </div>
-                          )) || (
-                          <div className="text-center py-8 text-slate-500">
-                            No timeline data available
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 </div>
               </TabsContent>
 

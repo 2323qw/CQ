@@ -452,9 +452,7 @@ export function EnhancedNavigation({
                                 isActive
                                   ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30 neon-text nav-item-active"
                                   : "text-muted-foreground hover:text-white hover:bg-matrix-accent/50",
-                                isCompactMode && "justify-center",
                               )}
-                              title={isCompactMode ? item.name : undefined}
                             >
                               <div className="flex items-center gap-3">
                                 <ItemIcon

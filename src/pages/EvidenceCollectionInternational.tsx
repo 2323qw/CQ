@@ -508,7 +508,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                           ? (investigation as any).basicInfo?.reputation ||
                               "unknown"
                           : (investigation as any).reputation || "unknown",
-                      ).label === "Clean" ? "���洁" : "未知"
+                      ).label === "Clean" ? "清洁" : "未知"
                     }
                   </Badge>
                   <Button
@@ -777,97 +777,95 @@ const EvidenceCollectionInternational: React.FC = () => {
                 </TabsList>
 
               <TabsContent value="overview">
-                {/* 高级模式 - 显示详细图表 */}
-                  /* 高级模式 - 显示详细图表 */
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="cyber-card p-6">
-                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                        <BarChart3 className="w-5 h-5 text-quantum-500" />
-                        <span>攻击类型分布</span>
-                      </h3>
-                      {attackTypeData.length > 0 ? (
-                        <ResponsiveContainer width="100%" height={300}>
-                          <RechartsPieChart>
-                            <Pie
-                              data={attackTypeData}
-                              cx="50%"
-                              cy="50%"
-                              outerRadius={100}
-                              dataKey="value"
-                              label={({ name, value }) => `${name}: ${value}`}
-                            >
-                              {attackTypeData.map((entry, index) => (
-                                <Cell
-                                  key={`cell-${index}`}
-                                  fill={[
-                                    "#00f5ff",
-                                    "#39ff14",
-                                    "#bf00ff",
-                                    "#ff1493",
-                                    "#ff6600",
-                                    "#ffff00"
-                                  ][index % 6]}
-                                />
-                              ))}
-                            </Pie>
-                            <Tooltip
-                              contentStyle={{
-                                backgroundColor: "#1f2937",
-                                border: "1px solid #374151",
-                                borderRadius: "8px",
-                                color: "#f8fafc",
-                              }}
-                            />
-                          </RechartsPieChart>
-                        </ResponsiveContainer>
-                      ) : (
-                        <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                          暂无攻击数据
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="cyber-card p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                      <BarChart3 className="w-5 h-5 text-quantum-500" />
+                      <span>攻击类型分布</span>
+                    </h3>
+                    {attackTypeData.length > 0 ? (
+                      <ResponsiveContainer width="100%" height={300}>
+                        <RechartsPieChart>
+                          <Pie
+                            data={attackTypeData}
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={100}
+                            dataKey="value"
+                            label={({ name, value }) => `${name}: ${value}`}
+                          >
+                            {attackTypeData.map((entry, index) => (
+                              <Cell
+                                key={`cell-${index}`}
+                                fill={[
+                                  "#00f5ff",
+                                  "#39ff14",
+                                  "#bf00ff",
+                                  "#ff1493",
+                                  "#ff6600",
+                                  "#ffff00"
+                                ][index % 6]}
+                              />
+                            ))}
+                          </Pie>
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: "#1f2937",
+                              border: "1px solid #374151",
+                              borderRadius: "8px",
+                              color: "#f8fafc",
+                            }}
+                          />
+                        </RechartsPieChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                        暂无攻击数据
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="cyber-card p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                      <Activity className="w-5 h-5 text-green-400" />
+                      <span>安全时间线</span>
+                    </h3>
+                    <div className="space-y-4">
+                      {(investigation as any).timeline
+                        ?.slice(0, 5)
+                        .map((event: any, index: number) => (
+                          <div
+                            key={index}
+                            className="flex items-start space-x-3 p-3 bg-matrix-surface/50 rounded-lg"
+                          >
+                            <div className="flex-shrink-0 mt-1">
+                              <div className="w-2 h-2 bg-quantum-500 rounded-full" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-white">
+                                {event.type
+                                  ?.replace(/_/g, " ")
+                                  .toUpperCase() || "安全事件"}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {event.details || "检测到安全事件"}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {new Date(
+                                  event.timestamp || Date.now(),
+                                ).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        )) || (
+                        <div className="text-center py-8 text-muted-foreground">
+                          暂无时间线数据
                         </div>
                       )}
                     </div>
-
-                    <div className="cyber-card p-6">
-                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                        <Activity className="w-5 h-5 text-green-400" />
-                        <span>安全时间线</span>
-                      </h3>
-                      <div className="space-y-4">
-                        {(investigation as any).timeline
-                          ?.slice(0, 5)
-                          .map((event: any, index: number) => (
-                            <div
-                              key={index}
-                              className="flex items-start space-x-3 p-3 bg-matrix-surface/50 rounded-lg"
-                            >
-                              <div className="flex-shrink-0 mt-1">
-                                <div className="w-2 h-2 bg-quantum-500 rounded-full" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="text-sm font-medium text-white">
-                                  {event.type
-                                    ?.replace(/_/g, " ")
-                                    .toUpperCase() || "安全事件"}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                  {event.details || "检测到安全事件"}
-                                </p>
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  {new Date(
-                                    event.timestamp || Date.now(),
-                                  ).toLocaleString()}
-                                </p>
-                              </div>
-                            </div>
-                          )) || (
-                          <div className="text-center py-8 text-muted-foreground">
-                            暂无时间线数据
-                          </div>
-                        )}
-                      </div>
-                    </div>
                   </div>
-                )}
+                </div>
+              </TabsContent>
               </TabsContent>
 
               <TabsContent value="topology">
@@ -1582,7 +1580,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                     { name: "威胁情报引擎", status: "运行正常", uptime: "99.9%", color: "green" },
                     { name: "网络分析服务", status: "运行正常", uptime: "99.7%", color: "green" },
                     { name: "数据库连接", status: "运行正常", uptime: "100%", color: "green" },
-                    { name: "API网关", status: "运行正��", uptime: "99.8%", color: "green" }
+                    { name: "API网关", status: "运行正常", uptime: "99.8%", color: "green" }
                   ].map((service, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-matrix-surface/30 rounded-lg">
                       <div className="flex items-center space-x-3">

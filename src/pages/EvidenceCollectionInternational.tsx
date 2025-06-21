@@ -328,7 +328,15 @@ const EvidenceCollectionInternational: React.FC = () => {
           <div className="space-y-6">
             {/* Metrics Overview */}
             {metrics && (
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div
+                className={cn(
+                  "grid gap-6",
+                  investigationMode === "basic"
+                    ? "grid-cols-1 md:grid-cols-2"
+                    : "grid-cols-1 md:grid-cols-4",
+                )}
+              >
+                {/* 基础模式只显示风险评分和威胁检测 */}
                 <div className="cyber-card p-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -357,24 +365,6 @@ const EvidenceCollectionInternational: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">
-                        {investigationMode === "advanced"
-                          ? "网络连接"
-                          : "攻击次数"}
-                      </p>
-                      <p className="text-3xl font-bold text-white">
-                        {metrics.totalConnections}
-                      </p>
-                    </div>
-                    <div className="p-3 bg-quantum-500/20 rounded-xl">
-                      <Network className="w-6 h-6 text-quantum-400" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="cyber-card p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">
                         威胁检测
                       </p>
                       <p className="text-3xl font-bold text-white">
@@ -387,29 +377,50 @@ const EvidenceCollectionInternational: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="cyber-card p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">
-                        安全评分
-                      </p>
-                      <p className="text-3xl font-bold text-white">
-                        {metrics.securityScore}/100
-                      </p>
+                {/* 高级模式显示额外的指标 */}
+                {investigationMode === "advanced" && (
+                  <>
+                    <div className="cyber-card p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground">
+                            网络连接
+                          </p>
+                          <p className="text-3xl font-bold text-white">
+                            {metrics.totalConnections}
+                          </p>
+                        </div>
+                        <div className="p-3 bg-quantum-500/20 rounded-xl">
+                          <Network className="w-6 h-6 text-quantum-400" />
+                        </div>
+                      </div>
                     </div>
-                    <div className="p-3 bg-green-500/20 rounded-xl">
-                      <CheckCircle className="w-6 h-6 text-green-400" />
+
+                    <div className="cyber-card p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground">
+                            安全评分
+                          </p>
+                          <p className="text-3xl font-bold text-white">
+                            {metrics.securityScore}/100
+                          </p>
+                        </div>
+                        <div className="p-3 bg-green-500/20 rounded-xl">
+                          <CheckCircle className="w-6 h-6 text-green-400" />
+                        </div>
+                      </div>
+                      <div className="mt-4">
+                        <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all duration-300"
+                            style={{ width: `${metrics.securityScore}%` }}
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="mt-4">
-                    <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all duration-300"
-                        style={{ width: `${metrics.securityScore}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
+                  </>
+                )}
               </div>
             )}
 

@@ -294,7 +294,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                 </h3>
                 <p className="text-muted-foreground">
                   {investigationMode === "advanced"
-                    ? "正在执行深度威胁分析和网��映射..."
+                    ? "正在执行深度威胁分析和网络映射..."
                     : "正在收集基础威胁情报数据..."}
                 </p>
                 <div className="w-64 mx-auto">
@@ -336,7 +336,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                     : "grid-cols-1 md:grid-cols-4",
                 )}
               >
-                {/* 基础模式只显示风险评分和威胁检测 */}
+                {/* 基础模式���显示风险评分和威胁检测 */}
                 <div className="cyber-card p-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -570,7 +570,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                     : "grid w-full grid-cols-5",
                 )}
               >
-                {/* 基础模式只���示总览和威胁情报 */}
+                {/* 基础模式只显示总览和威胁情报 */}
                 <TabsTrigger
                   value="overview"
                   className="flex items-center space-x-2"
@@ -615,95 +615,189 @@ const EvidenceCollectionInternational: React.FC = () => {
               </TabsList>
 
               <TabsContent value="overview">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {investigationMode === "basic" ? (
+                  /* 基础模式 - 只显示关键信息 */
                   <div className="cyber-card p-6">
                     <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                      <BarChart3 className="w-5 h-5 text-quantum-500" />
-                      <span>攻击类型分布</span>
+                      <Eye className="w-5 h-5 text-quantum-500" />
+                      <span>调查概览</span>
                     </h3>
-                    {attackTypeData.length > 0 ? (
-                      <ResponsiveContainer width="100%" height={300}>
-                        <RechartsPieChart>
-                          <Pie
-                            data={attackTypeData}
-                            cx="50%"
-                            cy="50%"
-                            outerRadius={100}
-                            dataKey="value"
-                            label={({ name, value }) => `${name}: ${value}`}
-                          >
-                            {attackTypeData.map((entry, index) => (
-                              <Cell
-                                key={`cell-${index}`}
-                                fill={
-                                  [
-                                    "#00f5ff",
-                                    "#39ff14",
-                                    "#bf00ff",
-                                    "#ff1493",
-                                    "#ff6600",
-                                    "#ffff00",
-                                  ][index % 6]
-                                }
-                              />
-                            ))}
-                          </Pie>
-                          <Tooltip
-                            contentStyle={{
-                              backgroundColor: "#1f2937",
-                              border: "1px solid #374151",
-                              borderRadius: "8px",
-                              color: "#f8fafc",
-                            }}
-                          />
-                        </RechartsPieChart>
-                      </ResponsiveContainer>
-                    ) : (
-                      <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                        暂无攻击数据
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="cyber-card p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                      <Activity className="w-5 h-5 text-green-400" />
-                      <span>安全时间线</span>
-                    </h3>
-                    <div className="space-y-4">
-                      {(investigation as any).timeline
-                        ?.slice(0, 5)
-                        .map((event: any, index: number) => (
-                          <div
-                            key={index}
-                            className="flex items-start space-x-3 p-3 bg-matrix-surface/50 rounded-lg"
-                          >
-                            <div className="flex-shrink-0 mt-1">
-                              <div className="w-2 h-2 bg-quantum-500 rounded-full" />
-                            </div>
-                            <div className="flex-1">
-                              <p className="text-sm font-medium text-white">
-                                {event.type?.replace(/_/g, " ").toUpperCase() ||
-                                  "安全事件"}
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                {event.details || "检测到安全事件"}
-                              </p>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {new Date(
-                                  event.timestamp || Date.now(),
-                                ).toLocaleString()}
-                              </p>
-                            </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <h4 className="font-medium text-white">基础信息</h4>
+                        <div className="space-y-3">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">
+                              IP地址:
+                            </span>
+                            <span className="text-white font-mono">
+                              {(investigation as any).ip || selectedIP}
+                            </span>
                           </div>
-                        )) || (
-                        <div className="text-center py-8 text-muted-foreground">
-                          暂无时间线数据
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">
+                              地理位置:
+                            </span>
+                            <span className="text-white">
+                              {(investigation as any).country || "未知"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">
+                              风险等级:
+                            </span>
+                            <Badge
+                              className={cn(
+                                "px-2 py-1",
+                                metrics && metrics.riskScore >= 70
+                                  ? "bg-red-500/20 text-red-400 border-red-500/40"
+                                  : metrics && metrics.riskScore >= 40
+                                    ? "bg-amber-500/20 text-amber-400 border-amber-500/40"
+                                    : "bg-green-500/20 text-green-400 border-green-500/40",
+                              )}
+                            >
+                              {metrics && metrics.riskScore >= 70
+                                ? "高风险"
+                                : metrics && metrics.riskScore >= 40
+                                  ? "中风险"
+                                  : "低风险"}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="font-medium text-white">威胁统计</h4>
+                        <div className="space-y-3">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">
+                              攻击类型:
+                            </span>
+                            <span className="text-white">
+                              {
+                                Object.keys(
+                                  (investigation as any).attackTypes || {},
+                                ).length
+                              }{" "}
+                              种
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">
+                              总攻击数:
+                            </span>
+                            <span className="text-white">
+                              {(investigation as any).totalAttacks || 0}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">
+                              最后活动:
+                            </span>
+                            <span className="text-white">
+                              {(investigation as any).lastActivity
+                                ? new Date(
+                                    (investigation as any).lastActivity,
+                                  ).toLocaleDateString()
+                                : "最近"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* 高级模式 - 显示详细图表 */
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="cyber-card p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                        <BarChart3 className="w-5 h-5 text-quantum-500" />
+                        <span>攻击类型分布</span>
+                      </h3>
+                      {attackTypeData.length > 0 ? (
+                        <ResponsiveContainer width="100%" height={300}>
+                          <RechartsPieChart>
+                            <Pie
+                              data={attackTypeData}
+                              cx="50%"
+                              cy="50%"
+                              outerRadius={100}
+                              dataKey="value"
+                              label={({ name, value }) => `${name}: ${value}`}
+                            >
+                              {attackTypeData.map((entry, index) => (
+                                <Cell
+                                  key={`cell-${index}`}
+                                  fill={
+                                    [
+                                      "#00f5ff",
+                                      "#39ff14",
+                                      "#bf00ff",
+                                      "#ff1493",
+                                      "#ff6600",
+                                      "#ffff00",
+                                    ][index % 6]
+                                  }
+                                />
+                              ))}
+                            </Pie>
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: "#1f2937",
+                                border: "1px solid #374151",
+                                borderRadius: "8px",
+                                color: "#f8fafc",
+                              }}
+                            />
+                          </RechartsPieChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                          暂无攻击数据
                         </div>
                       )}
                     </div>
+
+                    <div className="cyber-card p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                        <Activity className="w-5 h-5 text-green-400" />
+                        <span>安全时间线</span>
+                      </h3>
+                      <div className="space-y-4">
+                        {(investigation as any).timeline
+                          ?.slice(0, 5)
+                          .map((event: any, index: number) => (
+                            <div
+                              key={index}
+                              className="flex items-start space-x-3 p-3 bg-matrix-surface/50 rounded-lg"
+                            >
+                              <div className="flex-shrink-0 mt-1">
+                                <div className="w-2 h-2 bg-quantum-500 rounded-full" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm font-medium text-white">
+                                  {event.type
+                                    ?.replace(/_/g, " ")
+                                    .toUpperCase() || "安全事件"}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  {event.details || "检测到安全事件"}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {new Date(
+                                    event.timestamp || Date.now(),
+                                  ).toLocaleString()}
+                                </p>
+                              </div>
+                            </div>
+                          )) || (
+                          <div className="text-center py-8 text-muted-foreground">
+                            暂无时间线数据
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
               </TabsContent>
 
               <TabsContent value="topology">

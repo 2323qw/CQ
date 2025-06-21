@@ -347,16 +347,14 @@ export function EnhancedNavigation({
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center glow-border">
                 <Shield className="w-6 h-6 text-white" />
               </div>
-              {!isCompactMode && (
-                <div>
-                  <h1 className="text-lg font-bold text-white neon-text">
-                    CyberGuard
-                  </h1>
-                  <p className="text-xs text-muted-foreground">
-                    网络安全监控系统
-                  </p>
-                </div>
-              )}
+              <div>
+                <h1 className="text-lg font-bold text-white neon-text">
+                  CyberGuard
+                </h1>
+                <p className="text-xs text-muted-foreground">
+                  网络安全监控系统
+                </p>
+              </div>
             </div>
 
             {/* 移动端关闭按钮 */}

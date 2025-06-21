@@ -349,37 +349,53 @@ const menuGroups: {
   },
 ];
 
-// 快速操作
-const quickActions: QuickAction[] = [
-  {
-    name: "快速扫描",
-    icon: ScanLine,
-    color: "text-blue-400",
-    onClick: () => console.log("Quick scan"),
-    shortcut: "Ctrl+Q",
-  },
-  {
-    name: "紧急响应",
-    icon: AlertTriangle,
-    color: "text-red-400",
-    onClick: () => console.log("Emergency response"),
-    shortcut: "Ctrl+E",
-  },
-  {
-    name: "创���报告",
-    icon: FileText,
-    color: "text-green-400",
-    onClick: () => console.log("Create report"),
-    shortcut: "Ctrl+R",
-  },
-  {
-    name: "AI分析",
-    icon: Brain,
-    color: "text-purple-400",
-    onClick: () => console.log("AI analysis"),
-    shortcut: "Ctrl+A",
-  },
-];
+// 分类的快速操作
+const quickActionGroups = {
+  security: [
+    {
+      name: "快速扫描",
+      icon: ScanLine,
+      color: "text-cyan-400",
+      bgColor: "bg-cyan-500/20",
+      borderColor: "border-cyan-500/30",
+      onClick: () => console.log("Quick scan"),
+      shortcut: "Ctrl+Q",
+      description: "一键安全扫描",
+    },
+    {
+      name: "紧急响应",
+      icon: AlertTriangle,
+      color: "text-red-400",
+      bgColor: "bg-red-500/20",
+      borderColor: "border-red-500/30",
+      onClick: () => console.log("Emergency response"),
+      shortcut: "Ctrl+E",
+      description: "应急事件处理",
+    },
+  ],
+  analysis: [
+    {
+      name: "AI分析",
+      icon: Brain,
+      color: "text-purple-400",
+      bgColor: "bg-purple-500/20",
+      borderColor: "border-purple-500/30",
+      onClick: () => console.log("AI analysis"),
+      shortcut: "Ctrl+A",
+      description: "智能威胁分析",
+    },
+    {
+      name: "创建报告",
+      icon: FileText,
+      color: "text-green-400",
+      bgColor: "bg-green-500/20",
+      borderColor: "border-green-500/30",
+      onClick: () => console.log("Create report"),
+      shortcut: "Ctrl+R",
+      description: "生成安全报告",
+    },
+  ],
+};
 
 interface EnhancedNavigationProps {
   isMobileOpen?: boolean;
@@ -718,7 +734,7 @@ export function EnhancedNavigation({
                     {Math.floor((Date.now() - lastActiveTime.getTime()) / 1000)}
                     s
                   </div>
-                  <div className="text-muted-foreground">活跃时间</div>
+                  <div className="text-muted-foreground">活跃时���</div>
                 </div>
                 <div className="system-stat-item rounded p-2 text-center">
                   <div className="text-amber-400 font-mono nav-badge">3</div>

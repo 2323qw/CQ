@@ -571,6 +571,9 @@ export function EnhancedNavigation({
     }))
     .filter((group) => group.items.length > 0);
 
+  // 获取最终显示的���组（考虑搜索）
+  const displayGroups = getFilteredGroups();
+
   // 更新最后活跃时间
   useEffect(() => {
     const interval = setInterval(() => {
@@ -634,7 +637,7 @@ export function EnhancedNavigation({
                 className={`w-2 h-2 rounded-full ${isOnline ? "bg-green-400" : "bg-red-400"} animate-pulse`}
               />
               <span className="text-xs text-muted-foreground">
-                {isOnline ? (isApiMode ? "API模式" : "模拟模式") : "离线模式"}
+                {isOnline ? (isApiMode ? "API模��" : "模拟模式") : "离线模式"}
               </span>
             </div>
             <div className="flex items-center gap-1">

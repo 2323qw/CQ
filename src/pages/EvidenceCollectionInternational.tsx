@@ -983,7 +983,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                                 data={[
                                   { name: "端口扫描", value: 45, count: 45 },
                                   { name: "暴力破解", value: 23, count: 23 },
-                                  { name: "Web攻击", value: 18, count: 18 },
+                                  { name: "Web���击", value: 18, count: 18 },
                                   { name: "恶意软件", value: 14, count: 14 },
                                 ]}
                                 cx="50%"
@@ -1588,7 +1588,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                           <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
                             <div className="flex items-center justify-between mb-2">
                               <span className="font-medium text-white">
-                                可能的��胁组织
+                                可能的威胁组织
                               </span>
                               <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/40">
                                 中等可信度
@@ -2406,19 +2406,194 @@ const EvidenceCollectionInternational: React.FC = () => {
                 </TabsContent>
 
                 <TabsContent value="forensics">
-                  <div className="cyber-card p-6">
-                    <h3 className="text-lg font-semibold text-white mb-6 flex items-center space-x-2">
-                      <Bug className="w-5 h-5 text-orange-400" />
-                      <span>数字取证</span>
-                    </h3>
-                    {(investigation as any).forensics?.artifacts ? (
-                      <div className="space-y-4">
-                        {(investigation as any).forensics.artifacts
-                          .slice(0, 10)
-                          .map((artifact: any, index: number) => (
+                  <div className="space-y-6">
+                    {/* Enhanced Digital Forensics Dashboard */}
+                    <div className="cyber-card p-6">
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
+                          <Bug className="w-5 h-5 text-orange-400" />
+                          <span>高级数字取证分析</span>
+                        </h3>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-orange-400 hover:text-orange-300"
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            导出取证报告
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-purple-400 hover:text-purple-300"
+                          >
+                            <Play className="w-4 h-4 mr-2" />
+                            深度扫描
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Forensics Overview Cards */}
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div className="cyber-card p-4 bg-gradient-to-br from-orange-500/10 to-red-500/10 border-orange-500/30">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-orange-300">
+                                发现工件
+                              </p>
+                              <p className="text-2xl font-bold text-white">
+                                {(investigation as any).forensics?.artifacts
+                                  ?.length || 12}
+                              </p>
+                              <p className="text-xs text-orange-400">
+                                数字证据
+                              </p>
+                            </div>
+                            <FileSearch className="w-8 h-8 text-orange-400" />
+                          </div>
+                        </div>
+                        <div className="cyber-card p-4 bg-gradient-to-br from-purple-500/10 to-violet-500/10 border-purple-500/30">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-purple-300">
+                                恶意载荷
+                              </p>
+                              <p className="text-2xl font-bold text-white">3</p>
+                              <p className="text-xs text-purple-400">已识别</p>
+                            </div>
+                            <AlertTriangle className="w-8 h-8 text-purple-400" />
+                          </div>
+                        </div>
+                        <div className="cyber-card p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/30">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-blue-300">
+                                网络痕迹
+                              </p>
+                              <p className="text-2xl font-bold text-white">
+                                47
+                              </p>
+                              <p className="text-xs text-blue-400">连接记录</p>
+                            </div>
+                            <Network className="w-8 h-8 text-blue-400" />
+                          </div>
+                        </div>
+                        <div className="cyber-card p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/30">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-green-300">
+                                完整性
+                              </p>
+                              <p className="text-2xl font-bold text-white">
+                                98.7%
+                              </p>
+                              <p className="text-xs text-green-400">证据链</p>
+                            </div>
+                            <CheckCircle className="w-8 h-8 text-green-400" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Forensics Analysis Results */}
+                      {(investigation as any).forensics?.artifacts ? (
+                        <div className="space-y-4">
+                          <h4 className="font-medium text-white mb-3">
+                            取证工件分析
+                          </h4>
+                          {(investigation as any).forensics.artifacts
+                            .slice(0, 10)
+                            .map((artifact: any, index: number) => (
+                              <div
+                                key={index}
+                                className="flex items-center justify-between p-4 bg-matrix-surface/50 rounded-lg hover:bg-matrix-surface/70 transition-colors"
+                              >
+                                <div className="flex-1">
+                                  <div className="flex items-center space-x-3 mb-2">
+                                    <Badge
+                                      className={cn(
+                                        "px-2 py-1",
+                                        artifact.risk === "critical"
+                                          ? "bg-red-500/20 text-red-400 border-red-500/40"
+                                          : artifact.risk === "high"
+                                            ? "bg-orange-500/20 text-orange-400 border-orange-500/40"
+                                            : "bg-gray-500/20 text-gray-400 border-gray-500/40",
+                                      )}
+                                    >
+                                      {artifact.type}
+                                    </Badge>
+                                    <span className="font-medium text-white">
+                                      {artifact.artifact}
+                                    </span>
+                                  </div>
+                                  <p className="text-sm text-muted-foreground">
+                                    {artifact.description}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-sm text-muted-foreground">
+                                    {new Date(
+                                      artifact.timestamp,
+                                    ).toLocaleString()}
+                                  </p>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-cyan-400 hover:text-cyan-300 mt-1"
+                                  >
+                                    详细分析
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                      ) : (
+                        /* Enhanced Sample Forensics Data */
+                        <div className="space-y-4">
+                          <h4 className="font-medium text-white mb-3">
+                            取证工件分析
+                          </h4>
+                          {[
+                            {
+                              type: "恶意文件",
+                              artifact: "suspicious_payload.exe",
+                              description: "检测到具有代码注入功能的可执行文件",
+                              risk: "critical",
+                              timestamp: new Date(Date.now() - 3600000),
+                              hash: "a1b2c3d4e5f6...",
+                              size: "2.3 MB",
+                            },
+                            {
+                              type: "网络通信",
+                              artifact: "C&C通信记录",
+                              description: "发现与已知恶意域名的加密通信",
+                              risk: "high",
+                              timestamp: new Date(Date.now() - 7200000),
+                              hash: "f6e5d4c3b2a1...",
+                              size: "156 KB",
+                            },
+                            {
+                              type: "系统修改",
+                              artifact: "注册表项更改",
+                              description: "检测到持久化机制相关的注册表修改",
+                              risk: "high",
+                              timestamp: new Date(Date.now() - 10800000),
+                              hash: "9876543210ab...",
+                              size: "12 KB",
+                            },
+                            {
+                              type: "内存转储",
+                              artifact: "进程内存快照",
+                              description: "捕获到包含恶意代码的进程内存",
+                              risk: "critical",
+                              timestamp: new Date(Date.now() - 14400000),
+                              hash: "abcd1234efgh...",
+                              size: "45.7 MB",
+                            },
+                          ].map((artifact, index) => (
                             <div
                               key={index}
-                              className="flex items-center justify-between p-4 bg-matrix-surface/50 rounded-lg"
+                              className="flex items-center justify-between p-4 bg-matrix-surface/50 rounded-lg hover:bg-matrix-surface/70 transition-colors"
                             >
                               <div className="flex-1">
                                 <div className="flex items-center space-x-3 mb-2">
@@ -2427,9 +2602,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                                       "px-2 py-1",
                                       artifact.risk === "critical"
                                         ? "bg-red-500/20 text-red-400 border-red-500/40"
-                                        : artifact.risk === "high"
-                                          ? "bg-orange-500/20 text-orange-400 border-orange-500/40"
-                                          : "bg-gray-500/20 text-gray-400 border-gray-500/40",
+                                        : "bg-orange-500/20 text-orange-400 border-orange-500/40",
                                     )}
                                   >
                                     {artifact.type}
@@ -2438,27 +2611,277 @@ const EvidenceCollectionInternational: React.FC = () => {
                                     {artifact.artifact}
                                   </span>
                                 </div>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-sm text-muted-foreground mb-1">
                                   {artifact.description}
                                 </p>
+                                <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                                  <span>哈希: {artifact.hash}</span>
+                                  <span>大小: {artifact.size}</span>
+                                </div>
                               </div>
-                              <div className="text-right text-sm text-muted-foreground">
-                                {new Date(artifact.timestamp).toLocaleString()}
+                              <div className="text-right">
+                                <p className="text-sm text-muted-foreground">
+                                  {artifact.timestamp.toLocaleString()}
+                                </p>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-cyan-400 hover:text-cyan-300 mt-1"
+                                >
+                                  详细分析
+                                </Button>
                               </div>
                             </div>
                           ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-12">
-                        <Bug className="w-12 h-12 mx-auto mb-4 text-orange-400" />
-                        <h3 className="text-lg font-semibold text-white mb-2">
-                          未发现取证工件
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Advanced Forensics Analysis */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Malware Analysis */}
+                      <div className="cyber-card p-6">
+                        <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                          <Bug className="w-5 h-5 text-red-400" />
+                          <span>恶意软件分析</span>
                         </h3>
-                        <p className="text-muted-foreground">
-                          当前调查中未检测到可疑工件
-                        </p>
+                        <div className="space-y-4">
+                          <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-medium text-white">
+                                样本特征分析
+                              </span>
+                              <Badge className="bg-red-500/20 text-red-400 border-red-500/40">
+                                恶意
+                              </Badge>
+                            </div>
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">
+                                  文件类型:
+                                </span>
+                                <span className="text-white">
+                                  PE32 可执行文件
+                                </span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">
+                                  编译时间:
+                                </span>
+                                <span className="text-white">
+                                  2024-01-15 (可能伪造)
+                                </span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">
+                                  加壳检测:
+                                </span>
+                                <span className="text-orange-400">
+                                  UPX 3.96
+                                </span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">
+                                  熵值:
+                                </span>
+                                <span className="text-red-400">
+                                  7.89 (高熵值)
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="p-4 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                            <span className="font-medium text-white">
+                              行为分析
+                            </span>
+                            <div className="mt-2 space-y-1 text-sm">
+                              <div className="flex items-center space-x-2">
+                                <div className="w-2 h-2 bg-red-400 rounded-full" />
+                                <span className="text-muted-foreground">
+                                  创建互斥体确保单实例运行
+                                </span>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <div className="w-2 h-2 bg-orange-400 rounded-full" />
+                                <span className="text-muted-foreground">
+                                  修改系统启动项实现持久化
+                                </span>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <div className="w-2 h-2 bg-yellow-400 rounded-full" />
+                                <span className="text-muted-foreground">
+                                  尝试连接外部C&C服务器
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    )}
+
+                      {/* Network Forensics */}
+                      <div className="cyber-card p-6">
+                        <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                          <Network className="w-5 h-5 text-blue-400" />
+                          <span>网络取证分析</span>
+                        </h3>
+                        <div className="space-y-4">
+                          <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                            <span className="font-medium text-white">
+                              网络流量分析
+                            </span>
+                            <div className="mt-2 space-y-2 text-sm">
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">
+                                  总流量:
+                                </span>
+                                <span className="text-white">2.3 GB</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">
+                                  可疑连接:
+                                </span>
+                                <span className="text-orange-400">12 个</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">
+                                  加密流量:
+                                </span>
+                                <span className="text-white">78.5%</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+                            <span className="font-medium text-white">
+                              关键连接记录
+                            </span>
+                            <div className="mt-2 space-y-2">
+                              {[
+                                {
+                                  dst: "185.234.72.45",
+                                  port: "443",
+                                  protocol: "HTTPS",
+                                  status: "可疑",
+                                },
+                                {
+                                  dst: "malware-c2.com",
+                                  port: "8080",
+                                  protocol: "HTTP",
+                                  status: "恶意",
+                                },
+                                {
+                                  dst: "192.168.1.100",
+                                  port: "445",
+                                  protocol: "SMB",
+                                  status: "横向移动",
+                                },
+                              ].map((conn, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center justify-between text-xs"
+                                >
+                                  <span className="text-muted-foreground font-mono">
+                                    {conn.dst}:{conn.port}
+                                  </span>
+                                  <Badge
+                                    className={cn(
+                                      "text-xs",
+                                      conn.status === "恶意"
+                                        ? "bg-red-500/20 text-red-400 border-red-500/40"
+                                        : conn.status === "可疑"
+                                          ? "bg-orange-500/20 text-orange-400 border-orange-500/40"
+                                          : "bg-yellow-500/20 text-yellow-400 border-yellow-500/40",
+                                    )}
+                                  >
+                                    {conn.status}
+                                  </Badge>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Forensics Timeline */}
+                    <div className="cyber-card p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                        <Clock className="w-5 h-5 text-green-400" />
+                        <span>取证时间线</span>
+                      </h3>
+                      <div className="space-y-4">
+                        {[
+                          {
+                            time: "14:23:15",
+                            event: "初始感染",
+                            description: "恶意邮件附件执行",
+                            severity: "critical",
+                          },
+                          {
+                            time: "14:23:47",
+                            event: "权限提升",
+                            description: "利用CVE-2023-1234提升权限",
+                            severity: "high",
+                          },
+                          {
+                            time: "14:24:12",
+                            event: "持久化建立",
+                            description: "创建计划任务和注册表项",
+                            severity: "high",
+                          },
+                          {
+                            time: "14:25:03",
+                            event: "数据收集",
+                            description: "枚举系统信息和用户数据",
+                            severity: "medium",
+                          },
+                          {
+                            time: "14:26:45",
+                            event: "C&C通信",
+                            description: "建立与指挥控制服务器的连接",
+                            severity: "critical",
+                          },
+                          {
+                            time: "14:28:21",
+                            event: "横向移动",
+                            description: "尝试访问内网其他主机",
+                            severity: "high",
+                          },
+                        ].map((item, index) => (
+                          <div
+                            key={index}
+                            className="flex items-start space-x-4 p-3 bg-matrix-surface/30 rounded-lg"
+                          >
+                            <div className="flex-shrink-0 mt-1">
+                              <div
+                                className={cn(
+                                  "w-3 h-3 rounded-full",
+                                  item.severity === "critical"
+                                    ? "bg-red-400"
+                                    : item.severity === "high"
+                                      ? "bg-orange-400"
+                                      : "bg-yellow-400",
+                                )}
+                              />
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <p className="text-sm font-medium text-white">
+                                  {item.event}
+                                </p>
+                                <span className="text-xs text-muted-foreground">
+                                  {item.time}
+                                </span>
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {item.description}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </TabsContent>
               </Tabs>

@@ -620,14 +620,29 @@ export function EnhancedNavigation({
               </div>
             </div>
 
-            {/* 移动端关闭按钮 */}
-            <button
-              onClick={onMobileClose}
-              className="md:hidden p-2 text-muted-foreground hover:text-white transition-colors"
-              aria-label="关闭导航菜单"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-2">
+              {/* 紧凑模式切换 */}
+              <button
+                onClick={() => setIsCompactMode(!isCompactMode)}
+                className="hidden md:block p-2 text-muted-foreground hover:text-neon-blue transition-all duration-200 rounded-lg hover:bg-matrix-accent/30"
+                title={isCompactMode ? "展开导航" : "收起导航"}
+              >
+                {isCompactMode ? (
+                  <ChevronRight className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+
+              {/* 移动端关闭按钮 */}
+              <button
+                onClick={onMobileClose}
+                className="md:hidden p-2 text-muted-foreground hover:text-white transition-colors"
+                aria-label="关闭导航菜单"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           {/* 智能搜索框 */}

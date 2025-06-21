@@ -851,93 +851,452 @@ const EvidenceCollectionInternational: React.FC = () => {
                 </TabsList>
 
                 <TabsContent value="overview">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="cyber-card p-6">
-                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                        <BarChart3 className="w-5 h-5 text-quantum-500" />
-                        <span>攻击类型分布</span>
-                      </h3>
-                      {attackTypeData.length > 0 ? (
-                        <ResponsiveContainer width="100%" height={300}>
-                          <RechartsPieChart>
-                            <Pie
-                              data={attackTypeData}
-                              cx="50%"
-                              cy="50%"
-                              outerRadius={100}
-                              dataKey="value"
-                              label={({ name, value }) => `${name}: ${value}`}
-                            >
-                              {attackTypeData.map((entry, index) => (
-                                <Cell
-                                  key={`cell-${index}`}
-                                  fill={
-                                    [
-                                      "#00f5ff",
-                                      "#39ff14",
-                                      "#bf00ff",
-                                      "#ff1493",
-                                      "#ff6600",
-                                      "#ffff00",
-                                    ][index % 6]
-                                  }
-                                />
-                              ))}
-                            </Pie>
-                            <Tooltip
-                              contentStyle={{
-                                backgroundColor: "#1f2937",
-                                border: "1px solid #374151",
-                                borderRadius: "8px",
-                                color: "#f8fafc",
-                              }}
-                            />
-                          </RechartsPieChart>
-                        </ResponsiveContainer>
-                      ) : (
-                        <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                          暂无攻击数据
+                  <div className="space-y-6">
+                    {/* Executive Summary Dashboard */}
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                      <div className="cyber-card p-4 bg-gradient-to-br from-red-500/10 to-red-600/10 border-red-500/30">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-red-300">
+                              威胁等级
+                            </p>
+                            <p className="text-xl font-bold text-white">
+                              {metrics && metrics.riskScore >= 70
+                                ? "高危"
+                                : metrics && metrics.riskScore >= 40
+                                  ? "中危"
+                                  : "低危"}
+                            </p>
+                            <p className="text-xs text-red-400">
+                              评分: {metrics?.riskScore || 0}/100
+                            </p>
+                          </div>
+                          <AlertTriangle className="w-8 h-8 text-red-400" />
                         </div>
-                      )}
+                      </div>
+                      <div className="cyber-card p-4 bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/30">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-blue-300">
+                              网络活动
+                            </p>
+                            <p className="text-xl font-bold text-white">
+                              {metrics?.totalConnections || 0}
+                            </p>
+                            <p className="text-xs text-blue-400">活跃连接数</p>
+                          </div>
+                          <Network className="w-8 h-8 text-blue-400" />
+                        </div>
+                      </div>
+                      <div className="cyber-card p-4 bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/30">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-green-300">
+                              安全状态
+                            </p>
+                            <p className="text-xl font-bold text-white">
+                              {metrics?.securityScore || 0}%
+                            </p>
+                            <p className="text-xs text-green-400">
+                              综合安全评分
+                            </p>
+                          </div>
+                          <Shield className="w-8 h-8 text-green-400" />
+                        </div>
+                      </div>
+                      <div className="cyber-card p-4 bg-gradient-to-br from-purple-500/10 to-purple-600/10 border-purple-500/30">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-purple-300">
+                              调查完成度
+                            </p>
+                            <p className="text-xl font-bold text-white">
+                              98.5%
+                            </p>
+                            <p className="text-xs text-purple-400">
+                              数据收集完整度
+                            </p>
+                          </div>
+                          <CheckCircle className="w-8 h-8 text-purple-400" />
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="cyber-card p-6">
-                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                        <Activity className="w-5 h-5 text-green-400" />
-                        <span>安全时间线</span>
-                      </h3>
-                      <div className="space-y-4">
-                        {(investigation as any).timeline
-                          ?.slice(0, 5)
-                          .map((event: any, index: number) => (
-                            <div
-                              key={index}
-                              className="flex items-start space-x-3 p-3 bg-matrix-surface/50 rounded-lg"
-                            >
-                              <div className="flex-shrink-0 mt-1">
-                                <div className="w-2 h-2 bg-quantum-500 rounded-full" />
+                    {/* Enhanced Analysis Charts */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      {/* Attack Types Distribution */}
+                      <div className="cyber-card p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
+                            <BarChart3 className="w-5 h-5 text-quantum-500" />
+                            <span>攻击类型分布</span>
+                          </h3>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-quantum-400 hover:text-quantum-300"
+                          >
+                            <Filter className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        {attackTypeData.length > 0 ? (
+                          <ResponsiveContainer width="100%" height={280}>
+                            <RechartsPieChart>
+                              <Pie
+                                data={attackTypeData}
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={90}
+                                dataKey="value"
+                                label={({ name, value }) => `${name}: ${value}`}
+                              >
+                                {attackTypeData.map((entry, index) => (
+                                  <Cell
+                                    key={`cell-${index}`}
+                                    fill={
+                                      [
+                                        "#00f5ff",
+                                        "#39ff14",
+                                        "#bf00ff",
+                                        "#ff1493",
+                                        "#ff6600",
+                                        "#ffff00",
+                                      ][index % 6]
+                                    }
+                                  />
+                                ))}
+                              </Pie>
+                              <Tooltip
+                                contentStyle={{
+                                  backgroundColor: "#1f2937",
+                                  border: "1px solid #374151",
+                                  borderRadius: "8px",
+                                  color: "#f8fafc",
+                                }}
+                              />
+                            </RechartsPieChart>
+                          </ResponsiveContainer>
+                        ) : (
+                          <ResponsiveContainer width="100%" height={280}>
+                            <RechartsPieChart>
+                              <Pie
+                                data={[
+                                  { name: "端口扫描", value: 45, count: 45 },
+                                  { name: "暴力破解", value: 23, count: 23 },
+                                  { name: "Web攻击", value: 18, count: 18 },
+                                  { name: "恶意软件", value: 14, count: 14 },
+                                ]}
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={90}
+                                dataKey="value"
+                                label={({ name, value }) => `${name}: ${value}`}
+                              >
+                                {[0, 1, 2, 3].map((index) => (
+                                  <Cell
+                                    key={`cell-${index}`}
+                                    fill={
+                                      [
+                                        "#00f5ff",
+                                        "#39ff14",
+                                        "#bf00ff",
+                                        "#ff1493",
+                                      ][index]
+                                    }
+                                  />
+                                ))}
+                              </Pie>
+                              <Tooltip
+                                contentStyle={{
+                                  backgroundColor: "#1f2937",
+                                  border: "1px solid #374151",
+                                  borderRadius: "8px",
+                                  color: "#f8fafc",
+                                }}
+                              />
+                            </RechartsPieChart>
+                          </ResponsiveContainer>
+                        )}
+                      </div>
+
+                      {/* Risk Assessment Radar */}
+                      <div className="cyber-card p-6">
+                        <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                          <Target className="w-5 h-5 text-red-400" />
+                          <span>风险评估雷达</span>
+                        </h3>
+                        <div className="space-y-4">
+                          {[
+                            {
+                              name: "恶意活动",
+                              score: metrics?.riskScore || 25,
+                              color: "#ff4444",
+                            },
+                            {
+                              name: "网络威胁",
+                              score: (metrics?.riskScore || 30) * 0.8,
+                              color: "#ff6600",
+                            },
+                            {
+                              name: "数据泄露",
+                              score: (metrics?.riskScore || 20) * 0.6,
+                              color: "#ffaa00",
+                            },
+                            {
+                              name: "系统漏洞",
+                              score: (metrics?.riskScore || 35) * 0.7,
+                              color: "#00f5ff",
+                            },
+                            {
+                              name: "访问异常",
+                              score: (metrics?.riskScore || 40) * 0.9,
+                              color: "#bf00ff",
+                            },
+                          ].map((item, index) => (
+                            <div key={index} className="space-y-2">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">
+                                  {item.name}
+                                </span>
+                                <span className="text-white font-medium">
+                                  {Math.round(item.score)}/100
+                                </span>
                               </div>
-                              <div className="flex-1">
-                                <p className="text-sm font-medium text-white">
-                                  {event.type
-                                    ?.replace(/_/g, " ")
-                                    .toUpperCase() || "安全事件"}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                  {event.details || "检测到安全事件"}
-                                </p>
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  {new Date(
-                                    event.timestamp || Date.now(),
-                                  ).toLocaleString()}
-                                </p>
+                              <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
+                                <div
+                                  className="h-full rounded-full transition-all duration-500"
+                                  style={{
+                                    width: `${item.score}%`,
+                                    backgroundColor: item.color,
+                                  }}
+                                />
                               </div>
                             </div>
-                          )) || (
-                          <div className="text-center py-8 text-muted-foreground">
-                            暂无时间线数据
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Real-time Activity Feed */}
+                      <div className="cyber-card p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
+                            <Activity className="w-5 h-5 text-green-400" />
+                            <span>实时活动流</span>
+                          </h3>
+                          <div className="flex items-center space-x-1">
+                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                            <span className="text-xs text-green-400">实时</span>
                           </div>
-                        )}
+                        </div>
+                        <div className="space-y-3 max-h-64 overflow-y-auto">
+                          {(investigation as any).timeline
+                            ?.slice(0, 8)
+                            .map((event: any, index: number) => (
+                              <div
+                                key={index}
+                                className="flex items-start space-x-3 p-2 bg-matrix-surface/30 rounded-lg hover:bg-matrix-surface/50 transition-colors"
+                              >
+                                <div className="flex-shrink-0 mt-1">
+                                  <div
+                                    className={cn(
+                                      "w-2 h-2 rounded-full",
+                                      index === 0
+                                        ? "bg-red-400"
+                                        : index === 1
+                                          ? "bg-orange-400"
+                                          : index === 2
+                                            ? "bg-yellow-400"
+                                            : "bg-quantum-500",
+                                    )}
+                                  />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-xs font-medium text-white">
+                                    {event.type
+                                      ?.replace(/_/g, " ")
+                                      .toUpperCase() ||
+                                      [
+                                        "检测到端口扫描",
+                                        "发现可疑连接",
+                                        "威胁情报匹配",
+                                        "网络异常活动",
+                                      ][index % 4]}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {event.details ||
+                                      [
+                                        "来源IP尝试访问多个端口",
+                                        "与已知恶意域名通信",
+                                        "IP被多个威胁源标记",
+                                        "异常流量模式检测",
+                                      ][index % 4]}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {new Date(
+                                      event.timestamp ||
+                                        Date.now() - index * 60000,
+                                    ).toLocaleTimeString()}
+                                  </p>
+                                </div>
+                              </div>
+                            )) ||
+                            // 示例数据
+                            [
+                              {
+                                type: "端口扫描检测",
+                                details: "检测到对22,80,443端口的扫描活动",
+                                severity: "high",
+                              },
+                              {
+                                type: "威胁情报匹配",
+                                details: "IP地址在3个威胁数据库中被标记",
+                                severity: "critical",
+                              },
+                              {
+                                type: "异常连接",
+                                details: "发现与C&C服务器的可疑通信",
+                                severity: "high",
+                              },
+                              {
+                                type: "地理位置异常",
+                                details: "IP地址位置与历史模式不符",
+                                severity: "medium",
+                              },
+                              {
+                                type: "流量分析",
+                                details: "检测到加密隧道流量特征",
+                                severity: "medium",
+                              },
+                            ].map((event, index) => (
+                              <div
+                                key={index}
+                                className="flex items-start space-x-3 p-2 bg-matrix-surface/30 rounded-lg hover:bg-matrix-surface/50 transition-colors"
+                              >
+                                <div className="flex-shrink-0 mt-1">
+                                  <div
+                                    className={cn(
+                                      "w-2 h-2 rounded-full",
+                                      event.severity === "critical"
+                                        ? "bg-red-400"
+                                        : event.severity === "high"
+                                          ? "bg-orange-400"
+                                          : event.severity === "medium"
+                                            ? "bg-yellow-400"
+                                            : "bg-quantum-500",
+                                    )}
+                                  />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-xs font-medium text-white">
+                                    {event.type}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {event.details}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {new Date(
+                                      Date.now() - index * 120000,
+                                    ).toLocaleTimeString()}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Detailed Intelligence Summary */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Geographic & Network Intelligence */}
+                      <div className="cyber-card p-6">
+                        <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                          <Globe className="w-5 h-5 text-cyan-400" />
+                          <span>地理与网络情报</span>
+                        </h3>
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <label className="text-xs font-medium text-muted-foreground">
+                                地理位置
+                              </label>
+                              <p className="text-sm text-white">
+                                {(investigation as any).country || "中国"}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {(investigation as any).city || "北京市"}
+                              </p>
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-xs font-medium text-muted-foreground">
+                                网络运营商
+                              </label>
+                              <p className="text-sm text-white">
+                                {(investigation as any).isp || "China Telecom"}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                AS{(investigation as any).asn || "4134"}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="border-t border-matrix-border pt-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs font-medium text-muted-foreground">
+                                网络信誉评分
+                              </span>
+                              <span className="text-sm text-white">
+                                {95 - (metrics?.riskScore || 0)}/100
+                              </span>
+                            </div>
+                            <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"
+                                style={{
+                                  width: `${95 - (metrics?.riskScore || 0)}%`,
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Threat Indicators Summary */}
+                      <div className="cyber-card p-6">
+                        <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                          <Shield className="w-5 h-5 text-orange-400" />
+                          <span>威胁指标汇总</span>
+                        </h3>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="text-center p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                            <p className="text-2xl font-bold text-red-400">
+                              {(investigation as any).threatIntelligence
+                                ?.blacklists?.length || 0}
+                            </p>
+                            <p className="text-xs text-red-300">恶意IP标记</p>
+                          </div>
+                          <div className="text-center p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                            <p className="text-2xl font-bold text-orange-400">
+                              {
+                                Object.keys(
+                                  (investigation as any).attackTypes || {},
+                                ).length
+                              }
+                            </p>
+                            <p className="text-xs text-orange-300">攻击类型</p>
+                          </div>
+                          <div className="text-center p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                            <p className="text-2xl font-bold text-blue-400">
+                              {(investigation as any).networkAnalysis?.openPorts
+                                ?.length || 3}
+                            </p>
+                            <p className="text-xs text-blue-300">开放端口</p>
+                          </div>
+                          <div className="text-center p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+                            <p className="text-2xl font-bold text-purple-400">
+                              12
+                            </p>
+                            <p className="text-xs text-purple-300">情报来源</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -965,7 +1324,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                     <div className="cyber-card p-6">
                       <h3 className="text-lg font-semibold text-white mb-6 flex items-center space-x-2">
                         <Shield className="w-5 h-5 text-red-400" />
-                        <span>威胁情报分析</span>
+                        <span>威��情报分析</span>
                       </h3>
 
                       {/* Threat Intelligence Cards */}

@@ -578,7 +578,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                   className="flex items-center space-x-2"
                 >
                   <Shield className="w-4 h-4" />
-                  <span>威胁情报</span>
+                  <span>���胁情报</span>
                 </TabsTrigger>
 
                 {/* 高级模式显示所有标签页 */}
@@ -678,7 +678,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">
-                              ��攻击数:
+                              总攻击数:
                             </span>
                             <span className="text-white">
                               {(investigation as any).totalAttacks || 0}
@@ -1004,33 +1004,370 @@ const EvidenceCollectionInternational: React.FC = () => {
           </div>
         )}
 
-        {/* Empty State */}
+        {/* Empty State with Enhanced Information */}
         {!selectedIP && !loading && (
-          <div className="cyber-card p-12">
-            <div className="text-center space-y-6">
-              <div className="w-20 h-20 bg-gradient-to-br from-quantum-500 to-neural-500 rounded-full flex items-center justify-center mx-auto">
-                <Search className="w-10 h-10 text-white" />
+          <div className="space-y-6">
+            {/* Platform Statistics */}
+            <div className="cyber-card p-6">
+              <h3 className="text-xl font-semibold text-white mb-6 flex items-center space-x-2">
+                <BarChart3 className="w-5 h-5 text-quantum-500" />
+                <span>平台统计概览</span>
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="cyber-card p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/30">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-blue-300">
+                        今日调查
+                      </p>
+                      <p className="text-2xl font-bold text-white">1,247</p>
+                      <p className="text-xs text-blue-400">↑ 12% 较昨日</p>
+                    </div>
+                    <Database className="w-8 h-8 text-blue-400" />
+                  </div>
+                </div>
+                <div className="cyber-card p-4 bg-gradient-to-br from-red-500/10 to-orange-500/10 border-red-500/30">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-red-300">
+                        威胁检测
+                      </p>
+                      <p className="text-2xl font-bold text-white">89</p>
+                      <p className="text-xs text-red-400">↑ 5% 较昨日</p>
+                    </div>
+                    <AlertTriangle className="w-8 h-8 text-red-400" />
+                  </div>
+                </div>
+                <div className="cyber-card p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/30">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-green-300">
+                        网络连接
+                      </p>
+                      <p className="text-2xl font-bold text-white">3,456</p>
+                      <p className="text-xs text-green-400">↑ 8% 较昨日</p>
+                    </div>
+                    <Network className="w-8 h-8 text-green-400" />
+                  </div>
+                </div>
+                <div className="cyber-card p-4 bg-gradient-to-br from-purple-500/10 to-violet-500/10 border-purple-500/30">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-purple-300">
+                        在线用户
+                      </p>
+                      <p className="text-2xl font-bold text-white">156</p>
+                      <p className="text-xs text-purple-400">↑ 3% 较昨日</p>
+                    </div>
+                    <Eye className="w-8 h-8 text-purple-400" />
+                  </div>
+                </div>
               </div>
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-2">
-                  准备开始调查
+            </div>
+
+            {/* Quick Analysis Examples */}
+            <div className="cyber-card p-6">
+              <h3 className="text-xl font-semibold text-white mb-6 flex items-center space-x-2">
+                <Zap className="w-5 h-5 text-yellow-400" />
+                <span>快速分析示例</span>
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  {
+                    ip: "192.168.1.100",
+                    type: "内网扫描",
+                    risk: "中风险",
+                    color: "orange",
+                    description: "检测到端口扫描活动",
+                  },
+                  {
+                    ip: "10.0.0.15",
+                    type: "可疑连接",
+                    risk: "高风险",
+                    color: "red",
+                    description: "与恶意域名通信",
+                  },
+                  {
+                    ip: "172.16.0.50",
+                    type: "正常流量",
+                    risk: "低风险",
+                    color: "green",
+                    description: "业务系统正常访问",
+                  },
+                ].map((example, index) => (
+                  <div
+                    key={index}
+                    className="cursor-pointer hover:scale-105 transition-transform duration-200"
+                    onClick={() => setSearchIP(example.ip)}
+                  >
+                    <div
+                      className={cn(
+                        "cyber-card p-4 border-l-4 hover:bg-matrix-surface/50",
+                        example.color === "red"
+                          ? "border-l-red-500"
+                          : example.color === "orange"
+                            ? "border-l-orange-500"
+                            : "border-l-green-500",
+                      )}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <code className="text-sm font-mono text-white">
+                          {example.ip}
+                        </code>
+                        <Badge
+                          className={cn(
+                            "text-xs",
+                            example.color === "red"
+                              ? "bg-red-500/20 text-red-400 border-red-500/40"
+                              : example.color === "orange"
+                                ? "bg-orange-500/20 text-orange-400 border-orange-500/40"
+                                : "bg-green-500/20 text-green-400 border-green-500/40",
+                          )}
+                        >
+                          {example.risk}
+                        </Badge>
+                      </div>
+                      <p className="text-sm font-medium text-white mb-1">
+                        {example.type}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {example.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Recent Activity Timeline */}
+            <div className="cyber-card p-6">
+              <h3 className="text-xl font-semibold text-white mb-6 flex items-center space-x-2">
+                <Clock className="w-5 h-5 text-cyan-400" />
+                <span>近期活动</span>
+              </h3>
+              <div className="space-y-4">
+                {[
+                  {
+                    time: "2 分钟前",
+                    action: "完成IP调查",
+                    target: "203.0.113.42",
+                    result: "发现3个威胁指标",
+                    type: "investigation",
+                  },
+                  {
+                    time: "15 分钟前",
+                    action: "网络拓扑分析",
+                    target: "内网段 10.0.0.0/24",
+                    result: "映射126个设备",
+                    type: "topology",
+                  },
+                  {
+                    time: "32 分钟前",
+                    action: "威胁情报更新",
+                    target: "恶意IP数据库",
+                    result: "新增847个IOC",
+                    type: "update",
+                  },
+                  {
+                    time: "1 小时前",
+                    action: "数字取证扫描",
+                    target: "192.168.100.5",
+                    result: "提取12个工件",
+                    type: "forensics",
+                  },
+                ].map((activity, index) => (
+                  <div
+                    key={index}
+                    className="flex items-start space-x-4 p-4 bg-matrix-surface/30 rounded-lg hover:bg-matrix-surface/50 transition-colors"
+                  >
+                    <div className="flex-shrink-0 mt-1">
+                      <div
+                        className={cn(
+                          "w-3 h-3 rounded-full",
+                          activity.type === "investigation"
+                            ? "bg-blue-400"
+                            : activity.type === "topology"
+                              ? "bg-green-400"
+                              : activity.type === "update"
+                                ? "bg-purple-400"
+                                : "bg-orange-400",
+                        )}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium text-white">
+                          {activity.action}
+                        </p>
+                        <span className="text-xs text-muted-foreground">
+                          {activity.time}
+                        </span>
+                      </div>
+                      <p className="text-sm text-cyan-300 font-mono mt-1">
+                        {activity.target}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {activity.result}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* System Status */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="cyber-card p-6">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                  <Activity className="w-5 h-5 text-green-400" />
+                  <span>系统状态</span>
                 </h3>
-                <p className="text-muted-foreground max-w-md mx-auto">
-                  在上方输入IP地址开始全面的威胁分析和网络调查
-                </p>
+                <div className="space-y-4">
+                  {[
+                    {
+                      name: "威胁情报引擎",
+                      status: "运行正常",
+                      uptime: "99.9%",
+                      color: "green",
+                    },
+                    {
+                      name: "网络分析服务",
+                      status: "运行正常",
+                      uptime: "99.7%",
+                      color: "green",
+                    },
+                    {
+                      name: "数据库连接",
+                      status: "运行正常",
+                      uptime: "100%",
+                      color: "green",
+                    },
+                    {
+                      name: "API网关",
+                      status: "运行正常",
+                      uptime: "99.8%",
+                      color: "green",
+                    },
+                  ].map((service, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 bg-matrix-surface/30 rounded-lg"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div
+                          className={cn(
+                            "w-2 h-2 rounded-full",
+                            service.color === "green"
+                              ? "bg-green-400"
+                              : "bg-red-400",
+                          )}
+                        />
+                        <span className="text-sm font-medium text-white">
+                          {service.name}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm text-green-400">
+                          {service.status}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          运行时间: {service.uptime}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="flex justify-center space-x-4 text-sm text-muted-foreground">
-                <div className="flex items-center space-x-1">
-                  <CheckCircle className="w-4 h-4 text-green-400" />
-                  <span>实时分析</span>
+
+              <div className="cyber-card p-6">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                  <Settings className="w-5 h-5 text-blue-400" />
+                  <span>操作指南</span>
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-start space-x-3 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                    <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                      1
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">
+                        输入目标IP
+                      </p>
+                      <p className="text-xs text-blue-300">
+                        在搜索框中输入要调查的IP地址
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3 p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+                    <div className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                      2
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">
+                        选择分析模式
+                      </p>
+                      <p className="text-xs text-purple-300">
+                        基础模式快速分析，高级模式深度调查
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                    <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                      3
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">分析结果</p>
+                      <p className="text-xs text-green-300">
+                        查看威胁评估和网络关系图
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-1">
-                  <CheckCircle className="w-4 h-4 text-green-400" />
-                  <span>威胁情报</span>
+              </div>
+            </div>
+
+            {/* Call to Action */}
+            <div className="cyber-card p-12">
+              <div className="text-center space-y-6">
+                <div className="w-20 h-20 bg-gradient-to-br from-quantum-500 to-neural-500 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-quantum-500/25">
+                  <Search className="w-10 h-10 text-white" />
                 </div>
-                <div className="flex items-center space-x-1">
-                  <CheckCircle className="w-4 h-4 text-green-400" />
-                  <span>网络映射</span>
+                <div>
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    准备开始调查
+                  </h3>
+                  <p className="text-muted-foreground max-w-md mx-auto">
+                    在上方输入IP地址开始全面的威胁分析和网络调查。我们的AI驱动分析引擎将为您提供详细的安全评估。
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+                  <div className="flex flex-col items-center space-y-2 p-4 bg-matrix-surface/30 rounded-lg">
+                    <CheckCircle className="w-6 h-6 text-green-400" />
+                    <span className="text-sm text-white font-medium">
+                      实时威胁检测
+                    </span>
+                    <span className="text-xs text-muted-foreground text-center">
+                      基于最新威胁情报数据库
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center space-y-2 p-4 bg-matrix-surface/30 rounded-lg">
+                    <CheckCircle className="w-6 h-6 text-green-400" />
+                    <span className="text-sm text-white font-medium">
+                      网络关系映射
+                    </span>
+                    <span className="text-xs text-muted-foreground text-center">
+                      可视化连接和依赖关系
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center space-y-2 p-4 bg-matrix-surface/30 rounded-lg">
+                    <CheckCircle className="w-6 h-6 text-green-400" />
+                    <span className="text-sm text-white font-medium">
+                      详细分析报告
+                    </span>
+                    <span className="text-xs text-muted-foreground text-center">
+                      专业级调���文档导出
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

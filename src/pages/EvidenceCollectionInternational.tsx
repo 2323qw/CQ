@@ -280,31 +280,34 @@ const EvidenceCollectionInternational: React.FC = () => {
 
         {/* Loading State */}
         {loading && (
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-8">
-              <div className="flex flex-col items-center space-y-6">
-                <div className="relative">
-                  <div className="w-20 h-20 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Shield className="w-8 h-8 text-blue-600" />
-                  </div>
+          <div className="cyber-card p-8">
+            <div className="flex flex-col items-center space-y-6">
+              <div className="relative">
+                <div className="w-20 h-20 border-4 border-quantum-500/30 border-t-quantum-500 rounded-full animate-spin" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Shield className="w-8 h-8 text-quantum-500" />
                 </div>
-                <div className="text-center space-y-2">
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-                    Analyzing {selectedIP}
-                  </h3>
-                  <p className="text-slate-600 dark:text-slate-400">
-                    {investigationMode === "advanced"
-                      ? "Performing deep threat analysis and network mapping..."
-                      : "Collecting basic threat intelligence data..."}
-                  </p>
-                  <div className="w-64 mx-auto">
-                    <Progress value={33} className="h-2" />
+              </div>
+              <div className="text-center space-y-2">
+                <h3 className="text-xl font-semibold text-white">
+                  正在分析 {selectedIP}
+                </h3>
+                <p className="text-muted-foreground">
+                  {investigationMode === "advanced"
+                    ? "正在执行深度威胁分析和网络映射..."
+                    : "正在收集基础威胁情报数据..."}
+                </p>
+                <div className="w-64 mx-auto">
+                  <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-quantum-500 to-neural-500 rounded-full transition-all duration-300"
+                      style={{ width: "33%" }}
+                    />
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         {/* Error State */}

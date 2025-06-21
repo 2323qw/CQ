@@ -451,7 +451,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                     variant="outline"
                     size="sm"
                   >
-                    <Export className="w-4 h-4 mr-2" />
+                    <Download className="w-4 h-4 mr-2" />
                     Export Report
                   </Button>
                 </div>

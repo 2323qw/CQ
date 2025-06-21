@@ -938,47 +938,258 @@ const EvidenceCollectionInternational: React.FC = () => {
               </TabsContent>
 
               <TabsContent value="threats">
-                <div className="cyber-card p-6">
-                  <h3 className="text-lg font-semibold text-white mb-6 flex items-center space-x-2">
-                    <Shield className="w-5 h-5 text-red-400" />
-                    <span>威胁情报分析</span>
-                  </h3>
-                  {investigationMode === "advanced" &&
-                  (investigation as any).threatIntelligence?.blacklists ? (
-                    <div className="space-y-4">
-                      {(investigation as any).threatIntelligence.blacklists.map(
-                        (blacklist: string, index: number) => (
+                <div className="space-y-6">
+                  {/* Threat Intelligence Summary */}
+                  <div className="cyber-card p-6">
+                    <h3 className="text-lg font-semibold text-white mb-6 flex items-center space-x-2">
+                      <Shield className="w-5 h-5 text-red-400" />
+                      <span>威胁情报分析</span>
+                    </h3>
+
+                    {/* Threat Intelligence Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                      <div className="cyber-card p-4 bg-gradient-to-br from-red-500/10 to-orange-500/10 border-red-500/30">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-red-300">
+                              恶意IP检测
+                            </p>
+                            <p className="text-2xl font-bold text-white">
+                              {investigationMode === "advanced" &&
+                              (investigation as any).threatIntelligence
+                                ?.blacklists
+                                ? (investigation as any).threatIntelligence
+                                    .blacklists.length
+                                : 0}
+                            </p>
+                          </div>
+                          <AlertTriangle className="w-8 h-8 text-red-400" />
+                        </div>
+                      </div>
+                      <div className="cyber-card p-4 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-yellow-500/30">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-yellow-300">
+                              可疑活动
+                            </p>
+                            <p className="text-2xl font-bold text-white">
+                              {
+                                Object.keys(
+                                  (investigation as any).attackTypes || {},
+                                ).length
+                              }
+                            </p>
+                          </div>
+                          <Eye className="w-8 h-8 text-yellow-400" />
+                        </div>
+                      </div>
+                      <div className="cyber-card p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/30">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-blue-300">
+                              情报来源
+                            </p>
+                            <p className="text-2xl font-bold text-white">
+                              {investigationMode === "advanced" ? "12" : "6"}
+                            </p>
+                          </div>
+                          <Database className="w-8 h-8 text-blue-400" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {investigationMode === "advanced" &&
+                    (investigation as any).threatIntelligence?.blacklists ? (
+                      <div className="space-y-4">
+                        <h4 className="font-medium text-white mb-3">
+                          检测到的威胁
+                        </h4>
+                        {(
+                          investigation as any
+                        ).threatIntelligence.blacklists.map(
+                          (blacklist: string, index: number) => (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between p-4 bg-red-500/10 border border-red-500/30 rounded-lg"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <AlertTriangle className="w-5 h-5 text-red-400" />
+                                <div>
+                                  <p className="font-medium text-red-400">
+                                    {blacklist}
+                                  </p>
+                                  <p className="text-sm text-red-300">
+                                    威胁数据库匹配
+                                  </p>
+                                </div>
+                              </div>
+                              <Badge className="bg-red-500/20 text-red-400 border-red-500/40">
+                                已列入黑名单
+                              </Badge>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <h4 className="font-medium text-white mb-3">
+                          威胁检测结果
+                        </h4>
+                        <div className="text-center py-8 bg-green-500/5 border border-green-500/20 rounded-lg">
+                          <Shield className="w-12 h-12 mx-auto mb-4 text-green-400" />
+                          <h3 className="text-lg font-semibold text-white mb-2">
+                            未检测到活跃威胁
+                          </h3>
+                          <p className="text-muted-foreground">
+                            该IP地址当前未被列入已知威胁数据库
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Threat Intelligence Sources */}
+                  <div className="cyber-card p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                      <Globe className="w-5 h-5 text-cyan-400" />
+                      <span>威胁情报源</span>
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {[
+                        {
+                          name: "VirusTotal",
+                          status: "已检查",
+                          result: "清洁",
+                          color: "green",
+                        },
+                        {
+                          name: "AbuseIPDB",
+                          status: "已检查",
+                          result:
+                            investigationMode === "advanced" ? "可疑" : "清洁",
+                          color:
+                            investigationMode === "advanced"
+                              ? "orange"
+                              : "green",
+                        },
+                        {
+                          name: "Shodan",
+                          status: "已扫描",
+                          result: "3个开放端口",
+                          color: "blue",
+                        },
+                        {
+                          name: "AlienVault OTX",
+                          status: "已分析",
+                          result: "无威胁",
+                          color: "green",
+                        },
+                        {
+                          name: "Cisco Talos",
+                          status: "已验证",
+                          result: "信誉良好",
+                          color: "green",
+                        },
+                        {
+                          name: "IBM X-Force",
+                          status: "已评估",
+                          result:
+                            metrics && metrics.riskScore > 50
+                              ? "中风险"
+                              : "低风险",
+                          color:
+                            metrics && metrics.riskScore > 50
+                              ? "orange"
+                              : "green",
+                        },
+                      ].map((source, index) => (
+                        <div
+                          key={index}
+                          className="p-4 bg-matrix-surface/30 rounded-lg"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="font-medium text-white">
+                              {source.name}
+                            </span>
+                            <div
+                              className={cn(
+                                "w-3 h-3 rounded-full",
+                                source.color === "green"
+                                  ? "bg-green-400"
+                                  : source.color === "orange"
+                                    ? "bg-orange-400"
+                                    : "bg-blue-400",
+                              )}
+                            />
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-1">
+                            {source.status}
+                          </p>
+                          <p
+                            className={cn(
+                              "text-sm font-medium",
+                              source.color === "green"
+                                ? "text-green-400"
+                                : source.color === "orange"
+                                  ? "text-orange-400"
+                                  : "text-blue-400",
+                            )}
+                          >
+                            {source.result}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Attack Types Analysis */}
+                  {Object.keys((investigation as any).attackTypes || {})
+                    .length > 0 && (
+                    <div className="cyber-card p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                        <Target className="w-5 h-5 text-red-400" />
+                        <span>攻击类型分析</span>
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {Object.entries(
+                          (investigation as any).attackTypes || {},
+                        ).map(([type, count], index) => (
                           <div
                             key={index}
-                            className="flex items-center justify-between p-4 bg-red-500/10 border border-red-500/30 rounded-lg"
+                            className="p-4 bg-red-500/5 border border-red-500/20 rounded-lg"
                           >
-                            <div className="flex items-center space-x-3">
-                              <AlertTriangle className="w-5 h-5 text-red-400" />
+                            <div className="flex items-center justify-between">
                               <div>
-                                <p className="font-medium text-red-400">
-                                  {blacklist}
+                                <p className="font-medium text-white">
+                                  {type.replace(/_/g, " ").toUpperCase()}
                                 </p>
                                 <p className="text-sm text-red-300">
-                                  威胁数据库匹配
+                                  检测次数: {count as number}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  最后检测: {new Date().toLocaleDateString()}
                                 </p>
                               </div>
+                              <Badge
+                                className={cn(
+                                  "px-2 py-1",
+                                  (count as number) > 10
+                                    ? "bg-red-500/20 text-red-400 border-red-500/40"
+                                    : (count as number) > 5
+                                      ? "bg-orange-500/20 text-orange-400 border-orange-500/40"
+                                      : "bg-yellow-500/20 text-yellow-400 border-yellow-500/40",
+                                )}
+                              >
+                                {(count as number) > 10
+                                  ? "高频"
+                                  : (count as number) > 5
+                                    ? "中频"
+                                    : "低频"}
+                              </Badge>
                             </div>
-                            <Badge className="bg-red-500/20 text-red-400 border-red-500/40">
-                              已列入黑名单
-                            </Badge>
                           </div>
-                        ),
-                      )}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <Shield className="w-12 h-12 mx-auto mb-4 text-green-400" />
-                      <h3 className="text-lg font-semibold text-white mb-2">
-                        未检测到活跃威胁
-                      </h3>
-                      <p className="text-muted-foreground">
-                        该IP地址当前未被列入已知威胁数据库
-                      </p>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>

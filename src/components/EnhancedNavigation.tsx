@@ -153,7 +153,7 @@ const menuGroups: {
         icon: Users,
         roles: ["超级管理员", "安全管理员"],
       },
-      { name: "安全报告", path: "/reports", icon: FileText },
+      { name: "��全报告", path: "/reports", icon: FileText },
     ],
   },
   {
@@ -572,62 +572,9 @@ export function EnhancedNavigation({
           </nav>
         </div>
 
-        {/* 底部系统信息和用户区域 */}
+        {/* 底部用户信息 */}
         <div className="p-4 border-t border-matrix-border">
           <div className="space-y-3">
-            {/* 系统状态 */}
-            {!isCompactMode && (
-              <div className="space-y-2">
-                <h4 className="text-xs font-medium text-muted-foreground">
-                  系统状态
-                </h4>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">CPU</span>
-                    <span
-                      className={cn(
-                        "font-mono",
-                        systemStatus.cpu > 80
-                          ? "text-red-400"
-                          : systemStatus.cpu > 60
-                            ? "text-orange-400"
-                            : "text-green-400",
-                      )}
-                    >
-                      {systemStatus.cpu.toFixed(0)}%
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">内存</span>
-                    <span
-                      className={cn(
-                        "font-mono",
-                        systemStatus.memory > 85
-                          ? "text-red-400"
-                          : systemStatus.memory > 70
-                            ? "text-orange-400"
-                            : "text-green-400",
-                      )}
-                    >
-                      {systemStatus.memory.toFixed(0)}%
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">网络</span>
-                    <span className="text-green-400 font-mono">
-                      {systemStatus.network.toFixed(0)}%
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">威胁</span>
-                    <span className="text-red-400 font-mono">
-                      {systemStatus.threats}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* 用户信息 */}
             <div
               className={cn(
@@ -653,47 +600,39 @@ export function EnhancedNavigation({
                   <p className={cn("text-xs truncate", userColor)}>
                     {userRole}
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    在线{" "}
-                    {Math.floor(
-                      (Date.now() - lastActiveTime.getTime()) / 60000,
-                    )}
-                    m
-                  </p>
                 </div>
               )}
             </div>
 
-            {/* 登出和帮助 */}
-            <div
-              className={cn(
-                "flex gap-2",
-                isCompactMode ? "flex-col" : "flex-row",
-              )}
-            >
-              {!isCompactMode && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex-1 text-cyan-400 hover:text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/10"
-                >
-                  <HelpCircle className="w-4 h-4 mr-2" />
-                  帮助
-                </Button>
-              )}
+            {/* 简化状态 */}
+            {!isCompactMode && (
+              <div className="system-stats-grid text-xs">
+                <div className="system-stat-item rounded p-2 text-center">
+                  <div className="text-green-400 font-mono">99.9%</div>
+                  <div className="text-muted-foreground">正常运行</div>
+                </div>
+                <div className="system-stat-item rounded p-2 text-center">
+                  <div className="text-neon-blue font-mono">
+                    {Math.floor((Date.now() - lastActiveTime.getTime()) / 1000)}
+                    s
+                  </div>
+                  <div className="text-muted-foreground">活跃时间</div>
+                </div>
+                <div className="system-stat-item rounded p-2 text-center">
+                  <div className="text-amber-400 font-mono nav-badge">3</div>
+                  <div className="text-muted-foreground">待处理</div>
+                </div>
+              </div>
+            )}
 
-              <Button
-                onClick={handleLogout}
-                size="sm"
-                className={cn(
-                  "bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-all duration-200 neon-button",
-                  isCompactMode ? "w-full justify-center" : "flex-1",
-                )}
-              >
-                <LogOut className="w-4 h-4" />
-                {!isCompactMode && <span className="ml-2">退出</span>}
-              </Button>
-            </div>
+            {/* 登出按钮 */}
+            <Button
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/30 transition-all duration-200 neon-button"
+            >
+              <LogOut className="w-4 h-4" />
+              {!isCompactMode && <span>安全退出</span>}
+            </Button>
           </div>
         </div>
       </div>

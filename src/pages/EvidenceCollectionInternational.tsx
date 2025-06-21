@@ -226,7 +226,7 @@ const EvidenceCollectionInternational: React.FC = () => {
               <span>调查配置</span>
             </h3>
             <p className="text-muted-foreground mt-1">
-              输入IP地��开始综合威胁分析
+              输入IP地址开始综合威胁分析
             </p>
           </div>
           <form onSubmit={handleSearch} className="flex gap-4 items-end">
@@ -1588,7 +1588,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                           <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
                             <div className="flex items-center justify-between mb-2">
                               <span className="font-medium text-white">
-                                可能的威胁组织
+                                可能的��胁组织
                               </span>
                               <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/40">
                                 中等可信度
@@ -1889,25 +1889,61 @@ const EvidenceCollectionInternational: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Charts Section */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Advanced Charts Section */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      {/* Protocol Analysis with ML Insights */}
                       <div className="cyber-card p-6">
-                        <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                          <TrendingUp className="w-5 h-5 text-green-400" />
-                          <span>协议分析</span>
-                        </h3>
-                        <ResponsiveContainer width="100%" height={300}>
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
+                            <TrendingUp className="w-5 h-5 text-green-400" />
+                            <span>协议分析</span>
+                          </h3>
+                          <Badge className="bg-green-500/20 text-green-400 border-green-500/40">
+                            AI增强
+                          </Badge>
+                        </div>
+                        <ResponsiveContainer width="100%" height={280}>
                           <BarChart
                             data={
                               protocolData.length > 0
                                 ? protocolData
                                 : [
-                                    { name: "TCP", value: 45 },
-                                    { name: "UDP", value: 23 },
-                                    { name: "HTTP", value: 67 },
-                                    { name: "HTTPS", value: 89 },
-                                    { name: "SSH", value: 12 },
-                                    { name: "FTP", value: 8 },
+                                    {
+                                      name: "TCP",
+                                      value: 45,
+                                      trend: "↑",
+                                      anomaly: false,
+                                    },
+                                    {
+                                      name: "UDP",
+                                      value: 23,
+                                      trend: "→",
+                                      anomaly: false,
+                                    },
+                                    {
+                                      name: "HTTP",
+                                      value: 67,
+                                      trend: "↑",
+                                      anomaly: true,
+                                    },
+                                    {
+                                      name: "HTTPS",
+                                      value: 89,
+                                      trend: "↑",
+                                      anomaly: false,
+                                    },
+                                    {
+                                      name: "SSH",
+                                      value: 12,
+                                      trend: "↓",
+                                      anomaly: true,
+                                    },
+                                    {
+                                      name: "FTP",
+                                      value: 8,
+                                      trend: "↓",
+                                      anomaly: false,
+                                    },
                                   ]
                             }
                           >
@@ -1939,14 +1975,35 @@ const EvidenceCollectionInternational: React.FC = () => {
                             <Bar dataKey="value" fill="#00f5ff" />
                           </BarChart>
                         </ResponsiveContainer>
+                        <div className="mt-4 space-y-2">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">
+                              异常检测:
+                            </span>
+                            <span className="text-orange-400">2个协议异常</span>
+                          </div>
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">
+                              预测趋势:
+                            </span>
+                            <span className="text-green-400">流量增长15%</span>
+                          </div>
+                        </div>
                       </div>
 
+                      {/* Enhanced Traffic Distribution */}
                       <div className="cyber-card p-6">
-                        <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                          <PieChart className="w-5 h-5 text-purple-400" />
-                          <span>流量分布</span>
-                        </h3>
-                        <ResponsiveContainer width="100%" height={300}>
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
+                            <PieChart className="w-5 h-5 text-purple-400" />
+                            <span>流量分布</span>
+                          </h3>
+                          <div className="flex items-center space-x-1">
+                            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
+                            <span className="text-xs text-cyan-400">实时</span>
+                          </div>
+                        </div>
+                        <ResponsiveContainer width="100%" height={280}>
                           <RechartsPieChart>
                             <Pie
                               data={[
@@ -1963,7 +2020,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                               ]}
                               cx="50%"
                               cy="50%"
-                              outerRadius={100}
+                              outerRadius={90}
                               dataKey="value"
                               label={({ name, value }) => `${name}: ${value}%`}
                             />
@@ -1977,6 +2034,197 @@ const EvidenceCollectionInternational: React.FC = () => {
                             />
                           </RechartsPieChart>
                         </ResponsiveContainer>
+                        <div className="mt-4 grid grid-cols-2 gap-4">
+                          <div className="text-center p-2 bg-cyan-500/10 rounded">
+                            <p className="text-xs text-cyan-300">平均带宽</p>
+                            <p className="text-sm font-bold text-white">
+                              2.3 MB/s
+                            </p>
+                          </div>
+                          <div className="text-center p-2 bg-green-500/10 rounded">
+                            <p className="text-xs text-green-300">峰值流量</p>
+                            <p className="text-sm font-bold text-white">
+                              8.7 MB/s
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* AI Threat Prediction */}
+                      <div className="cyber-card p-6">
+                        <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                          <Target className="w-5 h-5 text-orange-400" />
+                          <span>AI威胁预测</span>
+                        </h3>
+                        <div className="space-y-4">
+                          <div className="text-center p-4 bg-gradient-to-br from-orange-500/10 to-red-500/10 border border-orange-500/30 rounded-lg">
+                            <div className="text-3xl font-bold text-orange-400 mb-2">
+                              76%
+                            </div>
+                            <p className="text-sm text-orange-300">威胁概率</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              基于行为模式分析
+                            </p>
+                          </div>
+
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs text-muted-foreground">
+                                恶意软件风险
+                              </span>
+                              <span className="text-xs text-red-400">
+                                高 (85%)
+                              </span>
+                            </div>
+                            <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full"
+                                style={{ width: "85%" }}
+                              />
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs text-muted-foreground">
+                                数据外泄风险
+                              </span>
+                              <span className="text-xs text-orange-400">
+                                中 (45%)
+                              </span>
+                            </div>
+                            <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-gradient-to-r from-orange-500 to-orange-400 rounded-full"
+                                style={{ width: "45%" }}
+                              />
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs text-muted-foreground">
+                                横向移动风险
+                              </span>
+                              <span className="text-xs text-yellow-400">
+                                中 (62%)
+                              </span>
+                            </div>
+                            <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-full"
+                                style={{ width: "62%" }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Machine Learning Insights */}
+                    <div className="cyber-card p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                        <Zap className="w-5 h-5 text-yellow-400" />
+                        <span>机器学习洞察</span>
+                      </h3>
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="space-y-4">
+                          <h4 className="font-medium text-cyan-400">
+                            行为模式分析
+                          </h4>
+                          <div className="space-y-2">
+                            <div className="p-3 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+                              <p className="text-sm font-medium text-white">
+                                异常连接模式
+                              </p>
+                              <p className="text-xs text-cyan-300">
+                                检测到非典型时间段的大量连接
+                              </p>
+                              <div className="flex items-center mt-2">
+                                <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/40">
+                                  置信度: 89%
+                                </Badge>
+                              </div>
+                            </div>
+                            <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                              <p className="text-sm font-medium text-white">
+                                流量基线偏差
+                              </p>
+                              <p className="text-xs text-blue-300">
+                                流量模式偏离7天基线37%
+                              </p>
+                              <div className="flex items-center mt-2">
+                                <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/40">
+                                  置信度: 76%
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          <h4 className="font-medium text-green-400">
+                            关联分析
+                          </h4>
+                          <div className="space-y-2">
+                            <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                              <p className="text-sm font-medium text-white">
+                                相似IP聚类
+                              </p>
+                              <p className="text-xs text-green-300">
+                                发现12个行为相似的IP地址
+                              </p>
+                              <div className="flex items-center mt-2">
+                                <Badge className="bg-green-500/20 text-green-400 border-green-500/40">
+                                  相似度: 94%
+                                </Badge>
+                              </div>
+                            </div>
+                            <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+                              <p className="text-sm font-medium text-white">
+                                攻击链重构
+                              </p>
+                              <p className="text-xs text-emerald-300">
+                                识别到完整的攻击序列
+                              </p>
+                              <div className="flex items-center mt-2">
+                                <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/40">
+                                  完整度: 83%
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          <h4 className="font-medium text-purple-400">
+                            预测模型
+                          </h4>
+                          <div className="space-y-2">
+                            <div className="p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+                              <p className="text-sm font-medium text-white">
+                                下一步行为预测
+                              </p>
+                              <p className="text-xs text-purple-300">
+                                预计将尝试权限提升
+                              </p>
+                              <div className="flex items-center mt-2">
+                                <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/40">
+                                  概率: 78%
+                                </Badge>
+                              </div>
+                            </div>
+                            <div className="p-3 bg-violet-500/10 border border-violet-500/30 rounded-lg">
+                              <p className="text-sm font-medium text-white">
+                                影响范围评估
+                              </p>
+                              <p className="text-xs text-violet-300">
+                                可能影响23个相关系统
+                              </p>
+                              <div className="flex items-center mt-2">
+                                <Badge className="bg-violet-500/20 text-violet-400 border-violet-500/40">
+                                  风险: 高
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
 

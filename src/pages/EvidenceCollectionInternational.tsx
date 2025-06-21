@@ -414,86 +414,121 @@ const EvidenceCollectionInternational: React.FC = () => {
             )}
 
             {/* Basic Information */}
-            <Card className="border-0 shadow-lg">
-              <CardHeader className="flex flex-row items-center justify-between">
+            <div className="cyber-card p-6">
+              <div className="flex flex-row items-center justify-between mb-6">
                 <div>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Target className="w-5 h-5 text-blue-600" />
-                    <span>Investigation Summary</span>
-                  </CardTitle>
-                  <CardDescription>
-                    Target: {selectedIP} | Mode: {investigationMode}
-                  </CardDescription>
+                  <h3 className="text-xl font-semibold text-white flex items-center space-x-2">
+                    <Target className="w-5 h-5 text-quantum-500" />
+                    <span>调查摘要</span>
+                  </h3>
+                  <p className="text-muted-foreground mt-1">
+                    目标: {selectedIP} | 模式:{" "}
+                    {investigationMode === "advanced" ? "高级" : "基础"}
+                  </p>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Badge
-                    {...getReputationStatus(
-                      investigationMode === "advanced"
-                        ? (investigation as any).basicInfo?.reputation ||
-                            "unknown"
-                        : (investigation as any).reputation || "unknown",
-                    )}
-                  >
-                    {
+                    className={cn(
+                      "px-3 py-1",
                       getReputationStatus(
                         investigationMode === "advanced"
                           ? (investigation as any).basicInfo?.reputation ||
                               "unknown"
                           : (investigation as any).reputation || "unknown",
-                      ).label
-                    }
+                      ).variant === "destructive"
+                        ? "bg-red-500/20 text-red-400 border-red-500/40"
+                        : getReputationStatus(
+                              investigationMode === "advanced"
+                                ? (investigation as any).basicInfo
+                                    ?.reputation || "unknown"
+                                : (investigation as any).reputation ||
+                                    "unknown",
+                            ).variant === "secondary"
+                          ? "bg-amber-500/20 text-amber-400 border-amber-500/40"
+                          : getReputationStatus(
+                                investigationMode === "advanced"
+                                  ? (investigation as any).basicInfo
+                                      ?.reputation || "unknown"
+                                  : (investigation as any).reputation ||
+                                      "unknown",
+                              ).variant === "default"
+                            ? "bg-green-500/20 text-green-400 border-green-500/40"
+                            : "bg-gray-500/20 text-gray-400 border-gray-500/40",
+                    )}
+                  >
+                    {getReputationStatus(
+                      investigationMode === "advanced"
+                        ? (investigation as any).basicInfo?.reputation ||
+                            "unknown"
+                        : (investigation as any).reputation || "unknown",
+                    ).label === "Malicious"
+                      ? "恶���"
+                      : getReputationStatus(
+                            investigationMode === "advanced"
+                              ? (investigation as any).basicInfo?.reputation ||
+                                  "unknown"
+                              : (investigation as any).reputation || "unknown",
+                          ).label === "Suspicious"
+                        ? "可疑"
+                        : getReputationStatus(
+                              investigationMode === "advanced"
+                                ? (investigation as any).basicInfo
+                                    ?.reputation || "unknown"
+                                : (investigation as any).reputation ||
+                                    "unknown",
+                            ).label === "Clean"
+                          ? "清洁"
+                          : "未知"}
                   </Badge>
                   <Button
                     onClick={() => handleExport("JSON")}
-                    variant="outline"
+                    className="neon-button-green"
                     size="sm"
                   >
                     <Download className="w-4 h-4 mr-2" />
-                    Export Report
+                    导出报告
                   </Button>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                      IP Address
-                    </label>
-                    <p className="font-mono text-lg font-semibold text-slate-900 dark:text-slate-100">
-                      {(investigation as any).ip || selectedIP}
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                      Location
-                    </label>
-                    <p className="text-slate-900 dark:text-slate-100">
-                      {(investigation as any).country || "Unknown"}
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                      Organization
-                    </label>
-                    <p className="text-slate-900 dark:text-slate-100">
-                      {(investigation as any).organization || "Not available"}
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                      Last Activity
-                    </label>
-                    <p className="text-slate-900 dark:text-slate-100">
-                      {(investigation as any).lastActivity
-                        ? new Date(
-                            (investigation as any).lastActivity,
-                          ).toLocaleDateString()
-                        : "Recently"}
-                    </p>
-                  </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground">
+                    IP地址
+                  </label>
+                  <p className="font-mono text-lg font-semibold text-white">
+                    {(investigation as any).ip || selectedIP}
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground">
+                    地理位置
+                  </label>
+                  <p className="text-white">
+                    {(investigation as any).country || "未知"}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground">
+                    组织机构
+                  </label>
+                  <p className="text-white">
+                    {(investigation as any).organization || "无数据"}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground">
+                    最后活动
+                  </label>
+                  <p className="text-white">
+                    {(investigation as any).lastActivity
+                      ? new Date(
+                          (investigation as any).lastActivity,
+                        ).toLocaleDateString()
+                      : "最近"}
+                  </p>
+                </div>
+              </div>
+            </div>
 
             {/* Detailed Analysis */}
             <Tabs

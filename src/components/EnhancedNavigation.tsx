@@ -571,7 +571,7 @@ export function EnhancedNavigation({
     }))
     .filter((group) => group.items.length > 0);
 
-  // 获取最终显示的���组（考虑搜索）
+  // 获取最终显示的分组（考虑搜索）
   const displayGroups = getFilteredGroups();
 
   // 更新最后活跃时间
@@ -601,8 +601,8 @@ export function EnhancedNavigation({
           isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
         )}
       >
-        {/* 顶部 Logo 区域 */}
-        <div className="p-6 border-b border-matrix-border">
+        {/* 顶部 Logo 和搜索区域 */}
+        <div className="p-4 border-b border-matrix-border space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center glow-border">
@@ -613,7 +613,7 @@ export function EnhancedNavigation({
                   CyberGuard
                 </h1>
                 <p className="text-xs text-muted-foreground">
-                  网络安全监控系统
+                  智能网络安全平台
                 </p>
               </div>
             </div>
@@ -627,6 +627,80 @@ export function EnhancedNavigation({
               <X className="w-5 h-5" />
             </button>
           </div>
+
+          {/* 智能搜索框 */}
+          {!isCompactMode && (
+            <div className="relative">
+              <div
+                className={cn(
+                  "relative flex items-center transition-all duration-300",
+                  isSearchFocused && "transform scale-105",
+                )}
+              >
+                <Search className="absolute left-3 w-4 h-4 text-muted-foreground z-10" />
+                <Input
+                  type="text"
+                  placeholder="搜索功能、页面..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
+                  className={cn(
+                    "pl-10 pr-4 py-2 w-full bg-matrix-surface/50 border-matrix-border text-sm",
+                    "focus:border-neon-blue/50 focus:bg-matrix-surface/80 transition-all duration-300",
+                    isSearchFocused &&
+                      "border-neon-blue/50 bg-matrix-surface/80 glow-border-subtle",
+                  )}
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 w-4 h-4 text-muted-foreground hover:text-white transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+
+              {/* 搜索建议 */}
+              {searchQuery && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-matrix-surface border border-matrix-border rounded-lg shadow-xl z-50 max-h-64 overflow-y-auto">
+                  {displayGroups.length === 0 ? (
+                    <div className="p-3 text-sm text-muted-foreground text-center">
+                      未找到匹配项
+                    </div>
+                  ) : (
+                    displayGroups.map((group) => (
+                      <div key={group.title} className="p-2">
+                        <div className="text-xs text-muted-foreground mb-1 px-2">
+                          {group.title}
+                        </div>
+                        {group.items.map((item) => (
+                          <Link
+                            key={item.name}
+                            to={item.path || "#"}
+                            onClick={() => {
+                              setSearchQuery("");
+                              handleMobileNavClick(item.path);
+                            }}
+                            className="flex items-center gap-2 px-2 py-1.5 rounded text-sm hover:bg-matrix-accent/50 transition-colors"
+                          >
+                            <item.icon className="w-4 h-4 text-muted-foreground" />
+                            <span>{item.name}</span>
+                            {item.description && (
+                              <span className="text-xs text-muted-foreground ml-auto">
+                                {item.description}
+                              </span>
+                            )}
+                          </Link>
+                        ))}
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* 简化状态栏 */}
@@ -637,7 +711,7 @@ export function EnhancedNavigation({
                 className={`w-2 h-2 rounded-full ${isOnline ? "bg-green-400" : "bg-red-400"} animate-pulse`}
               />
               <span className="text-xs text-muted-foreground">
-                {isOnline ? (isApiMode ? "API模��" : "模拟模式") : "离线模式"}
+                {isOnline ? (isApiMode ? "API模式" : "模拟模式") : "离线模式"}
               </span>
             </div>
             <div className="flex items-center gap-1">

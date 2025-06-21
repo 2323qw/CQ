@@ -161,7 +161,7 @@ const menuGroups: {
     icon: Shield,
     priority: 2,
     color: "text-red-400",
-    description: "威胁发现与响应",
+    description: "威胁发现与响���",
     items: [
       {
         name: "威胁告警",
@@ -296,7 +296,7 @@ const menuGroups: {
         path: "/users",
         icon: Users,
         roles: ["超级管理员", "安全管理员"],
-        description: "身份与访问控制",
+        description: "身份与访���控制",
       },
       {
         name: "安全报告",
@@ -349,7 +349,7 @@ const menuGroups: {
   },
 ];
 
-// 分类的快速操���
+// 分类的快速操作
 const quickActionGroups = {
   security: [
     {
@@ -495,6 +495,48 @@ export function EnhancedNavigation({
   // 检查分组是否包含当前活跃路径
   const isGroupActive = (items: MenuItem[]) => {
     return items.some((item) => item.path && isActivePath(item.path));
+  };
+
+  // 搜索过滤功能
+  const getFilteredGroups = () => {
+    if (!searchQuery.trim()) return filteredGroups;
+
+    return filteredGroups
+      .map((group) => ({
+        ...group,
+        items: group.items.filter(
+          (item) =>
+            item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.description?.toLowerCase().includes(searchQuery.toLowerCase()),
+        ),
+      }))
+      .filter((group) => group.items.length > 0);
+  };
+
+  // 切换收藏状态
+  const toggleFavorite = (itemPath: string) => {
+    setFavoriteItems((prev) => {
+      const newFavorites = prev.includes(itemPath)
+        ? prev.filter((path) => path !== itemPath)
+        : [...prev, itemPath];
+      localStorage.setItem(
+        "cyberguard_favorites",
+        JSON.stringify(newFavorites),
+      );
+      return newFavorites;
+    });
+  };
+
+  // 添加到最近访问
+  const addToRecent = (itemPath: string) => {
+    setRecentItems((prev) => {
+      const newRecent = [
+        itemPath,
+        ...prev.filter((path) => path !== itemPath),
+      ].slice(0, 5);
+      localStorage.setItem("cyberguard_recent", JSON.stringify(newRecent));
+      return newRecent;
+    });
   };
 
   const handleLogout = () => {

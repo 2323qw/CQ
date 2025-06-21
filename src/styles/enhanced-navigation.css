@@ -380,6 +380,40 @@
   scroll-behavior: smooth;
 }
 
+/* 导航组展开/收起动画 */
+.nav-group-content {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.nav-group-content.expanded {
+  max-height: 500px;
+  opacity: 1;
+}
+
+.nav-group-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
+/* 紧凑模式样式 */
+.nav-compact-mode {
+  width: 4rem;
+}
+
+.nav-compact-mode .nav-text {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+}
+
+.nav-compact-mode:hover .nav-text {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
 /* Responsive Enhancements */
 @media (max-width: 768px) {
   .enhanced-nav {
@@ -396,6 +430,17 @@
 
   .system-metric {
     padding: 0.5rem;
+  }
+
+  .nav-scroll-area {
+    height: calc(100vh - 200px);
+  }
+}
+
+/* 大屏幕优化 */
+@media (min-width: 1920px) {
+  .enhanced-nav {
+    width: 20rem; /* 320px */
   }
 }
 

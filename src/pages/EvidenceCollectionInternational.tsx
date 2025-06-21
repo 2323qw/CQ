@@ -226,7 +226,7 @@ const EvidenceCollectionInternational: React.FC = () => {
               <span>调查配置</span>
             </h3>
             <p className="text-muted-foreground mt-1">
-              输入IP地址开始综合威胁分析
+              输入IP地��开始综合威胁分析
             </p>
           </div>
           <form onSubmit={handleSearch} className="flex gap-4 items-end">
@@ -1786,56 +1786,105 @@ const EvidenceCollectionInternational: React.FC = () => {
 
                 <TabsContent value="analytics">
                   <div className="space-y-6">
-                    {/* Analytics Overview */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <div className="cyber-card p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/30">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-blue-300">
-                              数据点
-                            </p>
-                            <p className="text-xl font-bold text-white">
-                              1,247
-                            </p>
-                          </div>
-                          <Database className="w-6 h-6 text-blue-400" />
+                    {/* Enhanced Analytics Overview */}
+                    <div className="cyber-card p-6">
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
+                          <BarChart3 className="w-5 h-5 text-cyan-400" />
+                          <span>智能数据分析平台</span>
+                        </h3>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-cyan-400 hover:text-cyan-300"
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            导出分析报告
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-green-400 hover:text-green-300"
+                          >
+                            <Play className="w-4 h-4 mr-2" />
+                            运行预测模型
+                          </Button>
                         </div>
                       </div>
-                      <div className="cyber-card p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/30">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-green-300">
-                              分析完成
-                            </p>
-                            <p className="text-xl font-bold text-white">
-                              98.5%
-                            </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div className="cyber-card p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/30">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-blue-300">
+                                数据点
+                              </p>
+                              <p className="text-xl font-bold text-white">
+                                1,247
+                              </p>
+                              <p className="text-xs text-blue-400">采集完成</p>
+                            </div>
+                            <Database className="w-6 h-6 text-blue-400" />
                           </div>
-                          <CheckCircle className="w-6 h-6 text-green-400" />
                         </div>
-                      </div>
-                      <div className="cyber-card p-4 bg-gradient-to-br from-purple-500/10 to-violet-500/10 border-purple-500/30">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-purple-300">
-                              处理时间
-                            </p>
-                            <p className="text-xl font-bold text-white">2.3s</p>
+                        <div className="cyber-card p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/30">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-green-300">
+                                分析完成
+                              </p>
+                              <p className="text-xl font-bold text-white">
+                                98.5%
+                              </p>
+                              <p className="text-xs text-green-400">实时处理</p>
+                            </div>
+                            <CheckCircle className="w-6 h-6 text-green-400" />
                           </div>
-                          <Clock className="w-6 h-6 text-purple-400" />
                         </div>
-                      </div>
-                      <div className="cyber-card p-4 bg-gradient-to-br from-orange-500/10 to-red-500/10 border-orange-500/30">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-orange-300">
-                              置信度
-                            </p>
-                            <p className="text-xl font-bold text-white">
-                              94.2%
-                            </p>
+                        <div className="cyber-card p-4 bg-gradient-to-br from-purple-500/10 to-violet-500/10 border-purple-500/30">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-purple-300">
+                                处理时间
+                              </p>
+                              <p className="text-xl font-bold text-white">
+                                2.3s
+                              </p>
+                              <p className="text-xs text-purple-400">
+                                优化算法
+                              </p>
+                            </div>
+                            <Clock className="w-6 h-6 text-purple-400" />
                           </div>
-                          <TrendingUp className="w-6 h-6 text-orange-400" />
+                        </div>
+                        <div className="cyber-card p-4 bg-gradient-to-br from-orange-500/10 to-red-500/10 border-orange-500/30">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-orange-300">
+                                置信度
+                              </p>
+                              <p className="text-xl font-bold text-white">
+                                94.2%
+                              </p>
+                              <p className="text-xs text-orange-400">AI模型</p>
+                            </div>
+                            <TrendingUp className="w-6 h-6 text-orange-400" />
+                          </div>
+                        </div>
+                        <div className="cyber-card p-4 bg-gradient-to-br from-pink-500/10 to-rose-500/10 border-pink-500/30">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-pink-300">
+                                威胁预测
+                              </p>
+                              <p className="text-xl font-bold text-white">
+                                76%
+                              </p>
+                              <p className="text-xs text-pink-400">ML预测</p>
+                            </div>
+                            <Target className="w-6 h-6 text-pink-400" />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2456,7 +2505,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white">
-                        ���入目标IP
+                        输入目标IP
                       </p>
                       <p className="text-xs text-blue-300">
                         在搜索框中输入要调查的IP地址

@@ -30,6 +30,7 @@ import AuthDebug from "@/components/AuthDebug";
 // 受保护的布局组件
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCompactMode, setIsCompactMode] = useState(false);
 
   const handleMobileToggle = (isOpen: boolean) => {
     setIsMobileMenuOpen(isOpen);
@@ -39,6 +40,24 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
     setIsMobileMenuOpen(false);
   };
 
+  // 监听导航栏紧凑模式状态变化
+  React.useEffect(() => {
+    const handleCompactModeChange = (event: CustomEvent) => {
+      setIsCompactMode(event.detail.isCompact);
+    };
+
+    window.addEventListener(
+      "navigationCompactModeChange",
+      handleCompactModeChange as EventListener,
+    );
+    return () => {
+      window.removeEventListener(
+        "navigationCompactModeChange",
+        handleCompactModeChange as EventListener,
+      );
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-matrix-bg text-white font-mono">
       <EnhancedNavigation
@@ -46,8 +65,14 @@ function ProtectedLayout({ children }: { children: React.ReactNode }) {
         onMobileClose={handleMobileClose}
       />
       <MobileNavigationTrigger onToggle={handleMobileToggle} />
-      {/* 为导航栏预留空间：ml-72 = 288px，与导航栏宽度w-72匹配 */}
-      <div className="ml-0 md:ml-72 min-h-screen transition-all duration-300">
+      {/* 动态调整margin以适应导航栏宽度变化 */}
+      <div
+        className={cn(
+          "min-h-screen transition-all duration-300",
+          "ml-0", // 移动端无margin
+          isCompactMode ? "md:ml-16" : "md:ml-72", // 桌面端根据紧凑模式调整
+        )}
+      >
         {children}
       </div>
     </div>

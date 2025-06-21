@@ -795,7 +795,8 @@ export function EnhancedNavigation({
                       <div className="flex items-center gap-3">
                         <div
                           className={cn(
-                            "p-1.5 rounded-lg transition-all duration-300",
+                            "rounded-lg transition-all duration-300",
+                            isCompactMode ? "p-1" : "p-1.5",
                             hasActiveItem
                               ? "bg-current/20"
                               : "bg-matrix-surface/50",
@@ -803,7 +804,8 @@ export function EnhancedNavigation({
                         >
                           <GroupIcon
                             className={cn(
-                              "w-4 h-4 transition-colors",
+                              "transition-colors",
+                              isCompactMode ? "w-4 h-4" : "w-4 h-4",
                               hasActiveItem
                                 ? "text-current"
                                 : "text-muted-foreground",
@@ -811,7 +813,7 @@ export function EnhancedNavigation({
                           />
                         </div>
                         {!isCompactMode && (
-                          <div className="text-left">
+                          <div className="text-left flex-1">
                             <div className="font-semibold">{group.title}</div>
                             {group.description && (
                               <div className="text-xs text-muted-foreground/80 font-normal">

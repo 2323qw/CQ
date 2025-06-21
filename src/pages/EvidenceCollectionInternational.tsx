@@ -865,92 +865,142 @@ const EvidenceCollectionInternational: React.FC = () => {
 
               <TabsContent value="overview">
                 {investigationMode === "basic" ? (
-                  /* 基础模式 - 只显示关键信息 */
-                  <div className="cyber-card p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                      <Eye className="w-5 h-5 text-quantum-500" />
-                      <span>调查概览</span>
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <h4 className="font-medium text-white">基础信息</h4>
-                        <div className="space-y-3">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">
-                              IP地址:
-                            </span>
-                            <span className="text-white font-mono">
-                              {(investigation as any).ip || selectedIP}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">
-                              地理位置:
-                            </span>
-                            <span className="text-white">
-                              {(investigation as any).country || "未知"}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">
-                              风险等级:
-                            </span>
-                            <Badge
-                              className={cn(
-                                "px-2 py-1",
-                                metrics && metrics.riskScore >= 70
-                                  ? "bg-red-500/20 text-red-400 border-red-500/40"
+                  /* 基础模式 - 显示适量关键信息 */
+                  <div className="space-y-6">
+                    <div className="cyber-card p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                        <Eye className="w-5 h-5 text-quantum-500" />
+                        <span>调查概览</span>
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <h4 className="font-medium text-white">基础信息</h4>
+                          <div className="space-y-3">
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">
+                                IP地址:
+                              </span>
+                              <span className="text-white font-mono">
+                                {(investigation as any).ip || selectedIP}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">
+                                地理位置:
+                              </span>
+                              <span className="text-white">
+                                {(investigation as any).country || "未知"}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">
+                                ISP提供商:
+                              </span>
+                              <span className="text-white">
+                                {(investigation as any).isp || "China Telecom"}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">
+                                风险等级:
+                              </span>
+                              <Badge
+                                className={cn(
+                                  "px-2 py-1",
+                                  metrics && metrics.riskScore >= 70
+                                    ? "bg-red-500/20 text-red-400 border-red-500/40"
+                                    : metrics && metrics.riskScore >= 40
+                                      ? "bg-amber-500/20 text-amber-400 border-amber-500/40"
+                                      : "bg-green-500/20 text-green-400 border-green-500/40",
+                                )}
+                              >
+                                {metrics && metrics.riskScore >= 70
+                                  ? "高风险"
                                   : metrics && metrics.riskScore >= 40
-                                    ? "bg-amber-500/20 text-amber-400 border-amber-500/40"
-                                    : "bg-green-500/20 text-green-400 border-green-500/40",
-                              )}
-                            >
-                              {metrics && metrics.riskScore >= 70
-                                ? "高风险"
-                                : metrics && metrics.riskScore >= 40
-                                  ? "中风险"
-                                  : "低风险"}
-                            </Badge>
+                                    ? "中风险"
+                                    : "低风险"}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="space-y-4">
+                          <h4 className="font-medium text-white">威胁统计</h4>
+                          <div className="space-y-3">
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">
+                                攻击类型:
+                              </span>
+                              <span className="text-white">
+                                {
+                                  Object.keys(
+                                    (investigation as any).attackTypes || {},
+                                  ).length
+                                }{" "}
+                                种
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">
+                                总攻击数:
+                              </span>
+                              <span className="text-white">
+                                {(investigation as any).totalAttacks || 0}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">
+                                开放端口:
+                              </span>
+                              <span className="text-white">3��</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">
+                                最后活动:
+                              </span>
+                              <span className="text-white">
+                                {(investigation as any).lastActivity
+                                  ? new Date(
+                                      (investigation as any).lastActivity,
+                                    ).toLocaleDateString()
+                                  : "最近"}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div className="space-y-4">
-                        <h4 className="font-medium text-white">威胁统计</h4>
-                        <div className="space-y-3">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">
-                              攻击类型:
-                            </span>
-                            <span className="text-white">
-                              {
-                                Object.keys(
-                                  (investigation as any).attackTypes || {},
-                                ).length
-                              }{" "}
-                              种
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">
-                              总攻击数:
-                            </span>
-                            <span className="text-white">
-                              {(investigation as any).totalAttacks || 0}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">
-                              最后活动:
-                            </span>
-                            <span className="text-white">
-                              {(investigation as any).lastActivity
-                                ? new Date(
-                                    (investigation as any).lastActivity,
-                                  ).toLocaleDateString()
-                                : "最近"}
-                            </span>
-                          </div>
-                        </div>
+                    </div>
+
+                    {/* 基础模式增加简单的威胁活动展示 */}
+                    <div className="cyber-card p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                        <Activity className="w-5 h-5 text-green-400" />
+                        <span>安全事件</span>
+                      </h3>
+                      <div className="space-y-3">
+                        {Object.entries(
+                          (investigation as any).attackTypes || {
+                            port_scan: 5,
+                            brute_force: 2,
+                            web_attack: 1,
+                          },
+                        )
+                          .slice(0, 3)
+                          .map(([type, count], index) => (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between p-3 bg-matrix-surface/30 rounded-lg"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <div className="w-2 h-2 bg-orange-400 rounded-full" />
+                                <span className="text-sm font-medium text-white">
+                                  {type.replace(/_/g, " ").toUpperCase()}
+                                </span>
+                              </div>
+                              <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/40">
+                                {count as number} 次
+                              </Badge>
+                            </div>
+                          ))}
                       </div>
                     </div>
                   </div>
@@ -1942,7 +1992,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                   {[
                     {
                       name: "威胁情报引擎",
-                      status: "运行正常",
+                      status: "运行��常",
                       uptime: "99.9%",
                       color: "green",
                     },
@@ -2053,7 +2103,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                     准备开始调查
                   </h3>
                   <p className="text-muted-foreground max-w-md mx-auto">
-                    在上方输入IP地址开始全面的威胁分析和网络调查。我们的AI驱动分析引擎将为您提供详细的安全评估。
+                    在上��输入IP地址开始全面的威胁分析和网络调查。我们的AI驱动分析引擎将为您提供详细的安全评估。
                   </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">

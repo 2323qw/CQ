@@ -199,20 +199,20 @@ const EvidenceCollectionInternational: React.FC = () => {
   const metrics = getInvestigationMetrics();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-matrix-bg text-white">
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Header Section */}
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center space-x-3">
-            <div className="p-3 bg-blue-600 rounded-xl">
+            <div className="p-3 bg-gradient-to-br from-quantum-500 to-neural-500 rounded-xl shadow-lg">
               <FileSearch className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100">
-                Threat Intelligence Platform
+              <h1 className="text-4xl font-bold text-white neon-text">
+                威胁情报分析平台
               </h1>
-              <p className="text-lg text-slate-600 dark:text-slate-400">
-                Advanced IP Investigation & Network Analysis
+              <p className="text-lg text-muted-foreground">
+                高级IP调查与网络分析系统
               </p>
             </div>
           </div>

@@ -342,24 +342,42 @@
 
 .scrollbar-custom {
   scrollbar-width: thin;
-  scrollbar-color: rgba(51, 65, 85, 0.5) transparent;
+  scrollbar-color: rgba(56, 178, 172, 0.3) transparent;
 }
 
 .scrollbar-custom::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 
 .scrollbar-custom::-webkit-scrollbar-track {
   background: transparent;
+  border-radius: 2px;
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.5);
-  border-radius: 3px;
+  background: linear-gradient(
+    180deg,
+    rgba(56, 178, 172, 0.4),
+    rgba(56, 178, 172, 0.6)
+  );
+  border-radius: 2px;
+  transition: background 0.3s ease;
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb:hover {
-  background: rgba(51, 65, 85, 0.8);
+  background: linear-gradient(
+    180deg,
+    rgba(56, 178, 172, 0.6),
+    rgba(56, 178, 172, 0.8)
+  );
+}
+
+/* 滚动区域优化 */
+.nav-scroll-area {
+  height: calc(100vh - 280px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 /* Responsive Enhancements */

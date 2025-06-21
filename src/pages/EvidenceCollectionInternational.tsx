@@ -232,7 +232,7 @@ const EvidenceCollectionInternational: React.FC = () => {
           <form onSubmit={handleSearch} className="flex gap-4 items-end">
             <div className="flex-1 space-y-2">
               <label className="text-sm font-medium text-muted-foreground">
-                目标IP地址
+                目标IP地��
               </label>
               <Input
                 type="text"
@@ -1390,8 +1390,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                 </div>
               </TabsContent>
             </Tabs>
-          </div>
-        )}
+            )}
 
         {/* Empty State with Enhanced Information */}
         {!selectedIP && !loading && (
@@ -1509,7 +1508,7 @@ const EvidenceCollectionInternational: React.FC = () => {
             <div className="cyber-card p-6">
               <h3 className="text-xl font-semibold text-white mb-6 flex items-center space-x-2">
                 <Clock className="w-5 h-5 text-cyan-400" />
-                <span>近期活动</span>
+                <span>近期���动</span>
               </h3>
               <div className="space-y-4">
                 {[

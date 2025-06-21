@@ -611,8 +611,8 @@ export function EnhancedNavigation({
           isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
         )}
       >
-        {/* 顶部 Logo 和控制区域 */}
-        <div className="p-4 border-b border-matrix-border">
+        {/* 顶部 Logo 区域 */}
+        <div className="p-6 border-b border-matrix-border">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center glow-border">
@@ -621,37 +621,23 @@ export function EnhancedNavigation({
               {!isCompactMode && (
                 <div>
                   <h1 className="text-lg font-bold text-white neon-text">
-                    CyberGuard Pro
+                    CyberGuard
                   </h1>
                   <p className="text-xs text-muted-foreground">
-                    智能网络安全平台
+                    网络安全监控系统
                   </p>
                 </div>
               )}
             </div>
 
-            {!isCompactMode && (
-              <div className="flex items-center space-x-2">
-                {/* 紧凑模式切换 */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsCompactMode(!isCompactMode)}
-                  className="text-muted-foreground hover:text-white"
-                >
-                  <Layers className="w-4 h-4" />
-                </Button>
-
-                {/* 移动端关闭按钮 */}
-                <button
-                  onClick={onMobileClose}
-                  className="md:hidden p-2 text-muted-foreground hover:text-white transition-colors"
-                  aria-label="关闭导航菜单"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            )}
+            {/* 移动端关闭按钮 */}
+            <button
+              onClick={onMobileClose}
+              className="md:hidden p-2 text-muted-foreground hover:text-white transition-colors"
+              aria-label="关闭导航菜单"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
         </div>
 

@@ -294,7 +294,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                 </h3>
                 <p className="text-muted-foreground">
                   {investigationMode === "advanced"
-                    ? "正在执行深度威胁分析和网络映射..."
+                    ? "正在执行深度威胁分析和网��映射..."
                     : "正在收集基础威胁情报数据..."}
                 </p>
                 <div className="w-64 mx-auto">
@@ -562,7 +562,15 @@ const EvidenceCollectionInternational: React.FC = () => {
               }
               className="space-y-6"
             >
-              <TabsList className="grid w-full grid-cols-5 bg-matrix-surface border border-matrix-border">
+              <TabsList
+                className={cn(
+                  "bg-matrix-surface border border-matrix-border",
+                  investigationMode === "basic"
+                    ? "grid w-full grid-cols-2"
+                    : "grid w-full grid-cols-5",
+                )}
+              >
+                {/* 基础模式只���示总览和威胁情报 */}
                 <TabsTrigger
                   value="overview"
                   className="flex items-center space-x-2"
@@ -571,33 +579,39 @@ const EvidenceCollectionInternational: React.FC = () => {
                   <span>总览</span>
                 </TabsTrigger>
                 <TabsTrigger
-                  value="topology"
-                  className="flex items-center space-x-2"
-                >
-                  <Network className="w-4 h-4" />
-                  <span>网络拓扑</span>
-                </TabsTrigger>
-                <TabsTrigger
                   value="threats"
                   className="flex items-center space-x-2"
                 >
                   <Shield className="w-4 h-4" />
                   <span>威胁情报</span>
                 </TabsTrigger>
-                <TabsTrigger
-                  value="analytics"
-                  className="flex items-center space-x-2"
-                >
-                  <BarChart3 className="w-4 h-4" />
-                  <span>数据分析</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="forensics"
-                  className="flex items-center space-x-2"
-                >
-                  <Bug className="w-4 h-4" />
-                  <span>数字取证</span>
-                </TabsTrigger>
+
+                {/* 高级模式显示所有标签页 */}
+                {investigationMode === "advanced" && (
+                  <>
+                    <TabsTrigger
+                      value="topology"
+                      className="flex items-center space-x-2"
+                    >
+                      <Network className="w-4 h-4" />
+                      <span>网络拓扑</span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="analytics"
+                      className="flex items-center space-x-2"
+                    >
+                      <BarChart3 className="w-4 h-4" />
+                      <span>数据分析</span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="forensics"
+                      className="flex items-center space-x-2"
+                    >
+                      <Bug className="w-4 h-4" />
+                      <span>数字取证</span>
+                    </TabsTrigger>
+                  </>
+                )}
               </TabsList>
 
               <TabsContent value="overview">

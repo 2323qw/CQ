@@ -169,7 +169,7 @@ const menuGroups: {
         icon: AlertTriangle,
         badge: "3",
         badgeVariant: "destructive",
-        description: "实时威���预警",
+        description: "实时威胁预警",
         shortcut: "Ctrl+T",
       },
       {
@@ -299,7 +299,7 @@ const menuGroups: {
         description: "身份与访问控制",
       },
       {
-        name: "安全报告",
+        name: "安��报告",
         path: "/reports",
         icon: FileText,
         description: "定制化安全报表",
@@ -618,7 +618,7 @@ export function EnhancedNavigation({
               </div>
             </div>
 
-            {/* 移动端关闭按钮 */}
+            {/* 移动���关闭按钮 */}
             <button
               onClick={onMobileClose}
               className="md:hidden p-2 text-muted-foreground hover:text-white transition-colors"
@@ -973,66 +973,100 @@ export function EnhancedNavigation({
           </nav>
         </div>
 
-        {/* 底部用户信息 */}
-        <div className="p-4 border-t border-matrix-border">
-          <div className="space-y-3">
-            {/* 用户信息 */}
-            <div
-              className={cn(
-                "flex items-center p-3 bg-matrix-accent/30 rounded-lg",
-                isCompactMode ? "justify-center" : "space-x-3",
-              )}
-            >
-              <div className="flex-shrink-0">
+        {/* 底部用户信息和控制区域 */}
+        <div className="p-4 border-t border-matrix-border space-y-4">
+          {/* 用户信息卡片 */}
+          <div
+            className={cn(
+              "user-profile rounded-xl p-4 transition-all duration-300",
+              isCompactMode ? "flex justify-center" : "space-y-3",
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <div className="user-avatar w-10 h-10 flex-shrink-0">
                 {(() => {
                   const RoleIcon = getRoleIcon(userRole);
-                  return (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center">
-                      <RoleIcon className="w-4 h-4 text-white" />
-                    </div>
-                  );
+                  return <RoleIcon className="w-5 h-5 text-white" />;
                 })()}
               </div>
               {!isCompactMode && (
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">
-                    {user?.username || "访客用户"}
-                  </p>
-                  <p className={cn("text-xs truncate", userColor)}>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold text-white truncate">
+                      {user?.username || "访客用户"}
+                    </p>
+                    {isOnline && (
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                    )}
+                  </div>
+                  <p className={cn("text-xs truncate font-medium", userColor)}>
                     {userRole}
+                  </p>
+                  <p className="text-xs text-muted-foreground/70">
+                    上次活跃:{" "}
+                    {Math.floor(
+                      (Date.now() - lastActiveTime.getTime()) / 60000,
+                    )}
+                    分钟前
                   </p>
                 </div>
               )}
             </div>
+          </div>
 
-            {/* 简化状态 */}
-            {!isCompactMode && (
-              <div className="system-stats-grid text-xs">
-                <div className="system-stat-item rounded p-2 text-center">
-                  <div className="text-green-400 font-mono">99.9%</div>
+          {/* 系统状态网格 */}
+          {!isCompactMode && (
+            <div className="grid grid-cols-3 gap-2 text-xs">
+              <div className="system-metric">
+                <div className="flex flex-col items-center">
+                  <div className="metric-value normal">99.9%</div>
                   <div className="text-muted-foreground">正常运行</div>
                 </div>
-                <div className="system-stat-item rounded p-2 text-center">
-                  <div className="text-neon-blue font-mono">
-                    {Math.floor((Date.now() - lastActiveTime.getTime()) / 1000)}
-                    s
+              </div>
+              <div className="system-metric">
+                <div className="flex flex-col items-center">
+                  <div className="metric-value normal">{systemStatus.cpu}%</div>
+                  <div className="text-muted-foreground">CPU</div>
+                </div>
+              </div>
+              <div className="system-metric">
+                <div className="flex flex-col items-center">
+                  <div className="metric-value warning">
+                    {systemStatus.threats}
                   </div>
-                  <div className="text-muted-foreground">活跃时间</div>
+                  <div className="text-muted-foreground">威胁</div>
                 </div>
-                <div className="system-stat-item rounded p-2 text-center">
-                  <div className="text-amber-400 font-mono nav-badge">3</div>
-                  <div className="text-muted-foreground">待处理</div>
-                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 控制按钮组 */}
+          <div className="space-y-2">
+            {/* 紧凑模式切换 */}
+            {!isCompactMode && (
+              <div className="flex items-center justify-between p-2 bg-matrix-surface/30 rounded-lg">
+                <span className="text-xs text-muted-foreground">紧凑模式</span>
+                <Switch
+                  checked={isCompactMode}
+                  onCheckedChange={setIsCompactMode}
+                  className="scale-75"
+                />
               </div>
             )}
 
             {/* 登出按钮 */}
             <Button
               onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/30 transition-all duration-200 neon-button"
+              className={cn(
+                "w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl",
+                "bg-gradient-to-r from-red-500/20 to-red-600/20 text-red-400",
+                "border border-red-500/30 hover:border-red-400/50",
+                "hover:bg-gradient-to-r hover:from-red-500/30 hover:to-red-600/30",
+                "transition-all duration-300 neon-button hover:shadow-lg hover:shadow-red-500/20",
+              )}
             >
               <LogOut className="w-4 h-4" />
-              {!isCompactMode && <span>安全退出</span>}
+              {!isCompactMode && <span className="font-medium">安全退出</span>}
             </Button>
           </div>
         </div>

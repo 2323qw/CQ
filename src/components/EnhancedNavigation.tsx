@@ -437,7 +437,7 @@ export function EnhancedNavigation({
 
   useEffect(() => {
     // 获取用户角色和颜色信息
-    const role = localStorage.getItem("cyberguard_user_role") || "用户";
+    const role = localStorage.getItem("cyberguard_user_role") || "用���";
     const color =
       localStorage.getItem("cyberguard_user_color") || "text-neon-blue";
     setUserRole(role);
@@ -506,7 +506,7 @@ export function EnhancedNavigation({
     );
   };
 
-  // ��录最近访问
+  // 记录最近访问
   const recordRecentAccess = (path: string) => {
     setRecentItems((prev) => {
       const filtered = prev.filter((p) => p !== path);
@@ -662,62 +662,6 @@ export function EnhancedNavigation({
             </div>
           </div>
         </div>
-
-        {/* 快速操作区 */}
-        {!isCompactMode && (
-          <div className="p-4 border-b border-matrix-border/50">
-            <h4 className="text-xs font-medium text-muted-foreground mb-3">
-              快速操作
-            </h4>
-            <div className="grid grid-cols-2 gap-2">
-              {quickActions.map((action) => (
-                <Button
-                  key={action.name}
-                  variant="ghost"
-                  size="sm"
-                  onClick={action.onClick}
-                  className={cn(
-                    "flex flex-col items-center gap-1 p-3 h-auto border border-matrix-border/30 hover:border-matrix-border transition-colors",
-                    action.color,
-                  )}
-                  title={action.shortcut}
-                >
-                  <action.icon className="w-4 h-4" />
-                  <span className="text-xs">{action.name}</span>
-                </Button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* 收藏和最近访问 */}
-        {!isCompactMode && favoriteItems.length > 0 && (
-          <div className="p-4 border-b border-matrix-border/50">
-            <h4 className="text-xs font-medium text-muted-foreground mb-3">
-              收藏
-            </h4>
-            <div className="space-y-1">
-              {favoriteItems.slice(0, 3).map((path) => {
-                const item = menuGroups
-                  .flatMap((g) => g.items)
-                  .find((i) => i.path === path);
-                if (!item) return null;
-                const ItemIcon = item.icon;
-                return (
-                  <Link
-                    key={path}
-                    to={path}
-                    onClick={handleMobileNavClick}
-                    className="flex items-center gap-2 px-2 py-1 rounded text-sm text-muted-foreground hover:text-white hover:bg-matrix-accent/50 transition-colors"
-                  >
-                    <ItemIcon className="w-4 h-4" />
-                    <span className="truncate">{item.name}</span>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        )}
 
         {/* 主导航菜单 */}
         <div className="flex-1 overflow-y-auto">

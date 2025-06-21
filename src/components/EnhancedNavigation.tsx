@@ -519,117 +519,49 @@ export function EnhancedNavigation({
                         {group.items.map((item) => {
                           const ItemIcon = item.icon;
                           const isActive = item.path && isActivePath(item.path);
-                          const isFavorite =
-                            item.path && favoriteItems.includes(item.path);
 
                           return (
-                            <div key={item.name} className="relative group">
-                              <Link
-                                to={item.path || "#"}
-                                onClick={() => {
-                                  handleMobileNavClick();
-                                  if (item.path) recordRecentAccess(item.path);
-                                }}
-                                className={cn(
-                                  "flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all duration-200 nav-item",
-                                  isActive
-                                    ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30 neon-text nav-item-active"
-                                    : "text-muted-foreground hover:text-white hover:bg-matrix-accent/50",
-                                  isCompactMode && "justify-center",
-                                )}
-                                title={
-                                  isCompactMode
-                                    ? `${item.name} - ${item.description}`
-                                    : undefined
-                                }
-                              >
-                                <div className="flex items-center gap-3">
-                                  <ItemIcon
-                                    className={cn(
-                                      "w-4 h-4 transition-colors",
-                                      isActive
-                                        ? "text-neon-blue"
-                                        : "group-hover:text-neon-blue",
-                                    )}
-                                  />
-                                  {!isCompactMode && (
-                                    <div className="flex-1">
-                                      <div className="flex items-center gap-2">
-                                        <span>{item.name}</span>
-                                        {item.isNew && (
-                                          <Badge className="bg-green-500/20 text-green-400 border-green-500/40 text-xs">
-                                            NEW
-                                          </Badge>
-                                        )}
-                                        {item.isPro && (
-                                          <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/40 text-xs">
-                                            PRO
-                                          </Badge>
-                                        )}
-                                        {item.isBeta && (
-                                          <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/40 text-xs">
-                                            BETA
-                                          </Badge>
-                                        )}
-                                      </div>
-                                      {item.description && (
-                                        <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                                          {item.description}
-                                        </p>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-
-                                {!isCompactMode && (
-                                  <div className="flex items-center gap-2">
-                                    {item.badge && (
-                                      <Badge
-                                        className={cn(
-                                          "text-xs",
-                                          item.badgeVariant === "destructive"
-                                            ? "bg-red-500/20 text-red-400 border-red-500/40"
-                                            : item.badgeVariant === "warning"
-                                              ? "bg-orange-500/20 text-orange-400 border-orange-500/40"
-                                              : item.badgeVariant === "success"
-                                                ? "bg-green-500/20 text-green-400 border-green-500/40"
-                                                : "bg-blue-500/20 text-blue-400 border-blue-500/40",
-                                        )}
-                                      >
-                                        {item.badge}
-                                      </Badge>
-                                    )}
-                                    {item.shortcut && (
-                                      <span className="text-xs text-muted-foreground">
-                                        {item.shortcut}
-                                      </span>
-                                    )}
-                                  </div>
-                                )}
-                              </Link>
-
-                              {/* 收藏按钮 */}
-                              {!isCompactMode && item.path && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    toggleFavorite(item.path!);
-                                  }}
-                                  className="absolute right-1 top-1 opacity-0 group-hover:opacity-100 transition-opacity p-1 h-6 w-6"
-                                >
-                                  <Star
-                                    className={cn(
-                                      "w-3 h-3",
-                                      isFavorite
-                                        ? "text-yellow-400 fill-current"
-                                        : "text-muted-foreground",
-                                    )}
-                                  />
-                                </Button>
+                            <Link
+                              key={item.name}
+                              to={item.path || "#"}
+                              onClick={handleMobileNavClick}
+                              className={cn(
+                                "flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all duration-200 group nav-item",
+                                isActive
+                                  ? "bg-neon-blue/20 text-neon-blue border border-neon-blue/30 neon-text nav-item-active"
+                                  : "text-muted-foreground hover:text-white hover:bg-matrix-accent/50",
+                                isCompactMode && "justify-center",
                               )}
-                            </div>
+                              title={isCompactMode ? item.name : undefined}
+                            >
+                              <div className="flex items-center gap-3">
+                                <ItemIcon
+                                  className={cn(
+                                    "w-4 h-4 transition-colors",
+                                    isActive
+                                      ? "text-neon-blue"
+                                      : "group-hover:text-neon-blue",
+                                  )}
+                                />
+                                {!isCompactMode && <span>{item.name}</span>}
+                              </div>
+                              {!isCompactMode && item.badge && (
+                                <Badge
+                                  className={cn(
+                                    "text-xs",
+                                    item.badgeVariant === "destructive"
+                                      ? "bg-red-500/20 text-red-400 border-red-500/40"
+                                      : item.badgeVariant === "warning"
+                                        ? "bg-orange-500/20 text-orange-400 border-orange-500/40"
+                                        : item.badgeVariant === "success"
+                                          ? "bg-green-500/20 text-green-400 border-green-500/40"
+                                          : "bg-blue-500/20 text-blue-400 border-blue-500/40",
+                                  )}
+                                >
+                                  {item.badge}
+                                </Badge>
+                              )}
+                            </Link>
                           );
                         })}
                       </div>

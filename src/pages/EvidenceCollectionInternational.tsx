@@ -218,64 +218,245 @@ const EvidenceCollectionInternational: React.FC = () => {
           </div>
         </div>
 
-        {/* Search Section */}
+        {/* Enhanced Search Section */}
         <div className="cyber-card p-6">
-          <div className="mb-4">
-            <h3 className="text-xl font-semibold text-white flex items-center space-x-2">
-              <Search className="w-5 h-5 text-quantum-500" />
-              <span>调查配置</span>
-            </h3>
-            <p className="text-muted-foreground mt-1">
-              输入IP地址开始综合威胁分析
-            </p>
+          <div className="mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-semibold text-white flex items-center space-x-2">
+                  <Search className="w-5 h-5 text-quantum-500" />
+                  <span>智能调查配置</span>
+                </h3>
+                <p className="text-muted-foreground mt-1">
+                  支持IP地址、域名、哈希值等多种输入类型的综合威胁分析
+                </p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Badge className="bg-green-500/20 text-green-400 border-green-500/40">
+                  <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse" />
+                  系统在线
+                </Badge>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-cyan-400 hover:text-cyan-300"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  高级设置
+                </Button>
+              </div>
+            </div>
           </div>
-          <form onSubmit={handleSearch} className="flex gap-4 items-end">
-            <div className="flex-1 space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                目标IP地址
-              </label>
-              <Input
-                type="text"
-                placeholder="192.168.1.100"
-                value={searchIP}
-                onChange={(e) => setSearchIP(e.target.value)}
-                className="h-12 text-lg font-mono bg-matrix-surface border-matrix-border text-white"
-              />
+
+          <form onSubmit={handleSearch} className="space-y-6">
+            {/* Main Search Input */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="lg:col-span-2 space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">
+                  调查目标 (支持IP、域名、哈希值)
+                </label>
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="192.168.1.100 或 example.com 或 a1b2c3d4e5f6..."
+                    value={searchIP}
+                    onChange={(e) => setSearchIP(e.target.value)}
+                    className="h-12 text-lg font-mono bg-matrix-surface border-matrix-border text-white pl-12"
+                  />
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                </div>
+                <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                  <span className="flex items-center space-x-1">
+                    <CheckCircle className="w-3 h-3 text-green-400" />
+                    <span>IPv4/IPv6</span>
+                  </span>
+                  <span className="flex items-center space-x-1">
+                    <CheckCircle className="w-3 h-3 text-green-400" />
+                    <span>域名/URL</span>
+                  </span>
+                  <span className="flex items-center space-x-1">
+                    <CheckCircle className="w-3 h-3 text-green-400" />
+                    <span>文件哈希</span>
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">
+                  分析深度
+                </label>
+                <select
+                  value={investigationMode}
+                  onChange={(e) =>
+                    setInvestigationMode(e.target.value as "basic" | "advanced")
+                  }
+                  className="w-full h-12 px-4 bg-matrix-surface border border-matrix-border rounded-md text-white"
+                >
+                  <option value="basic">🔍 基础分析 - 快速概览</option>
+                  <option value="advanced">🔬 高级调查 - 深度分析</option>
+                </select>
+                <p className="text-xs text-muted-foreground">
+                  {investigationMode === "basic"
+                    ? "快速获取核心威胁信息，适合日常监控"
+                    : "全面深度分析，���含ML预测和取证分析"}
+                </p>
+              </div>
             </div>
-            <div className="w-48 space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                分析模式
-              </label>
-              <select
-                value={investigationMode}
-                onChange={(e) =>
-                  setInvestigationMode(e.target.value as "basic" | "advanced")
-                }
-                className="w-full h-12 px-3 bg-matrix-surface border border-matrix-border rounded-md text-white"
-              >
-                <option value="basic">基础分析</option>
-                <option value="advanced">高级调查</option>
-              </select>
+
+            {/* Advanced Options for Advanced Mode */}
+            {investigationMode === "advanced" && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-matrix-surface/30 rounded-lg border border-matrix-border">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground">
+                    威胁情报源
+                  </label>
+                  <div className="space-y-1">
+                    {["VirusTotal", "AbuseIPDB", "Shodan", "AlienVault"].map(
+                      (source) => (
+                        <label
+                          key={source}
+                          className="flex items-center space-x-2 text-sm"
+                        >
+                          <input
+                            type="checkbox"
+                            defaultChecked
+                            className="rounded"
+                          />
+                          <span className="text-white">{source}</span>
+                        </label>
+                      ),
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground">
+                    分析范围
+                  </label>
+                  <div className="space-y-1">
+                    {[
+                      { label: "网络拓扑映射", key: "topology" },
+                      { label: "恶意软件分析", key: "malware" },
+                      { label: "数字取证", key: "forensics" },
+                      { label: "行为分析", key: "behavior" },
+                    ].map((option) => (
+                      <label
+                        key={option.key}
+                        className="flex items-center space-x-2 text-sm"
+                      >
+                        <input
+                          type="checkbox"
+                          defaultChecked
+                          className="rounded"
+                        />
+                        <span className="text-white">{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground">
+                    实时监控
+                  </label>
+                  <div className="space-y-1">
+                    <label className="flex items-center space-x-2 text-sm">
+                      <input
+                        type="checkbox"
+                        defaultChecked
+                        className="rounded"
+                      />
+                      <span className="text-white">持续监控目标</span>
+                    </label>
+                    <label className="flex items-center space-x-2 text-sm">
+                      <input type="checkbox" className="rounded" />
+                      <span className="text-white">自动威胁追踪</span>
+                    </label>
+                    <label className="flex items-center space-x-2 text-sm">
+                      <input type="checkbox" className="rounded" />
+                      <span className="text-white">异常行为告警</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="h-12 px-8 neon-button"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                      分析中...
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-5 h-5 mr-2" />
+                      开始{investigationMode === "advanced" ? "深度" : ""}调查
+                    </>
+                  )}
+                </Button>
+
+                {selectedIP && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="lg"
+                    className="h-12 px-6 text-orange-400 hover:text-orange-300"
+                    onClick={() => {
+                      setSelectedIP("");
+                      setSearchIP("");
+                      setSearchParams({});
+                    }}
+                  >
+                    <RefreshCw className="w-5 h-5 mr-2" />
+                    重新开始
+                  </Button>
+                )}
+              </div>
+
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <Clock className="w-4 h-4" />
+                <span>
+                  预计用时:{" "}
+                  {investigationMode === "advanced" ? "30-60秒" : "5-15秒"}
+                </span>
+              </div>
             </div>
-            <Button
-              type="submit"
-              size="lg"
-              className="h-12 px-8 neon-button"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                  分析中...
-                </>
-              ) : (
-                <>
-                  <Play className="w-5 h-5 mr-2" />
-                  开始调查
-                </>
-              )}
-            </Button>
           </form>
+
+          {/* Quick Analysis Suggestions */}
+          {!selectedIP && (
+            <div className="mt-6 pt-6 border-t border-matrix-border">
+              <h4 className="text-sm font-medium text-white mb-3">
+                快速分析建议
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  "192.168.1.100",
+                  "10.0.0.15",
+                  "malware-c2.com",
+                  "185.234.72.45",
+                ].map((suggestion) => (
+                  <Button
+                    key={suggestion}
+                    variant="ghost"
+                    size="sm"
+                    className="text-cyan-400 hover:text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/10"
+                    onClick={() => setSearchIP(suggestion)}
+                  >
+                    {suggestion}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Loading State */}
@@ -404,7 +585,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                   </div>
                 )}
 
-                {/* 高级模式显示额外的��标 */}
+                {/* 高级模式显示额外的指标 */}
                 {investigationMode === "advanced" && (
                   <>
                     <div className="cyber-card p-6">
@@ -2005,7 +2186,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                             {
                               type: "端口特征",
                               value: "22,80,443,8080",
-                              status: "已���测",
+                              status: "已检测",
                               risk: "low",
                             },
                             {
@@ -2075,7 +2256,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                                 可能的威胁组织
                               </span>
                               <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/40">
-                                中等可��度
+                                中等可信度
                               </Badge>
                             </div>
                             <p className="text-sm text-muted-foreground mb-2">
@@ -2221,7 +2402,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                       <div className="cyber-card p-6">
                         <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
                           <Target className="w-5 h-5 text-red-400" />
-                          <span>攻击类型分��</span>
+                          <span>攻击类型分析</span>
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {Object.entries(
@@ -2783,7 +2964,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                           <div className="space-y-2">
                             <div className="flex justify-between text-sm">
                               <span className="text-muted-foreground">
-                                内存使用率
+                                内��使用率
                               </span>
                               <span className="text-white">67%</span>
                             </div>
@@ -3100,7 +3281,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                                 </p>
                                 <div className="flex items-center space-x-4 text-xs text-muted-foreground">
                                   <span>哈希: {artifact.hash}</span>
-                                  <span>大小: {artifact.size}</span>
+                                  <span>大���: {artifact.size}</span>
                                 </div>
                               </div>
                               <div className="text-right">
@@ -3607,7 +3788,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                     },
                     {
                       name: "数据库连接",
-                      status: "运行正常",
+                      status: "运行���常",
                       uptime: "100%",
                       color: "green",
                     },

@@ -615,7 +615,7 @@ export function EnhancedNavigation({
                   CyberGuard
                 </h1>
                 <p className="text-xs text-muted-foreground">
-                  智���网络安全平台
+                  智能网络安全平台
                 </p>
               </div>
             </div>
@@ -782,11 +782,13 @@ export function EnhancedNavigation({
                     <button
                       onClick={() => toggleGroup(group.title)}
                       className={cn(
-                        "w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 nav-group-header",
+                        "w-full flex items-center rounded-xl text-sm font-semibold transition-all duration-300 nav-group-header",
                         hasActiveItem
                           ? `bg-gradient-to-r from-matrix-surface/80 to-matrix-accent/60 ${group.color} border border-current/20 shadow-lg nav-group-active`
                           : "text-muted-foreground hover:text-white hover:bg-matrix-accent/60 hover:shadow-md",
-                        isCompactMode && "justify-center",
+                        isCompactMode
+                          ? "justify-center p-2"
+                          : "justify-between px-4 py-3",
                       )}
                       title={isCompactMode ? group.title : group.description}
                     >

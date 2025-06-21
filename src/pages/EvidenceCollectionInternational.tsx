@@ -336,7 +336,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                     : "grid-cols-1 md:grid-cols-4",
                 )}
               >
-                {/* 基础模式���显示风险评分和威胁检测 */}
+                {/* 基础模式只显示风险评分和威胁检测 */}
                 <div className="cyber-card p-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -556,12 +556,7 @@ const EvidenceCollectionInternational: React.FC = () => {
             </div>
 
             {/* Detailed Analysis */}
-            <Tabs
-              defaultValue={
-                investigationMode === "advanced" ? "topology" : "overview"
-              }
-              className="space-y-6"
-            >
+            <Tabs defaultValue="overview" className="space-y-6">
               <TabsList
                 className={cn(
                   "bg-matrix-surface border border-matrix-border",
@@ -683,7 +678,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">
-                              总攻击数:
+                              ��攻击数:
                             </span>
                             <span className="text-white">
                               {(investigation as any).totalAttacks || 0}

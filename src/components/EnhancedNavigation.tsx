@@ -161,7 +161,7 @@ const menuGroups: {
     icon: Shield,
     priority: 2,
     color: "text-red-400",
-    description: "威胁发现与响���",
+    description: "威胁发现与响应",
     items: [
       {
         name: "威胁告警",
@@ -296,7 +296,7 @@ const menuGroups: {
         path: "/users",
         icon: Users,
         roles: ["超级管理员", "安全管理员"],
-        description: "身份与访���控制",
+        description: "身份与访问控制",
       },
       {
         name: "安全报告",
@@ -440,6 +440,16 @@ export function EnhancedNavigation({
       localStorage.getItem("cyberguard_user_color") || "text-neon-blue";
     setUserRole(role);
     setUserColor(color);
+
+    // 加载收藏和最近访问
+    const savedFavorites = localStorage.getItem("cyberguard_favorites");
+    const savedRecent = localStorage.getItem("cyberguard_recent");
+    if (savedFavorites) {
+      setFavoriteItems(JSON.parse(savedFavorites));
+    }
+    if (savedRecent) {
+      setRecentItems(JSON.parse(savedRecent));
+    }
 
     // 监听网络状态
     const handleOnline = () => setIsOnline(true);

@@ -294,7 +294,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                 </h3>
                 <p className="text-muted-foreground">
                   {investigationMode === "advanced"
-                    ? "正在执行深度威胁分析和网络映射..."
+                    ? "正在执行深度威胁分析��网络映射..."
                     : "正在收集基础威胁情报数据..."}
                 </p>
                 <div className="w-64 mx-auto">
@@ -684,55 +684,50 @@ const EvidenceCollectionInternational: React.FC = () => {
               </TabsContent>
 
               <TabsContent value="threats">
-                <Card className="border-0 shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <Shield className="w-5 h-5 text-red-600" />
-                      <span>Threat Intelligence</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {investigationMode === "advanced" &&
-                    (investigation as any).threatIntelligence?.blacklists ? (
-                      <div className="space-y-4">
-                        {(
-                          investigation as any
-                        ).threatIntelligence.blacklists.map(
-                          (blacklist: string, index: number) => (
-                            <div
-                              key={index}
-                              className="flex items-center justify-between p-4 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg"
-                            >
-                              <div className="flex items-center space-x-3">
-                                <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
-                                <div>
-                                  <p className="font-medium text-red-900 dark:text-red-100">
-                                    {blacklist}
-                                  </p>
-                                  <p className="text-sm text-red-700 dark:text-red-300">
-                                    Threat database match
-                                  </p>
-                                </div>
+                <div className="cyber-card p-6">
+                  <h3 className="text-lg font-semibold text-white mb-6 flex items-center space-x-2">
+                    <Shield className="w-5 h-5 text-red-400" />
+                    <span>威胁情报分析</span>
+                  </h3>
+                  {investigationMode === "advanced" &&
+                  (investigation as any).threatIntelligence?.blacklists ? (
+                    <div className="space-y-4">
+                      {(investigation as any).threatIntelligence.blacklists.map(
+                        (blacklist: string, index: number) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between p-4 bg-red-500/10 border border-red-500/30 rounded-lg"
+                          >
+                            <div className="flex items-center space-x-3">
+                              <AlertTriangle className="w-5 h-5 text-red-400" />
+                              <div>
+                                <p className="font-medium text-red-400">
+                                  {blacklist}
+                                </p>
+                                <p className="text-sm text-red-300">
+                                  威胁数据库匹配
+                                </p>
                               </div>
-                              <Badge variant="destructive">Blacklisted</Badge>
                             </div>
-                          ),
-                        )}
-                      </div>
-                    ) : (
-                      <div className="text-center py-12">
-                        <Shield className="w-12 h-12 mx-auto mb-4 text-green-600" />
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
-                          No Active Threats Detected
-                        </h3>
-                        <p className="text-slate-600 dark:text-slate-400">
-                          This IP address is not currently listed in known
-                          threat databases
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                            <Badge className="bg-red-500/20 text-red-400 border-red-500/40">
+                              已列入黑名单
+                            </Badge>
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <Shield className="w-12 h-12 mx-auto mb-4 text-green-400" />
+                      <h3 className="text-lg font-semibold text-white mb-2">
+                        未检测到活跃威胁
+                      </h3>
+                      <p className="text-muted-foreground">
+                        该IP地址当前未被列入已知威胁数据库
+                      </p>
+                    </div>
+                  )}
+                </div>
               </TabsContent>
 
               <TabsContent value="analytics">

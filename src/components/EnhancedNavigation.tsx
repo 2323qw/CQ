@@ -259,7 +259,7 @@ export function EnhancedNavigation({
         return Shield;
       case "数据分析师":
         return BarChart3;
-      case "��统操作员":
+      case "系统操作员":
         return Settings;
       default:
         return User;
@@ -292,21 +292,6 @@ export function EnhancedNavigation({
   // 检查分组是否包含当前活跃路径
   const isGroupActive = (items: MenuItem[]) => {
     return items.some((item) => item.path && isActivePath(item.path));
-  };
-
-  // 切换收藏
-  const toggleFavorite = (path: string) => {
-    setFavoriteItems((prev) =>
-      prev.includes(path) ? prev.filter((p) => p !== path) : [...prev, path],
-    );
-  };
-
-  // 记录最近访问
-  const recordRecentAccess = (path: string) => {
-    setRecentItems((prev) => {
-      const filtered = prev.filter((p) => p !== path);
-      return [path, ...filtered].slice(0, 5);
-    });
   };
 
   const handleLogout = () => {

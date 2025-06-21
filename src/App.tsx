@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { DataSourceProvider } from "@/contexts/DataSourceContext";
 import { NavigationProvider } from "@/contexts/NavigationContext";

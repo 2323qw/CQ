@@ -219,66 +219,64 @@ const EvidenceCollectionInternational: React.FC = () => {
         </div>
 
         {/* Search Section */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center space-x-2">
-              <Search className="w-5 h-5 text-blue-600" />
-              <span>Investigation Setup</span>
-            </CardTitle>
-            <CardDescription>
-              Enter an IP address to begin comprehensive threat analysis
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSearch} className="flex gap-4 items-end">
-              <div className="flex-1 space-y-2">
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  Target IP Address
-                </label>
-                <Input
-                  type="text"
-                  placeholder="192.168.1.100"
-                  value={searchIP}
-                  onChange={(e) => setSearchIP(e.target.value)}
-                  className="h-12 text-lg font-mono"
-                />
-              </div>
-              <div className="w-48 space-y-2">
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  Analysis Mode
-                </label>
-                <select
-                  value={investigationMode}
-                  onChange={(e) =>
-                    setInvestigationMode(e.target.value as "basic" | "advanced")
-                  }
-                  className="w-full h-12 px-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md text-slate-900 dark:text-slate-100"
-                >
-                  <option value="basic">Basic Analysis</option>
-                  <option value="advanced">Advanced Investigation</option>
-                </select>
-              </div>
-              <Button
-                type="submit"
-                size="lg"
-                className="h-12 px-8 bg-blue-600 hover:bg-blue-700"
-                disabled={loading}
+        <div className="cyber-card p-6">
+          <div className="mb-4">
+            <h3 className="text-xl font-semibold text-white flex items-center space-x-2">
+              <Search className="w-5 h-5 text-quantum-500" />
+              <span>调查配置</span>
+            </h3>
+            <p className="text-muted-foreground mt-1">
+              输入IP地址开始综合威胁分析
+            </p>
+          </div>
+          <form onSubmit={handleSearch} className="flex gap-4 items-end">
+            <div className="flex-1 space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                目标IP地址
+              </label>
+              <Input
+                type="text"
+                placeholder="192.168.1.100"
+                value={searchIP}
+                onChange={(e) => setSearchIP(e.target.value)}
+                className="h-12 text-lg font-mono bg-matrix-surface border-matrix-border text-white"
+              />
+            </div>
+            <div className="w-48 space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                分析模式
+              </label>
+              <select
+                value={investigationMode}
+                onChange={(e) =>
+                  setInvestigationMode(e.target.value as "basic" | "advanced")
+                }
+                className="w-full h-12 px-3 bg-matrix-surface border border-matrix-border rounded-md text-white"
               >
-                {loading ? (
-                  <>
-                    <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                    Analyzing...
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-5 h-5 mr-2" />
-                    Start Investigation
-                  </>
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                <option value="basic">基础分析</option>
+                <option value="advanced">高级调查</option>
+              </select>
+            </div>
+            <Button
+              type="submit"
+              size="lg"
+              className="h-12 px-8 neon-button"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                  分析中...
+                </>
+              ) : (
+                <>
+                  <Play className="w-5 h-5 mr-2" />
+                  开始调查
+                </>
+              )}
+            </Button>
+          </form>
+        </div>
 
         {/* Loading State */}
         {loading && (

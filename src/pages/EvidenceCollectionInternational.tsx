@@ -533,7 +533,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                 className={cn(
                   "grid gap-6",
                   investigationMode === "basic"
-                    ? "grid-cols-1 md:grid-cols-2"
+                    ? "grid-cols-1 md:grid-cols-3"
                     : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
                 )}
               >
@@ -554,6 +554,18 @@ const EvidenceCollectionInternational: React.FC = () => {
                     {(investigation as any).country || "未知"}
                   </p>
                 </div>
+
+                {/* 基础模式增加ISP信息 */}
+                {investigationMode === "basic" && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground">
+                      ISP提供商
+                    </label>
+                    <p className="text-white">
+                      {(investigation as any).isp || "China Telecom"}
+                    </p>
+                  </div>
+                )}
 
                 {/* 高级模式显示详细信息 */}
                 {investigationMode === "advanced" && (
@@ -908,7 +920,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                     <div className="cyber-card p-6">
                       <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
                         <Activity className="w-5 h-5 text-green-400" />
-                        <span>安全时��线</span>
+                        <span>安全时间线</span>
                       </h3>
                       <div className="space-y-4">
                         {(investigation as any).timeline

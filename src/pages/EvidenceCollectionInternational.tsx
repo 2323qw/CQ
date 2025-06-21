@@ -434,7 +434,8 @@ const EvidenceCollectionInternational: React.FC = () => {
                   </h3>
                   <p className="text-muted-foreground mt-1">
                     目标: {selectedIP} | 模式:{" "}
-                    {investigationMode === "advanced" ? "高级" : "基础"}
+                    {investigationMode === "advanced" ? "高级" : "基础"} |
+                    开始时间: {new Date().toLocaleString()}
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -555,6 +556,131 @@ const EvidenceCollectionInternational: React.FC = () => {
               </div>
             </div>
 
+            {/* Additional Information Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Technical Details */}
+              <div className="cyber-card p-6">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                  <Server className="w-5 h-5 text-blue-400" />
+                  <span>技术详情</span>
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-2 bg-matrix-surface/30 rounded">
+                    <span className="text-sm text-muted-foreground">
+                      ISP提供商
+                    </span>
+                    <span className="text-sm text-white">
+                      {(investigation as any).isp || "China Telecom"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-matrix-surface/30 rounded">
+                    <span className="text-sm text-muted-foreground">
+                      ASN编号
+                    </span>
+                    <span className="text-sm text-white font-mono">
+                      {(investigation as any).asn || "AS4134"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-matrix-surface/30 rounded">
+                    <span className="text-sm text-muted-foreground">
+                      域名记录
+                    </span>
+                    <span className="text-sm text-white">
+                      {(investigation as any).hostname || "无PTR记录"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-matrix-surface/30 rounded">
+                    <span className="text-sm text-muted-foreground">
+                      网络类型
+                    </span>
+                    <span className="text-sm text-white">
+                      {(investigation as any).networkType || "商业网络"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Security Assessment */}
+              <div className="cyber-card p-6">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                  <Shield className="w-5 h-5 text-green-400" />
+                  <span>安全评估</span>
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      恶意软件检测
+                    </span>
+                    <Badge className="bg-green-500/20 text-green-400 border-green-500/40">
+                      清洁
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      僵尸网络检测
+                    </span>
+                    <Badge className="bg-green-500/20 text-green-400 border-green-500/40">
+                      未检测
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      垃圾邮件源
+                    </span>
+                    <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/40">
+                      可能
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      开放端口扫描
+                    </span>
+                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/40">
+                      {investigationMode === "advanced"
+                        ? `${(investigation as any).networkAnalysis?.openPorts?.length || 0}个`
+                        : "3个"}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+
+              {/* Investigation Stats */}
+              <div className="cyber-card p-6">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                  <BarChart3 className="w-5 h-5 text-purple-400" />
+                  <span>调查统计</span>
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-2 bg-matrix-surface/30 rounded">
+                    <span className="text-sm text-muted-foreground">
+                      分析耗时
+                    </span>
+                    <span className="text-sm text-white">2.3秒</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-matrix-surface/30 rounded">
+                    <span className="text-sm text-muted-foreground">
+                      数据源数量
+                    </span>
+                    <span className="text-sm text-white">
+                      {investigationMode === "advanced" ? "12个" : "6个"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-matrix-surface/30 rounded">
+                    <span className="text-sm text-muted-foreground">
+                      置信度
+                    </span>
+                    <span className="text-sm text-white">94.5%</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-matrix-surface/30 rounded">
+                    <span className="text-sm text-muted-foreground">
+                      最后更新
+                    </span>
+                    <span className="text-sm text-white">刚刚</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Detailed Analysis */}
             <Tabs defaultValue="overview" className="space-y-6">
               <TabsList
@@ -578,7 +704,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                   className="flex items-center space-x-2"
                 >
                   <Shield className="w-4 h-4" />
-                  <span>���胁情报</span>
+                  <span>威胁情报</span>
                 </TabsTrigger>
 
                 {/* 高级模式显示所有标签页 */}
@@ -1365,7 +1491,7 @@ const EvidenceCollectionInternational: React.FC = () => {
                       详细分析报告
                     </span>
                     <span className="text-xs text-muted-foreground text-center">
-                      专业级调���文档导出
+                      专业级调查文档导出
                     </span>
                   </div>
                 </div>

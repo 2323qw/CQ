@@ -96,9 +96,7 @@ function AppLayout() {
         path="/evidence-collection"
         element={
           <ProtectedRoute>
-            <ProtectedLayout>
-              <EvidenceCollection />
-            </ProtectedLayout>
+            <EvidenceCollectionInternational />
           </ProtectedRoute>
         }
       />

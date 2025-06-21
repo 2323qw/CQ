@@ -329,85 +329,87 @@ const EvidenceCollectionInternational: React.FC = () => {
             {/* Metrics Overview */}
             {metrics && (
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <Card className="border-0 shadow-lg">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                          Risk Score
-                        </p>
-                        <p className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-                          {metrics.riskScore}/100
-                        </p>
-                      </div>
-                      <div className="p-3 bg-red-100 dark:bg-red-900 rounded-xl">
-                        <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
-                      </div>
+                <div className="cyber-card p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        风险评分
+                      </p>
+                      <p className="text-3xl font-bold text-white">
+                        {metrics.riskScore}/100
+                      </p>
                     </div>
-                    <div className="mt-4">
-                      <Progress value={metrics.riskScore} className="h-2" />
+                    <div className="p-3 bg-red-500/20 rounded-xl">
+                      <AlertTriangle className="w-6 h-6 text-red-400" />
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                  <div className="mt-4">
+                    <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-red-500 to-orange-500 rounded-full transition-all duration-300"
+                        style={{ width: `${metrics.riskScore}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
 
-                <Card className="border-0 shadow-lg">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                          {investigationMode === "advanced"
-                            ? "Connections"
-                            : "Attacks"}
-                        </p>
-                        <p className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-                          {metrics.totalConnections}
-                        </p>
-                      </div>
-                      <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-xl">
-                        <Network className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                      </div>
+                <div className="cyber-card p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {investigationMode === "advanced"
+                          ? "网络连接"
+                          : "攻击次数"}
+                      </p>
+                      <p className="text-3xl font-bold text-white">
+                        {metrics.totalConnections}
+                      </p>
                     </div>
-                  </CardContent>
-                </Card>
+                    <div className="p-3 bg-quantum-500/20 rounded-xl">
+                      <Network className="w-6 h-6 text-quantum-400" />
+                    </div>
+                  </div>
+                </div>
 
-                <Card className="border-0 shadow-lg">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                          Threats Detected
-                        </p>
-                        <p className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-                          {metrics.threatsDetected}
-                        </p>
-                      </div>
-                      <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-xl">
-                        <Shield className="w-6 h-6 text-orange-600 dark:text-orange-400" />
-                      </div>
+                <div className="cyber-card p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        威胁检测
+                      </p>
+                      <p className="text-3xl font-bold text-white">
+                        {metrics.threatsDetected}
+                      </p>
                     </div>
-                  </CardContent>
-                </Card>
+                    <div className="p-3 bg-orange-500/20 rounded-xl">
+                      <Shield className="w-6 h-6 text-orange-400" />
+                    </div>
+                  </div>
+                </div>
 
-                <Card className="border-0 shadow-lg">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                          Security Score
-                        </p>
-                        <p className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-                          {metrics.securityScore}/100
-                        </p>
-                      </div>
-                      <div className="p-3 bg-green-100 dark:bg-green-900 rounded-xl">
-                        <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
-                      </div>
+                <div className="cyber-card p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        安全评分
+                      </p>
+                      <p className="text-3xl font-bold text-white">
+                        {metrics.securityScore}/100
+                      </p>
                     </div>
-                    <div className="mt-4">
-                      <Progress value={metrics.securityScore} className="h-2" />
+                    <div className="p-3 bg-green-500/20 rounded-xl">
+                      <CheckCircle className="w-6 h-6 text-green-400" />
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                  <div className="mt-4">
+                    <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all duration-300"
+                        style={{ width: `${metrics.securityScore}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 

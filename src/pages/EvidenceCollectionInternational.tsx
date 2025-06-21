@@ -596,128 +596,217 @@ const EvidenceCollectionInternational: React.FC = () => {
             </div>
 
             {/* Additional Information Cards */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Technical Details */}
-              <div className="cyber-card p-6">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                  <Server className="w-5 h-5 text-blue-400" />
-                  <span>技术详情</span>
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center p-2 bg-matrix-surface/30 rounded">
-                    <span className="text-sm text-muted-foreground">
-                      ISP提供商
-                    </span>
-                    <span className="text-sm text-white">
-                      {(investigation as any).isp || "China Telecom"}
-                    </span>
+            <div
+              className={cn(
+                "grid gap-6",
+                investigationMode === "basic"
+                  ? "grid-cols-1 lg:grid-cols-2"
+                  : "grid-cols-1 lg:grid-cols-3",
+              )}
+            >
+              {/* 基础模式显示简化的安全评估和基础统计 */}
+              {investigationMode === "basic" ? (
+                <>
+                  {/* Security Assessment - Simplified */}
+                  <div className="cyber-card p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                      <Shield className="w-5 h-5 text-green-400" />
+                      <span>安全评估</span>
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                          恶意软件检测
+                        </span>
+                        <Badge className="bg-green-500/20 text-green-400 border-green-500/40">
+                          清洁
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                          威胁评级
+                        </span>
+                        <Badge
+                          className={cn(
+                            "px-2 py-1",
+                            metrics && metrics.riskScore >= 70
+                              ? "bg-red-500/20 text-red-400 border-red-500/40"
+                              : metrics && metrics.riskScore >= 40
+                                ? "bg-orange-500/20 text-orange-400 border-orange-500/40"
+                                : "bg-green-500/20 text-green-400 border-green-500/40",
+                          )}
+                        >
+                          {metrics && metrics.riskScore >= 70
+                            ? "高风险"
+                            : metrics && metrics.riskScore >= 40
+                              ? "中风险"
+                              : "低风险"}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                          开放端口
+                        </span>
+                        <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/40">
+                          3个
+                        </Badge>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center p-2 bg-matrix-surface/30 rounded">
-                    <span className="text-sm text-muted-foreground">
-                      ASN编号
-                    </span>
-                    <span className="text-sm text-white font-mono">
-                      {(investigation as any).asn || "AS4134"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center p-2 bg-matrix-surface/30 rounded">
-                    <span className="text-sm text-muted-foreground">
-                      域名记录
-                    </span>
-                    <span className="text-sm text-white">
-                      {(investigation as any).hostname || "无PTR记录"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center p-2 bg-matrix-surface/30 rounded">
-                    <span className="text-sm text-muted-foreground">
-                      网络类型
-                    </span>
-                    <span className="text-sm text-white">
-                      {(investigation as any).networkType || "商业网络"}
-                    </span>
-                  </div>
-                </div>
-              </div>
 
-              {/* Security Assessment */}
-              <div className="cyber-card p-6">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                  <Shield className="w-5 h-5 text-green-400" />
-                  <span>安全评估</span>
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      恶意软件检测
-                    </span>
-                    <Badge className="bg-green-500/20 text-green-400 border-green-500/40">
-                      清洁
-                    </Badge>
+                  {/* Basic Stats */}
+                  <div className="cyber-card p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                      <BarChart3 className="w-5 h-5 text-purple-400" />
+                      <span>基础信息</span>
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-2 bg-matrix-surface/30 rounded">
+                        <span className="text-sm text-muted-foreground">
+                          ASN编号
+                        </span>
+                        <span className="text-sm text-white font-mono">
+                          {(investigation as any).asn || "AS4134"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between p-2 bg-matrix-surface/30 rounded">
+                        <span className="text-sm text-muted-foreground">
+                          分析耗时
+                        </span>
+                        <span className="text-sm text-white">1.8秒</span>
+                      </div>
+                      <div className="flex items-center justify-between p-2 bg-matrix-surface/30 rounded">
+                        <span className="text-sm text-muted-foreground">
+                          数据源
+                        </span>
+                        <span className="text-sm text-white">6个情报源</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      僵尸网络检测
-                    </span>
-                    <Badge className="bg-green-500/20 text-green-400 border-green-500/40">
-                      未检测
-                    </Badge>
+                </>
+              ) : (
+                <>
+                  {/* Technical Details - Advanced */}
+                  <div className="cyber-card p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                      <Server className="w-5 h-5 text-blue-400" />
+                      <span>技术详情</span>
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center p-2 bg-matrix-surface/30 rounded">
+                        <span className="text-sm text-muted-foreground">
+                          ISP提供商
+                        </span>
+                        <span className="text-sm text-white">
+                          {(investigation as any).isp || "China Telecom"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center p-2 bg-matrix-surface/30 rounded">
+                        <span className="text-sm text-muted-foreground">
+                          ASN编号
+                        </span>
+                        <span className="text-sm text-white font-mono">
+                          {(investigation as any).asn || "AS4134"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center p-2 bg-matrix-surface/30 rounded">
+                        <span className="text-sm text-muted-foreground">
+                          域名记录
+                        </span>
+                        <span className="text-sm text-white">
+                          {(investigation as any).hostname || "无PTR记录"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center p-2 bg-matrix-surface/30 rounded">
+                        <span className="text-sm text-muted-foreground">
+                          网络类型
+                        </span>
+                        <span className="text-sm text-white">
+                          {(investigation as any).networkType || "商业网络"}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      垃圾邮件源
-                    </span>
-                    <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/40">
-                      可能
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      开放端口扫描
-                    </span>
-                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/40">
-                      {investigationMode === "advanced"
-                        ? `${(investigation as any).networkAnalysis?.openPorts?.length || 0}个`
-                        : "3个"}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
 
-              {/* Investigation Stats */}
-              <div className="cyber-card p-6">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                  <BarChart3 className="w-5 h-5 text-purple-400" />
-                  <span>调查统计</span>
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-2 bg-matrix-surface/30 rounded">
-                    <span className="text-sm text-muted-foreground">
-                      分析耗时
-                    </span>
-                    <span className="text-sm text-white">2.3秒</span>
+                  {/* Security Assessment - Advanced */}
+                  <div className="cyber-card p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                      <Shield className="w-5 h-5 text-green-400" />
+                      <span>安全评估</span>
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                          恶意软件检测
+                        </span>
+                        <Badge className="bg-green-500/20 text-green-400 border-green-500/40">
+                          清洁
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                          僵尸网络检测
+                        </span>
+                        <Badge className="bg-green-500/20 text-green-400 border-green-500/40">
+                          未检测
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                          垃圾邮件源
+                        </span>
+                        <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/40">
+                          可能
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                          开放端口扫描
+                        </span>
+                        <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/40">
+                          {(investigation as any).networkAnalysis?.openPorts
+                            ?.length || 0}
+                          个
+                        </Badge>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between p-2 bg-matrix-surface/30 rounded">
-                    <span className="text-sm text-muted-foreground">
-                      数据源数量
-                    </span>
-                    <span className="text-sm text-white">
-                      {investigationMode === "advanced" ? "12个" : "6个"}
-                    </span>
+
+                  {/* Investigation Stats - Advanced */}
+                  <div className="cyber-card p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                      <BarChart3 className="w-5 h-5 text-purple-400" />
+                      <span>调查统计</span>
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-2 bg-matrix-surface/30 rounded">
+                        <span className="text-sm text-muted-foreground">
+                          分析耗时
+                        </span>
+                        <span className="text-sm text-white">2.3秒</span>
+                      </div>
+                      <div className="flex items-center justify-between p-2 bg-matrix-surface/30 rounded">
+                        <span className="text-sm text-muted-foreground">
+                          数据源数量
+                        </span>
+                        <span className="text-sm text-white">12个</span>
+                      </div>
+                      <div className="flex items-center justify-between p-2 bg-matrix-surface/30 rounded">
+                        <span className="text-sm text-muted-foreground">
+                          置信度
+                        </span>
+                        <span className="text-sm text-white">94.5%</span>
+                      </div>
+                      <div className="flex items-center justify-between p-2 bg-matrix-surface/30 rounded">
+                        <span className="text-sm text-muted-foreground">
+                          最后更新
+                        </span>
+                        <span className="text-sm text-white">刚刚</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between p-2 bg-matrix-surface/30 rounded">
-                    <span className="text-sm text-muted-foreground">
-                      置信度
-                    </span>
-                    <span className="text-sm text-white">94.5%</span>
-                  </div>
-                  <div className="flex items-center justify-between p-2 bg-matrix-surface/30 rounded">
-                    <span className="text-sm text-muted-foreground">
-                      最后更新
-                    </span>
-                    <span className="text-sm text-white">刚刚</span>
-                  </div>
-                </div>
-              </div>
+                </>
+              )}
             </div>
 
             {/* Detailed Analysis */}

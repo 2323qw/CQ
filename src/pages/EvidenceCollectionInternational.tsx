@@ -1196,31 +1196,153 @@ const EvidenceCollectionInternational: React.FC = () => {
               </TabsContent>
 
               <TabsContent value="analytics">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="cyber-card p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                      <TrendingUp className="w-5 h-5 text-green-400" />
-                      <span>协议分析</span>
-                    </h3>
-                    {protocolData.length > 0 ? (
+                <div className="space-y-6">
+                  {/* Analytics Overview */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="cyber-card p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/30">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-blue-300">
+                            数据点
+                          </p>
+                          <p className="text-xl font-bold text-white">1,247</p>
+                        </div>
+                        <Database className="w-6 h-6 text-blue-400" />
+                      </div>
+                    </div>
+                    <div className="cyber-card p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/30">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-green-300">
+                            分析完成
+                          </p>
+                          <p className="text-xl font-bold text-white">98.5%</p>
+                        </div>
+                        <CheckCircle className="w-6 h-6 text-green-400" />
+                      </div>
+                    </div>
+                    <div className="cyber-card p-4 bg-gradient-to-br from-purple-500/10 to-violet-500/10 border-purple-500/30">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-purple-300">
+                            处理时间
+                          </p>
+                          <p className="text-xl font-bold text-white">2.3s</p>
+                        </div>
+                        <Clock className="w-6 h-6 text-purple-400" />
+                      </div>
+                    </div>
+                    <div className="cyber-card p-4 bg-gradient-to-br from-orange-500/10 to-red-500/10 border-orange-500/30">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-orange-300">
+                            置信度
+                          </p>
+                          <p className="text-xl font-bold text-white">94.2%</p>
+                        </div>
+                        <TrendingUp className="w-6 h-6 text-orange-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Charts Section */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="cyber-card p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                        <TrendingUp className="w-5 h-5 text-green-400" />
+                        <span>协议分析</span>
+                      </h3>
+                      {protocolData.length > 0 ? (
+                        <ResponsiveContainer width="100%" height={300}>
+                          <BarChart data={protocolData}>
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              stroke="#30363d"
+                            />
+                            <XAxis
+                              dataKey="name"
+                              stroke="#6b7280"
+                              fontSize={12}
+                              tickLine={false}
+                              axisLine={false}
+                            />
+                            <YAxis
+                              stroke="#6b7280"
+                              fontSize={12}
+                              tickLine={false}
+                              axisLine={false}
+                            />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: "#1f2937",
+                                border: "1px solid #374151",
+                                borderRadius: "8px",
+                                color: "#f8fafc",
+                              }}
+                            />
+                            <Bar dataKey="value" fill="#00f5ff" />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <ResponsiveContainer width="100%" height={300}>
+                          <BarChart
+                            data={[
+                              { name: "TCP", value: 45 },
+                              { name: "UDP", value: 23 },
+                              { name: "HTTP", value: 67 },
+                              { name: "HTTPS", value: 89 },
+                              { name: "SSH", value: 12 },
+                              { name: "FTP", value: 8 },
+                            ]}
+                          >
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              stroke="#30363d"
+                            />
+                            <XAxis
+                              dataKey="name"
+                              stroke="#6b7280"
+                              fontSize={12}
+                              tickLine={false}
+                              axisLine={false}
+                            />
+                            <YAxis
+                              stroke="#6b7280"
+                              fontSize={12}
+                              tickLine={false}
+                              axisLine={false}
+                            />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: "#1f2937",
+                                border: "1px solid #374151",
+                                borderRadius: "8px",
+                                color: "#f8fafc",
+                              }}
+                            />
+                            <Bar dataKey="value" fill="#00f5ff" />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      )}
+                    </div>
+
+                    <div className="cyber-card p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                        <PieChart className="w-5 h-5 text-purple-400" />
+                        <span>流量分布</span>
+                      </h3>
                       <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={protocolData}>
-                          <CartesianGrid
-                            strokeDasharray="3 3"
-                            stroke="#30363d"
-                          />
-                          <XAxis
-                            dataKey="name"
-                            stroke="#6b7280"
-                            fontSize={12}
-                            tickLine={false}
-                            axisLine={false}
-                          />
-                          <YAxis
-                            stroke="#6b7280"
-                            fontSize={12}
-                            tickLine={false}
-                            axisLine={false}
+                        <RechartsPieChart>
+                          <Pie
+                            data={[
+                              { name: "入站流量", value: 65, fill: "#00f5ff" },
+                              { name: "出站流量", value: 35, fill: "#39ff14" },
+                            ]}
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={100}
+                            dataKey="value"
+                            label={({ name, value }) => `${name}: ${value}%`}
                           />
                           <Tooltip
                             contentStyle={{
@@ -1230,52 +1352,181 @@ const EvidenceCollectionInternational: React.FC = () => {
                               color: "#f8fafc",
                             }}
                           />
-                          <Bar dataKey="value" fill="#00f5ff" />
-                        </BarChart>
+                        </RechartsPieChart>
                       </ResponsiveContainer>
-                    ) : (
-                      <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                        暂无协议数据
-                      </div>
-                    )}
+                    </div>
                   </div>
 
-                  <div className="cyber-card p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                      <Activity className="w-5 h-5 text-neural-500" />
-                      <span>网络活动</span>
-                    </h3>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-3 bg-matrix-surface/50 rounded-lg">
-                        <span className="text-sm font-medium text-muted-foreground">
-                          活跃连接
-                        </span>
-                        <span className="text-lg font-bold text-white">
-                          {(
-                            investigation as any
-                          ).networkAnalysis?.connections?.filter(
-                            (c: any) => c.status === "active",
-                          ).length || 0}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-matrix-surface/50 rounded-lg">
-                        <span className="text-sm font-medium text-muted-foreground">
-                          开放端口
-                        </span>
-                        <span className="text-lg font-bold text-white">
-                          {(investigation as any).networkAnalysis?.openPorts
-                            ?.length || 0}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-matrix-surface/50 rounded-lg">
-                        <span className="text-sm font-medium text-muted-foreground">
-                          安全事件
-                        </span>
-                        <span className="text-lg font-bold text-white">
-                          {(investigation as any).timeline?.length || 0}
-                        </span>
+                  {/* Network Activity Details */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="cyber-card p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                        <Activity className="w-5 h-5 text-neural-500" />
+                        <span>网络活动统计</span>
+                      </h3>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between p-3 bg-matrix-surface/50 rounded-lg">
+                          <span className="text-sm font-medium text-muted-foreground">
+                            活跃连接
+                          </span>
+                          <span className="text-lg font-bold text-white">
+                            {(
+                              investigation as any
+                            ).networkAnalysis?.connections?.filter(
+                              (c: any) => c.status === "active",
+                            ).length || 12}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-matrix-surface/50 rounded-lg">
+                          <span className="text-sm font-medium text-muted-foreground">
+                            开放端口
+                          </span>
+                          <span className="text-lg font-bold text-white">
+                            {(investigation as any).networkAnalysis?.openPorts
+                              ?.length || 3}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-matrix-surface/50 rounded-lg">
+                          <span className="text-sm font-medium text-muted-foreground">
+                            安全事件
+                          </span>
+                          <span className="text-lg font-bold text-white">
+                            {(investigation as any).timeline?.length || 5}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-matrix-surface/50 rounded-lg">
+                          <span className="text-sm font-medium text-muted-foreground">
+                            带宽使用
+                          </span>
+                          <span className="text-lg font-bold text-white">
+                            2.3 MB/s
+                          </span>
+                        </div>
                       </div>
                     </div>
+
+                    <div className="cyber-card p-6">
+                      <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                        <BarChart3 className="w-5 h-5 text-cyan-400" />
+                        <span>性能指标</span>
+                      </h3>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              CPU使用率
+                            </span>
+                            <span className="text-white">23%</span>
+                          </div>
+                          <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full"
+                              style={{ width: "23%" }}
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              内存使用率
+                            </span>
+                            <span className="text-white">67%</span>
+                          </div>
+                          <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"
+                              style={{ width: "67%" }}
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              网络使用率
+                            </span>
+                            <span className="text-white">45%</span>
+                          </div>
+                          <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-purple-500 to-violet-500 rounded-full"
+                              style={{ width: "45%" }}
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              磁盘I/O
+                            </span>
+                            <span className="text-white">12%</span>
+                          </div>
+                          <div className="h-2 bg-matrix-surface rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-orange-500 to-red-500 rounded-full"
+                              style={{ width: "12%" }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Time Series Analysis */}
+                  <div className="cyber-card p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+                      <Activity className="w-5 h-5 text-green-400" />
+                      <span>时间序列分析</span>
+                    </h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart
+                        data={[
+                          { time: "00:00", connections: 45, threats: 2 },
+                          { time: "04:00", connections: 23, threats: 1 },
+                          { time: "08:00", connections: 67, threats: 5 },
+                          { time: "12:00", connections: 89, threats: 3 },
+                          { time: "16:00", connections: 76, threats: 4 },
+                          { time: "20:00", connections: 54, threats: 2 },
+                          { time: "24:00", connections: 34, threats: 1 },
+                        ]}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="#30363d" />
+                        <XAxis
+                          dataKey="time"
+                          stroke="#6b7280"
+                          fontSize={12}
+                          tickLine={false}
+                          axisLine={false}
+                        />
+                        <YAxis
+                          stroke="#6b7280"
+                          fontSize={12}
+                          tickLine={false}
+                          axisLine={false}
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: "#1f2937",
+                            border: "1px solid #374151",
+                            borderRadius: "8px",
+                            color: "#f8fafc",
+                          }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="connections"
+                          stroke="#00f5ff"
+                          strokeWidth={2}
+                          name="网络连接"
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="threats"
+                          stroke="#ff4444"
+                          strokeWidth={2}
+                          name="威胁事件"
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
                   </div>
                 </div>
               </TabsContent>

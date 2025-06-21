@@ -299,7 +299,7 @@ const menuGroups: {
         description: "身份与访问控制",
       },
       {
-        name: "安��报告",
+        name: "安全报告",
         path: "/reports",
         icon: FileText,
         description: "定制化安全报表",
@@ -596,7 +596,9 @@ export function EnhancedNavigation({
       {/* 导航侧边栏 */}
       <div
         className={cn(
-          "fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-matrix-bg via-matrix-surface to-matrix-bg border-r border-matrix-border z-40 cyber-card-enhanced transition-transform duration-300",
+          "fixed left-0 top-0 h-full bg-gradient-to-b from-matrix-bg via-matrix-surface to-matrix-bg border-r border-matrix-border z-40 cyber-card-enhanced transition-all duration-300",
+          // 响应式宽度：紧凑模式更窄，正常模式适中
+          isCompactMode ? "w-16" : "w-72",
           // 移动端变换效果
           isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
         )}
@@ -618,7 +620,7 @@ export function EnhancedNavigation({
               </div>
             </div>
 
-            {/* 移动���关闭按钮 */}
+            {/* 移动端关闭按钮 */}
             <button
               onClick={onMobileClose}
               className="md:hidden p-2 text-muted-foreground hover:text-white transition-colors"

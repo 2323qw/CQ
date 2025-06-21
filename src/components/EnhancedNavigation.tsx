@@ -313,53 +313,11 @@ export function EnhancedNavigation({
     }))
     .filter((group) => group.items.length > 0);
 
-  // 快捷键处理
-  useEffect(() => {
-    const handleKeydown = (e: KeyboardEvent) => {
-      if (e.ctrlKey) {
-        switch (e.key) {
-          case "1":
-            e.preventDefault();
-            navigate("/");
-            break;
-          case "2":
-            e.preventDefault();
-            navigate("/situation");
-            break;
-          case "q":
-            e.preventDefault();
-            // 执行快速扫描
-            break;
-          case "e":
-            e.preventDefault();
-            // 紧急响应
-            break;
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeydown);
-    return () => window.removeEventListener("keydown", handleKeydown);
-  }, [navigate]);
-
-  // 更新最后活跃时间和系统状态
+  // 更新最后活跃时间
   useEffect(() => {
     const interval = setInterval(() => {
       setLastActiveTime(new Date());
-      // 模拟系统状态更新
-      setSystemStatus((prev) => ({
-        ...prev,
-        cpu: Math.max(10, Math.min(90, prev.cpu + (Math.random() - 0.5) * 10)),
-        memory: Math.max(
-          20,
-          Math.min(95, prev.memory + (Math.random() - 0.5) * 5),
-        ),
-        network: Math.max(
-          50,
-          Math.min(100, prev.network + (Math.random() - 0.5) * 3),
-        ),
-      }));
-    }, 30000);
+    }, 60000); // 每分钟更新一次
 
     return () => clearInterval(interval);
   }, []);

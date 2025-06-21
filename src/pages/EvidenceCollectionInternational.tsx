@@ -668,24 +668,19 @@ const EvidenceCollectionInternational: React.FC = () => {
               </TabsContent>
 
               <TabsContent value="topology">
-                <Card className="border-0 shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <Network className="w-5 h-5 text-blue-600" />
-                      <span>Network Topology Analysis</span>
-                    </CardTitle>
-                    <CardDescription>
-                      Interactive visualization of network connections and
-                      relationships
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <TopologyAnalysisEnhanced
-                      investigation={investigation}
-                      centerIP={selectedIP}
-                    />
-                  </CardContent>
-                </Card>
+                <div className="cyber-card p-6">
+                  <h3 className="text-lg font-semibold text-white mb-2 flex items-center space-x-2">
+                    <Network className="w-5 h-5 text-quantum-500" />
+                    <span>网络拓扑分析</span>
+                  </h3>
+                  <p className="text-muted-foreground mb-6">
+                    交互式网络连接关系可视化
+                  </p>
+                  <TopologyAnalysisEnhanced
+                    investigation={investigation}
+                    centerIP={selectedIP}
+                  />
+                </div>
               </TabsContent>
 
               <TabsContent value="threats">

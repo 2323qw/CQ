@@ -153,7 +153,7 @@ const menuGroups: {
         icon: Users,
         roles: ["超级管理员", "安全管理员"],
       },
-      { name: "��全报告", path: "/reports", icon: FileText },
+      { name: "安全报告", path: "/reports", icon: FileText },
     ],
   },
   {
@@ -219,8 +219,6 @@ export function EnhancedNavigation({
     "威胁检测",
   ]);
   const [lastActiveTime, setLastActiveTime] = useState(new Date());
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const [isCompactMode, setIsCompactMode] = useState(false);
   const [systemStatus, setSystemStatus] = useState<SystemStatus>({
     cpu: 23,
@@ -231,12 +229,6 @@ export function EnhancedNavigation({
     incidents: 5,
   });
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [isSoundEnabled, setIsSoundEnabled] = useState(true);
-  const [favoriteItems, setFavoriteItems] = useState<string[]>([
-    "/",
-    "/alerts",
-  ]);
-  const [recentItems, setRecentItems] = useState<string[]>([]);
 
   useEffect(() => {
     // 获取用户角色和颜色信息
@@ -267,7 +259,7 @@ export function EnhancedNavigation({
         return Shield;
       case "数据分析师":
         return BarChart3;
-      case "系统操作员":
+      case "��统操作员":
         return Settings;
       default:
         return User;

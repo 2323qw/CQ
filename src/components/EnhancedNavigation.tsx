@@ -392,7 +392,7 @@ const quickActionGroups = {
       borderColor: "border-green-500/30",
       onClick: () => console.log("Create report"),
       shortcut: "Ctrl+R",
-      description: "生成���全报告",
+      description: "生成安全报告",
     },
   ],
 };
@@ -764,10 +764,7 @@ export function EnhancedNavigation({
         </div>
 
         {/* 主导航菜单 */}
-        <div
-          className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-custom"
-          style={{ maxHeight: "calc(100vh - 240px)" }}
-        >
+        <div className="flex-1 nav-scroll-area scrollbar-custom">
           <nav className={cn("p-3 space-y-2", isCompactMode && "p-2")}>
             {displayGroups
               .sort((a, b) => (a.priority || 99) - (b.priority || 99))
@@ -1030,7 +1027,7 @@ export function EnhancedNavigation({
                     {Math.floor(
                       (Date.now() - lastActiveTime.getTime()) / 60000,
                     )}
-                    分��前
+                    分钟前
                   </p>
                 </div>
               )}

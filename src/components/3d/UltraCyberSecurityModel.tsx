@@ -9,10 +9,10 @@ import {
   Float32BufferAttribute,
   Points,
   AdditiveBlending,
-  DoubleSide,
   MathUtils,
 } from "three";
-import { Text, Line } from "@react-three/drei";
+import { Text } from "@react-three/drei";
+// Line component removed to prevent uniform errors
 
 // 量子核心组件 - 丰富版
 function QuantumCore() {
@@ -272,7 +272,8 @@ function AdvancedDefenseMatrix() {
           const nextNodeIndex = (nodeIndex + 1) % layer.length;
           const nextNode = layer[nextNodeIndex];
           return (
-            <Line
+            <></>
+            /* <Line
               key={`layer-${layerIndex}-${nodeIndex}`}
               points={[
                 new Vector3(...node.position),
@@ -282,21 +283,22 @@ function AdvancedDefenseMatrix() {
               lineWidth={2}
               transparent
               opacity={0.4}
-            />
+            /> */
           );
         }),
       )}
 
       {/* 核心连接线 */}
       {nodeNetworks[0]?.map((node, index) => (
-        <Line
+        <></>
+        /* <Line
           key={`core-${index}`}
           points={[new Vector3(0, 0, 0), new Vector3(...node.position)]}
           color={node.color}
           lineWidth={1.5}
           transparent
           opacity={0.3}
-        />
+        /> */
       ))}
 
       {/* 跨层连接 */}

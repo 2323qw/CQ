@@ -145,13 +145,18 @@ import {
   getTechLevelColor,
   getStatusColor,
 } from "@/lib/situationDisplayColors";
-import {
-  EnhancedQuantumTower,
-  EnhancedNeuralCluster,
-  EnhancedDataFlowSystem,
-  EnhancedQuantumShields,
-  EnhancedEnvironment,
-} from "@/components/3d/EnhancedFuturisticComponents";
+// Temporarily disabled to prevent Three.js uniform errors
+// import {
+//   EnhancedQuantumTower,
+//   EnhancedNeuralCluster,
+//   EnhancedDataFlowSystem,
+//   EnhancedQuantumShields,
+//   EnhancedEnvironment,
+// } from "@/components/3d/EnhancedFuturisticComponents";
+import { SciFiSituationModel } from "@/components/3d/SciFiSituationModel";
+import { EnhancedLeftPanel } from "@/components/EnhancedLeftPanel";
+import { EnhancedRightPanel } from "@/components/EnhancedRightPanel";
+import "@/styles/enhanced-situation-display.css";
 
 // 视图模式类型定义
 type ViewMode = "3d" | "2d" | "split-horizontal" | "split-vertical" | "quad";
@@ -223,17 +228,18 @@ function AdvancedCyberScene({
     }
   });
 
+  // 渲染简洁科幻的3D态势场景
+  const renderSceneContent = () => {
+    return <SciFiSituationModel realTimeData={realTimeData} />;
+  };
+
   return (
     <group ref={sceneRef}>
-      <EnhancedEnvironment />
-      <EnhancedQuantumTower />
-      <EnhancedNeuralCluster />
-      <EnhancedDataFlowSystem />
-      <EnhancedQuantumShields />
+      {renderSceneContent()}
       <Stars
         radius={sceneConfig.starRadius || 800}
         depth={sceneConfig.starDepth || 150}
-        count={sceneConfig.starCount}
+        count={sceneConfig.starCount || 3000}
         factor={sceneConfig.starFactor || 4}
         saturation={sceneConfig.starSaturation || 0.3}
         fade
@@ -709,24 +715,17 @@ function ViewModeSelector({
       icon: BoxIcon,
       desc: "立体态势展示",
     },
-    { id: "2d" as ViewMode, label: "2D视图", icon: Map, desc: "平面拓扑图" },
     {
-      id: "split-horizontal" as ViewMode,
-      label: "水平分屏",
-      icon: SplitSquareHorizontal,
-      desc: "上下分屏",
-    },
-    {
-      id: "split-vertical" as ViewMode,
-      label: "垂直分屏",
-      icon: SplitSquareVertical,
-      desc: "左右分屏",
+      id: "2d" as ViewMode,
+      label: "2D视图",
+      icon: Map,
+      desc: "平面拓扑图",
     },
     {
       id: "quad" as ViewMode,
       label: "四分屏",
       icon: Grid3X3,
-      desc: "四��限视图",
+      desc: "四象限视图",
     },
   ];
 
@@ -1463,6 +1462,16 @@ function AdvancedControlsTab({
           </div>
         </div>
       </div>
+
+      {/* 3D场景控制面板 */}
+      {viewMode === "3d" && (
+        <Enhanced3DSceneControls
+          sceneConfig={sceneConfig}
+          onConfigChange={handleConfigChange}
+          isVisible={is3DControlsVisible}
+          onToggle={() => setIs3DControlsVisible(!is3DControlsVisible)}
+        />
+      )}
     </div>
   );
 }
@@ -1598,111 +1607,254 @@ function generateTrendData() {
 }
 
 /**
- * 优化版加载屏幕
+ * 优化版3D态势大屏加载动画
  */
 function OptimizedLoadingScreen() {
   const [progress, setProgress] = useState(0);
-  const [currentStep, setCurrentStep] = useState("初始化系统");
+  const [currentStep, setCurrentStep] = useState("正在初始化");
+  const [loadingPhase, setLoadingPhase] = useState(0);
 
   const loadingSteps = [
-    "初始化量子引擎",
-    "建立神经连接",
-    "加载威胁数据库",
-    "启动防护屏障",
-    "同步时空坐标",
-    "完成启动序列",
+    { text: "正在启动3D引擎", icon: "🔮", color: DISPLAY_COLORS.neon.purple },
+    { text: "加载网络拓扑数据", icon: "🌐", color: DISPLAY_COLORS.neon.blue },
+    { text: "初始化威胁检测", icon: "🛡️", color: DISPLAY_COLORS.neon.green },
+    { text: "构建态势模型", icon: "⚡", color: DISPLAY_COLORS.neon.cyan },
+    { text: "同步实时数据", icon: "📡", color: DISPLAY_COLORS.neon.orange },
+    { text: "启动完成", icon: "✨", color: DISPLAY_COLORS.neon.green },
   ];
 
   useEffect(() => {
     const timer = setInterval(() => {
       setProgress((prev) => {
-        const newProgress = prev + Math.random() * 12;
+        const newProgress = prev + Math.random() * 8 + 2;
         const stepIndex = Math.floor((newProgress / 100) * loadingSteps.length);
-        if (stepIndex < loadingSteps.length) {
-          setCurrentStep(loadingSteps[stepIndex]);
+        if (stepIndex < loadingSteps.length && stepIndex !== loadingPhase) {
+          setLoadingPhase(stepIndex);
+          setCurrentStep(loadingSteps[stepIndex].text);
         }
         return Math.min(newProgress, 100);
       });
-    }, 200);
+    }, 150);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [loadingPhase]);
 
   return (
     <div
-      className="absolute inset-0 flex items-center justify-center"
+      className="absolute inset-0 flex items-center justify-center overflow-hidden"
       style={{
-        backgroundColor: DISPLAY_COLORS.ui.background.primary,
+        background: `radial-gradient(circle at center, ${DISPLAY_COLORS.ui.background.secondary} 0%, ${DISPLAY_COLORS.ui.background.primary} 100%)`,
         zIndex: Z_INDEX.loading,
       }}
     >
-      <div className="text-center max-w-lg mx-auto">
-        <div className="relative mb-8">
+      {/* 背景粒子效果 */}
+      <div className="absolute inset-0">
+        {Array.from({ length: 50 }).map((_, i) => (
           <div
-            className="w-28 h-28 rounded-xl flex items-center justify-center mx-auto relative quantum-effect"
+            key={i}
+            className="absolute w-1 h-1 bg-neon-blue rounded-full animate-pulse opacity-30"
             style={{
-              background: `linear-gradient(45deg, ${DISPLAY_COLORS.corporate.primary}, ${DISPLAY_COLORS.corporate.accent})`,
-              boxShadow: `0 0 50px ${DISPLAY_COLORS.corporate.accent}60`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 2}s`,
+              animationDuration: `${2 + Math.random() * 3}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="text-center max-w-2xl mx-auto px-8 relative z-10">
+        {/* 主要图标区域 */}
+        <div className="relative mb-12">
+          {/* 中央3D图标 */}
+          <div className="relative mx-auto w-32 h-32">
+            {/* 外圈旋转环 */}
+            <div
+              className="absolute inset-0 rounded-full border-4 border-transparent animate-spin"
+              style={{
+                borderTopColor: DISPLAY_COLORS.neon.blue,
+                borderRightColor: DISPLAY_COLORS.neon.purple,
+                animationDuration: "3s",
+              }}
+            />
+            {/* 中圈反向旋转环 */}
+            <div
+              className="absolute inset-2 rounded-full border-4 border-transparent"
+              style={{
+                borderLeftColor: DISPLAY_COLORS.neon.cyan,
+                borderBottomColor: DISPLAY_COLORS.neon.green,
+                animation: "spin 2s linear infinite reverse",
+              }}
+            />
+            {/* 内圈脉冲环 */}
+            <div
+              className="absolute inset-4 rounded-full border-2 animate-pulse"
+              style={{
+                borderColor: DISPLAY_COLORS.corporate.accent,
+                boxShadow: `0 0 30px ${DISPLAY_COLORS.corporate.accent}`,
+              }}
+            />
+            {/* 中央立方体图标 */}
+            <div
+              className="absolute inset-6 rounded-lg flex items-center justify-center"
+              style={{
+                background: `linear-gradient(45deg, ${DISPLAY_COLORS.corporate.primary}, ${DISPLAY_COLORS.corporate.accent})`,
+                boxShadow: `0 0 40px ${DISPLAY_COLORS.corporate.accent}60`,
+                transform: `rotateX(${Math.sin(Date.now() * 0.001) * 10}deg) rotateY(${Math.cos(Date.now() * 0.002) * 15}deg)`,
+              }}
+            >
+              <Hexagon className="w-8 h-8 text-white" />
+            </div>
+          </div>
+
+          {/* 相位指示器 */}
+          <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            {loadingSteps.map((step, index) => (
+              <div
+                key={index}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index <= loadingPhase ? "animate-pulse" : "opacity-30"
+                }`}
+                style={{
+                  backgroundColor:
+                    index <= loadingPhase
+                      ? step.color
+                      : DISPLAY_COLORS.ui.border.primary,
+                  boxShadow:
+                    index <= loadingPhase ? `0 0 10px ${step.color}` : "none",
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* 标题和描述 */}
+        <div className="mb-10">
+          <h1 className="text-5xl font-bold mb-4 font-orbitron">
+            <span className="bg-gradient-to-r from-neon-blue via-neon-cyan to-neon-purple bg-clip-text text-transparent animate-pulse">
+              3D态势大屏
+            </span>
+          </h1>
+          <p className="text-xl text-gray-400 font-rajdhani tracking-wider">
+            3D Situation Display Loading...
+          </p>
+        </div>
+
+        {/* 当前步骤显示 */}
+        <div className="mb-8">
+          <div className="flex items-center justify-center space-x-3 mb-4">
+            <span
+              className="text-2xl animate-bounce"
+              style={{ animationDelay: "0.1s" }}
+            >
+              {loadingSteps[loadingPhase]?.icon}
+            </span>
+            <span
+              className="text-xl font-medium"
+              style={{ color: loadingSteps[loadingPhase]?.color }}
+            >
+              {currentStep}
+            </span>
+          </div>
+        </div>
+
+        {/* 进度条 */}
+        <div className="mb-8 relative">
+          <div
+            className="h-2 rounded-full border overflow-hidden"
+            style={{
+              borderColor: DISPLAY_COLORS.ui.border.accent,
+              backgroundColor: DISPLAY_COLORS.ui.background.tertiary,
             }}
           >
-            <Brain className="w-14 h-14 text-white animate-pulse" />
             <div
-              className="absolute inset-0 rounded-xl animate-spin"
-              style={{
-                border: `3px solid transparent`,
-                borderTop: `3px solid ${DISPLAY_COLORS.corporate.accent}`,
-                borderRight: `3px solid ${DISPLAY_COLORS.neon.green}`,
-              }}
-            />
-          </div>
-        </div>
-
-        <div className="mb-8">
-          <div className="text-4xl font-bold mb-4 font-orbitron neon-text-blue">
-            正在启动神经网络监控中心
-          </div>
-          <div className="text-base font-rajdhani text-muted-foreground animate-pulse">
-            Advanced Neural Network Initialization...
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <div
-            className="quantum-progress h-4"
-            style={{ borderColor: `${DISPLAY_COLORS.corporate.accent}40` }}
-          >
-            <div
-              className="quantum-progress-fill h-full"
+              className="h-full transition-all duration-300 ease-out relative"
               style={{
                 width: `${progress}%`,
-                background: `linear-gradient(90deg, ${DISPLAY_COLORS.corporate.primary}, ${DISPLAY_COLORS.corporate.accent}, ${DISPLAY_COLORS.neon.green})`,
-                boxShadow: `0 0 25px ${DISPLAY_COLORS.corporate.accent}60`,
+                background: `linear-gradient(90deg, ${DISPLAY_COLORS.neon.blue}, ${DISPLAY_COLORS.neon.cyan}, ${DISPLAY_COLORS.neon.green})`,
+                boxShadow: `0 0 20px ${DISPLAY_COLORS.neon.blue}60`,
               }}
-            />
+            >
+              {/* 进度条光效 */}
+              <div
+                className="absolute inset-0 opacity-50 animate-pulse"
+                style={{
+                  background:
+                    "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
+                }}
+              />
+            </div>
           </div>
-          <div className="flex justify-between mt-3 text-sm font-mono">
-            <span className="text-muted-foreground">{currentStep}</span>
-            <span className="text-neon-blue">{Math.round(progress)}%</span>
+
+          {/* 进度百分比 */}
+          <div className="flex justify-between mt-3">
+            <span className="text-sm text-gray-400 font-mono">初始化进度</span>
+            <span
+              className="text-sm font-mono font-bold"
+              style={{ color: DISPLAY_COLORS.neon.cyan }}
+            >
+              {Math.round(progress)}%
+            </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 text-xs">
-          <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 rounded-full bg-neon-purple animate-pulse"></div>
-            <span className="text-neon-purple font-mono">量子引擎</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 rounded-full bg-neon-green animate-pulse"></div>
-            <span className="text-neon-green font-mono">神经网络</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 rounded-full bg-neon-blue animate-pulse"></div>
-            <span className="text-neon-blue font-mono">防护系统</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 rounded-full bg-neon-orange animate-pulse"></div>
-            <span className="text-neon-orange font-mono">时空引擎</span>
-          </div>
+        {/* 系统状态网格 */}
+        <div className="grid grid-cols-4 gap-4 text-sm">
+          {[
+            {
+              label: "3D引擎",
+              status: progress > 20,
+              color: DISPLAY_COLORS.neon.purple,
+            },
+            {
+              label: "数据流",
+              status: progress > 40,
+              color: DISPLAY_COLORS.neon.blue,
+            },
+            {
+              label: "威胁检测",
+              status: progress > 60,
+              color: DISPLAY_COLORS.neon.green,
+            },
+            {
+              label: "渲染器",
+              status: progress > 80,
+              color: DISPLAY_COLORS.neon.orange,
+            },
+          ].map((item, index) => (
+            <div
+              key={index}
+              className="flex flex-col items-center space-y-2 p-3 rounded-lg border transition-all duration-300"
+              style={{
+                borderColor: item.status
+                  ? item.color
+                  : DISPLAY_COLORS.ui.border.primary,
+                backgroundColor: item.status
+                  ? `${item.color}10`
+                  : "transparent",
+              }}
+            >
+              <div
+                className={`w-3 h-3 rounded-full ${item.status ? "animate-pulse" : ""}`}
+                style={{
+                  backgroundColor: item.status
+                    ? item.color
+                    : DISPLAY_COLORS.ui.border.primary,
+                  boxShadow: item.status ? `0 0 8px ${item.color}` : "none",
+                }}
+              />
+              <span
+                className="font-mono text-xs"
+                style={{
+                  color: item.status
+                    ? item.color
+                    : DISPLAY_COLORS.ui.text.muted,
+                }}
+              >
+                {item.label}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -1715,6 +1867,7 @@ export default function SituationDisplay() {
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("3d");
   const [showSidePanels, setShowSidePanels] = useState(true);
+  const [is3DControlsVisible, setIs3DControlsVisible] = useState(false);
 
   const [sceneConfig, setSceneConfig] = useState({
     starCount: 4000,
@@ -1807,22 +1960,18 @@ export default function SituationDisplay() {
         realTimeData={realTimeData}
       />
 
-      {/* 侧边面板（仅在非分屏模式下显示） */}
+      {/* 增强的侧边面板（仅在非分屏模式下显示） */}
       {showSidePanels && (
         <>
-          <SidePanel
-            side="left"
-            isVisible={viewMode === "3d" || viewMode === "2d"}
+          <EnhancedLeftPanel
             realTimeData={realTimeData}
-            selectedNode={selectedNode}
-            onNodeSelect={handleNodeSelect}
+            isVisible={viewMode === "3d" || viewMode === "2d"}
           />
-          <SidePanel
-            side="right"
-            isVisible={viewMode === "3d" || viewMode === "2d"}
+          <EnhancedRightPanel
             realTimeData={realTimeData}
-            selectedNode={selectedNode}
-            onNodeSelect={handleNodeSelect}
+            isVisible={viewMode === "3d" || viewMode === "2d"}
+            sceneConfig={sceneConfig}
+            onConfigChange={handleConfigChange}
           />
         </>
       )}

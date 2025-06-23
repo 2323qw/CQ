@@ -2,7 +2,7 @@ import React, { useRef, useMemo, useCallback } from "react";
 import { useFrame } from "@react-three/fiber";
 import {
   Text,
-  Line,
+  // Line component removed to prevent uniform errors
   Html,
   Sphere,
   Box,
@@ -30,7 +30,6 @@ import {
   Points,
   PointsMaterial,
   AdditiveBlending,
-  DoubleSide,
   BackSide,
 } from "three";
 import {
@@ -245,7 +244,7 @@ export function CentralMonitoringTower() {
             emissiveIntensity={0.8}
             transparent
             opacity={0.4}
-            side={DoubleSide}
+            side={2}
           />
         </mesh>
 
@@ -550,7 +549,7 @@ function DataPipeline({ pipe }: { pipe: any }) {
   return (
     <group>
       {/* 主管道 */}
-      <Line
+      {/* <Line
         points={[
           pipeGeometry.start,
           pipeGeometry.mid1,
@@ -561,10 +560,10 @@ function DataPipeline({ pipe }: { pipe: any }) {
         lineWidth={pipe.type === "primary" ? 8 : 5}
         transparent
         opacity={0.8}
-      />
+      /> */}
 
       {/* 管道光效 */}
-      <Line
+      {/* <Line
         points={[
           pipeGeometry.start,
           pipeGeometry.mid1,
@@ -575,7 +574,7 @@ function DataPipeline({ pipe }: { pipe: any }) {
         lineWidth={pipe.type === "primary" ? 3 : 2}
         transparent
         opacity={0.9}
-      />
+      /> */}
 
       {/* 数据流粒子 */}
       <DataFlowParticles
@@ -715,7 +714,7 @@ export function ProtectionShields() {
             emissiveIntensity={0.2}
             transparent
             opacity={shield.opacity}
-            side={DoubleSide}
+            side={2}
           />
         </mesh>
       ))}

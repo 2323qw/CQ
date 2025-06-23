@@ -1,0 +1,343 @@
+/* 增强3D态势大屏样式 */
+
+/* 滑块样式 */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-track {
+  background: #374151;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #00f5ff, #39ff14);
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 10px rgba(0, 245, 255, 0.6);
+}
+
+.slider::-moz-range-track {
+  background: #374151;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.slider::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #00f5ff, #39ff14);
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 10px rgba(0, 245, 255, 0.6);
+}
+
+/* 霓虹文字效果 */
+.neon-text-red {
+  color: #ff3366;
+  text-shadow: 0 0 10px #ff3366;
+}
+
+.neon-text-blue {
+  color: #00f5ff;
+  text-shadow: 0 0 10px #00f5ff;
+}
+
+.neon-text-green {
+  color: #39ff14;
+  text-shadow: 0 0 10px #39ff14;
+}
+
+.neon-text-purple {
+  color: #bf00ff;
+  text-shadow: 0 0 10px #bf00ff;
+}
+
+.neon-text-cyan {
+  color: #00ffff;
+  text-shadow: 0 0 10px #00ffff;
+}
+
+.neon-text-orange {
+  color: #ff6b00;
+  text-shadow: 0 0 10px #ff6b00;
+}
+
+/* 按钮悬停效果 */
+.neural-button {
+  position: relative;
+  overflow: hidden;
+  background: rgba(55, 65, 81, 0.5);
+  border: 1px solid rgba(156, 163, 175, 0.3);
+  color: #f3f4f6;
+  transition: all 0.3s ease;
+}
+
+.neural-button:hover {
+  background: rgba(55, 65, 81, 0.8);
+  border-color: rgba(0, 245, 255, 0.5);
+  color: #00f5ff;
+  box-shadow: 0 0 15px rgba(0, 245, 255, 0.3);
+}
+
+.neural-button:active {
+  transform: scale(0.98);
+}
+
+/* 量子效果 */
+.quantum-effect {
+  position: relative;
+}
+
+.quantum-effect::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(0, 245, 255, 0.1),
+    transparent
+  );
+  border-radius: inherit;
+  animation: quantum-pulse 2s ease-in-out infinite;
+}
+
+@keyframes quantum-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* 神经网络效果 */
+.neural-card {
+  background: rgba(31, 41, 55, 0.7);
+  border: 1px solid rgba(75, 85, 99, 0.5);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.neural-card:hover {
+  border-color: rgba(0, 245, 255, 0.5);
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* 进度条 */
+.neural-progress {
+  width: 100%;
+  height: 4px;
+  background: rgba(55, 65, 81, 0.8);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.neural-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00f5ff, #39ff14);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.neural-progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: progress-shimmer 2s infinite;
+}
+
+@keyframes progress-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* 量子进度条 */
+.quantum-progress {
+  width: 100%;
+  height: 6px;
+  background: rgba(31, 41, 55, 0.8);
+  border: 1px solid rgba(75, 85, 99, 0.5);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.quantum-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  position: relative;
+  transition: width 0.5s ease;
+}
+
+/* 矩阵背景 */
+.matrix-background {
+  position: relative;
+  overflow: hidden;
+}
+
+.matrix-background::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(
+      circle at 25% 25%,
+      rgba(0, 245, 255, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 75% 75%,
+      rgba(57, 255, 20, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(191, 0, 255, 0.05) 0%,
+      transparent 50%
+    );
+  animation: matrix-flow 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes matrix-flow {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-100px) rotate(1deg);
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .neural-card {
+    padding: 0.75rem;
+  }
+
+  .neon-text-blue,
+  .neon-text-green,
+  .neon-text-purple,
+  .neon-text-cyan,
+  .neon-text-orange,
+  .neon-text-red {
+    text-shadow: 0 0 5px currentColor;
+  }
+}
+
+/* 3D场景控制器样式 */
+.scene-controls {
+  backdrop-filter: blur(20px);
+  background: rgba(17, 24, 39, 0.9);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.scene-controls:hover {
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow: 0 0 25px rgba(59, 130, 246, 0.2);
+}
+
+/* 数据流动画 */
+@keyframes data-flow {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+.data-flow-animation {
+  animation: data-flow 2s ease-in-out infinite;
+}
+
+/* 威胁脉冲效果 */
+@keyframes threat-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 10px currentColor;
+    opacity: 0.8;
+  }
+  50% {
+    box-shadow:
+      0 0 20px currentColor,
+      0 0 30px currentColor;
+    opacity: 1;
+  }
+}
+
+.threat-pulse {
+  animation: threat-pulse 1.5s ease-in-out infinite;
+}
+
+/* 状态指示器 */
+.status-online {
+  color: #39ff14;
+  text-shadow: 0 0 8px #39ff14;
+}
+
+.status-warning {
+  color: #ff6b00;
+  text-shadow: 0 0 8px #ff6b00;
+}
+
+.status-critical {
+  color: #ff3366;
+  text-shadow: 0 0 8px #ff3366;
+}
+
+.status-offline {
+  color: #6b7280;
+  text-shadow: none;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 245, 255, 0.6);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 245, 255, 0.8);
+}

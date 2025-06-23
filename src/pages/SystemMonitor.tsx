@@ -1,4 +1,16 @@
 import React, { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import {
   Activity,
   Cpu,
@@ -27,559 +39,996 @@ import {
   Cloud,
   Shield,
   Info,
-} from "lucide-react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
+  Search,
+  Filter,
+  Download,
+  Flag,
+  Link,
+  MapPin,
+  Calendar,
+  Hash,
+  ExternalLink,
+  Smartphone,
+  Terminal,
+  Copy,
+  ChevronDown,
+  ChevronUp,
+  BarChart3,
   PieChart,
-  Pie,
-  Cell,
-} from "recharts";
-import {
-  useRealTimeAPI,
-  useSystemSummary,
-  useNetworkInterfaces,
-  useProcesses,
-  useServices,
-  useHealthCheck,
-  collectAllMetrics,
-} from "@/hooks/useRealTimeAPI";
-import { DISPLAY_COLORS } from "@/lib/situationDisplayColors";
-import { InvestigationTrigger } from "@/components/InvestigationTrigger";
+} from "lucide-react";
 
-// 类型定义
-interface MetricCard {
-  title: string;
-  value: string | number;
-  unit: string;
-  icon: React.ComponentType<any>;
-  color: string;
-  trend?: number;
-  alert?: boolean;
+// Data interfaces (same as before)
+interface SystemProcess {
+  pid: number;
+  name: string;
+  status: "running" | "sleeping" | "stopped" | "zombie";
+  username: string;
+  cpu_percent: number;
+  memory_percent: number;
+  memory_rss: number;
+  memory_vms: number;
+  io_read_bytes: number;
+  io_write_bytes: number;
+  num_threads: number;
+  create_time: string;
+  id: number;
+  timestamp: string;
+  risk_level?: "low" | "medium" | "high" | "critical";
+}
+
+interface NetworkConnection {
+  id: number;
+  timestamp: string;
+  pid: number;
+  process_name: string | null;
+  status:
+    | "ESTABLISHED"
+    | "TIME_WAIT"
+    | "LISTEN"
+    | "CLOSE_WAIT"
+    | "SYN_SENT"
+    | "SYN_RECEIVED";
+  protocol: "TCP" | "UDP" | null;
+  url: string | null;
+  connection: string;
+  risk_level?: "low" | "medium" | "high" | "critical";
+}
+
+interface WindowsService {
+  name: string;
+  display_name: string;
+  status:
+    | "running"
+    | "stopped"
+    | "paused"
+    | "start_pending"
+    | "stop_pending"
+    | "continue_pending"
+    | "pause_pending";
+  startup_type?: "automatic" | "manual" | "disabled";
+  service_type?: string;
+  risk_level?: "low" | "medium" | "high" | "critical";
 }
 
 const SystemMonitor: React.FC = () => {
-  const [isPaused, setIsPaused] = useState(false);
-  const [showRawData, setShowRawData] = useState(false);
+  // State management
+  const [searchTerm, setSearchTerm] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-
-  // 使用真实API Hooks
-  const {
-    data: realTimeData,
-    loading: dataLoading,
-    error: dataError,
-    isUsingMockData,
-    fetchNow,
-  } = useRealTimeAPI({
-    interval: 5000,
-    enabled: !isPaused,
-    fallbackToMock: true,
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [viewMode, setViewMode] = useState<"compact" | "detailed">("compact");
+  const [expandedSections, setExpandedSections] = useState({
+    threats: true,
+    processes: true,
+    connections: true,
+    services: true,
   });
 
-  const {
-    summary,
-    loading: summaryLoading,
-    error: summaryError,
-  } = useSystemSummary();
+  // Mock data (same as before but condensed for readability)
+  const mockProcesses: SystemProcess[] = [
+    {
+      pid: 46532,
+      name: "msedgewebview2.exe",
+      status: "running",
+      username: "DIEOUT\\DIEOUT",
+      cpu_percent: 0.0,
+      memory_percent: 0.06824922610466883,
+      memory_rss: 22.2109375,
+      memory_vms: 10.03515625,
+      io_read_bytes: 3.589977264404297,
+      io_write_bytes: 8.122886657714844,
+      num_threads: 11,
+      create_time: "2025-06-23T13:15:02.641886",
+      id: 7147,
+      timestamp: "2025-06-23T14:33:28.388209",
+      risk_level: "low",
+    },
+    {
+      pid: 1337,
+      name: "suspicious_crypto.exe",
+      status: "running",
+      username: "SYSTEM",
+      cpu_percent: 95.8,
+      memory_percent: 25.7,
+      memory_rss: 1024.0,
+      memory_vms: 2048.0,
+      io_read_bytes: 1200.5,
+      io_write_bytes: 800.3,
+      num_threads: 32,
+      create_time: "2025-06-23T14:30:15.123456",
+      id: 7148,
+      timestamp: "2025-06-23T14:43:28.407385",
+      risk_level: "critical",
+    },
+    {
+      pid: 2048,
+      name: "chrome.exe",
+      status: "running",
+      username: "DIEOUT\\DIEOUT",
+      cpu_percent: 15.7,
+      memory_percent: 8.3,
+      memory_rss: 340.5,
+      memory_vms: 680.2,
+      io_read_bytes: 125.3,
+      io_write_bytes: 89.1,
+      num_threads: 18,
+      create_time: "2025-06-23T09:45:20.987654",
+      id: 7149,
+      timestamp: "2025-06-23T14:43:28.407385",
+      risk_level: "low",
+    },
+    {
+      pid: 4096,
+      name: "powershell.exe",
+      status: "running",
+      username: "DIEOUT\\DIEOUT",
+      cpu_percent: 45.2,
+      memory_percent: 3.8,
+      memory_rss: 156.7,
+      memory_vms: 312.4,
+      io_read_bytes: 89.5,
+      io_write_bytes: 156.9,
+      num_threads: 8,
+      create_time: "2025-06-23T14:20:10.456789",
+      id: 7150,
+      timestamp: "2025-06-23T14:43:28.407385",
+      risk_level: "medium",
+    },
+  ];
 
-  const {
-    data: interfaces,
-    loading: interfacesLoading,
-    error: interfacesError,
-    refresh: refetchInterfaces,
-  } = useNetworkInterfaces();
+  const mockConnections: NetworkConnection[] = [
+    {
+      id: 6498,
+      timestamp: "2025-06-23T14:43:28.407385",
+      pid: 0,
+      process_name: null,
+      status: "TIME_WAIT",
+      protocol: null,
+      url: null,
+      connection: "192.168.156.100:58434 -> 211.100.0.108:443",
+      risk_level: "low",
+    },
+    {
+      id: 6499,
+      timestamp: "2025-06-23T14:43:28.407385",
+      pid: 1337,
+      process_name: "suspicious_crypto.exe",
+      status: "ESTABLISHED",
+      protocol: "TCP",
+      url: "https://suspicious-mining-pool.onion",
+      connection: "192.168.156.100:49152 -> 185.220.101.42:8080",
+      risk_level: "critical",
+    },
+    {
+      id: 6500,
+      timestamp: "2025-06-23T14:43:28.407385",
+      pid: 2048,
+      process_name: "chrome.exe",
+      status: "ESTABLISHED",
+      protocol: "TCP",
+      url: "https://www.google.com",
+      connection: "192.168.156.100:51234 -> 142.250.191.14:443",
+      risk_level: "low",
+    },
+    {
+      id: 6501,
+      timestamp: "2025-06-23T14:43:28.407385",
+      pid: 4096,
+      process_name: "powershell.exe",
+      status: "ESTABLISHED",
+      protocol: "TCP",
+      url: null,
+      connection: "192.168.156.100:52001 -> 10.0.0.50:22",
+      risk_level: "medium",
+    },
+  ];
 
-  const {
-    data: processes,
-    loading: processesLoading,
-    error: processesError,
-    refresh: refetchProcesses,
-  } = useProcesses(10);
+  const mockServices: WindowsService[] = [
+    {
+      name: "ALG",
+      display_name: "Application Layer Gateway Service",
+      status: "stopped",
+      startup_type: "manual",
+      service_type: "Win32",
+      risk_level: "low",
+    },
+    {
+      name: "Spooler",
+      display_name: "Print Spooler",
+      status: "running",
+      startup_type: "automatic",
+      service_type: "Win32",
+      risk_level: "medium",
+    },
+    {
+      name: "WinDefend",
+      display_name: "Windows Defender Antivirus Service",
+      status: "running",
+      startup_type: "automatic",
+      service_type: "Win32",
+      risk_level: "low",
+    },
+    {
+      name: "SuspiciousService",
+      display_name: "Suspicious Background Service",
+      status: "running",
+      startup_type: "automatic",
+      service_type: "Win32",
+      risk_level: "critical",
+    },
+  ];
 
-  const {
-    data: services,
-    loading: servicesLoading,
-    error: servicesError,
-    refresh: refetchServices,
-  } = useServices();
+  // Helper functions
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "running":
+      case "ESTABLISHED":
+        return "bg-green-500/20 text-green-400 border-green-500/40";
+      case "stopped":
+      case "TIME_WAIT":
+        return "bg-gray-500/20 text-gray-400 border-gray-500/40";
+      case "paused":
+      case "CLOSE_WAIT":
+        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/40";
+      case "LISTEN":
+        return "bg-blue-500/20 text-blue-400 border-blue-500/40";
+      case "sleeping":
+        return "bg-purple-500/20 text-purple-400 border-purple-500/40";
+      default:
+        return "bg-gray-500/20 text-gray-400 border-gray-500/40";
+    }
+  };
 
-  const {
-    health,
-    loading: healthLoading,
-    error: healthError,
-    refetch: refetchHealth,
-  } = useHealthCheck();
+  const getRiskColor = (risk: string) => {
+    switch (risk) {
+      case "critical":
+        return "bg-red-600/20 text-red-400 border-red-600/40";
+      case "high":
+        return "bg-red-500/20 text-red-400 border-red-500/40";
+      case "medium":
+        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/40";
+      case "low":
+        return "bg-green-500/20 text-green-400 border-green-500/40";
+      default:
+        return "bg-gray-500/20 text-gray-400 border-gray-500/40";
+    }
+  };
 
-  // 手动刷新所有数据
-  const handleRefreshAll = async () => {
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+  };
+
+  const formatTimestamp = (timestamp: string) => {
+    return new Date(timestamp).toLocaleTimeString("zh-CN");
+  };
+
+  const handleRefresh = () => {
     setRefreshing(true);
-    try {
-      await Promise.all([
-        fetchNow(),
-        refetchInterfaces(),
-        refetchProcesses(),
-        refetchServices(),
-        refetchHealth(),
-      ]);
-    } catch (error) {
-      console.error("Failed to refresh data:", error);
-    } finally {
-      setRefreshing(false);
-    }
+    setTimeout(() => setRefreshing(false), 1000);
   };
 
-  // 收集所有指标
-  const handleCollectMetrics = async () => {
-    try {
-      const result = await collectAllMetrics();
-      if (result.success) {
-        handleRefreshAll();
-      }
-    } catch (error) {
-      console.error("Failed to collect metrics:", error);
-    }
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
   };
 
-  // 生成指标卡片数据
-  const getMetricCards = (): MetricCard[] => {
-    if (!realTimeData) return [];
+  // Auto refresh
+  useEffect(() => {
+    if (!autoRefresh) return;
+    const interval = setInterval(handleRefresh, 5000);
+    return () => clearInterval(interval);
+  }, [autoRefresh]);
 
-    return [
-      {
-        title: "CPU使用率",
-        value: realTimeData.cpuUsage,
-        unit: "%",
-        icon: Cpu,
-        color: DISPLAY_COLORS.neon.blue,
-        alert: realTimeData.alerts?.cpu_alert,
-      },
-      {
-        title: "内存使用率",
-        value: realTimeData.memoryUsage,
-        unit: "%",
-        icon: MemoryStick,
-        color: DISPLAY_COLORS.neon.green,
-        alert: realTimeData.alerts?.memory_alert,
-      },
-      {
-        title: "磁盘使用率",
-        value: realTimeData.diskUsage,
-        unit: "%",
-        icon: HardDrive,
-        color: DISPLAY_COLORS.neon.purple,
-        alert: realTimeData.alerts?.disk_alert,
-      },
-      {
-        title: "网络延迟",
-        value: realTimeData.networkLatency,
-        unit: "ms",
-        icon: Wifi,
-        color: DISPLAY_COLORS.neon.cyan,
-      },
-      {
-        title: "活跃连接",
-        value: realTimeData.activeConnections,
-        unit: "个",
-        icon: Network,
-        color: DISPLAY_COLORS.neon.yellow,
-      },
-      {
-        title: "在线节点",
-        value: realTimeData.onlineNodes,
-        unit: "个",
-        icon: Server,
-        color: DISPLAY_COLORS.neon.orange,
-      },
-    ];
+  // Filter data based on search term
+  const filteredProcesses = mockProcesses.filter(
+    (process) =>
+      process.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      process.pid.toString().includes(searchTerm) ||
+      process.username.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  const filteredConnections = mockConnections.filter(
+    (connection) =>
+      connection.connection.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (connection.process_name &&
+        connection.process_name
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())),
+  );
+
+  const filteredServices = mockServices.filter(
+    (service) =>
+      service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.display_name.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  // Calculate system stats
+  const systemStats = {
+    cpuUsage: Math.round(
+      mockProcesses.reduce((acc, p) => acc + p.cpu_percent, 0),
+    ),
+    memoryUsage: Math.round(
+      mockProcesses.reduce((acc, p) => acc + p.memory_percent, 0),
+    ),
+    totalProcesses: mockProcesses.length,
+    totalConnections: mockConnections.length,
+    totalServices: mockServices.length,
+    criticalThreats: [
+      ...mockProcesses,
+      ...mockConnections,
+      ...mockServices,
+    ].filter((item) => item.risk_level === "critical").length,
   };
 
-  // 状态指示器组件
-  const StatusIndicator: React.FC<{ status: boolean; loading?: boolean }> = ({
-    status,
-    loading,
-  }) => {
-    if (loading) {
-      return (
-        <div className="animate-spin">
-          <RefreshCw className="w-4 h-4 text-gray-400" />
+  const CompactProcessRow = ({ process }: { process: SystemProcess }) => (
+    <div
+      className={cn(
+        "flex items-center justify-between p-3 rounded-lg border border-matrix-border hover:bg-matrix-surface/50 transition-colors",
+        process.risk_level === "critical" && "border-red-500/30 bg-red-500/5",
+      )}
+    >
+      <div className="flex items-center gap-3 flex-1">
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-sm bg-matrix-surface px-2 py-1 rounded">
+            {process.pid}
+          </span>
+          {process.risk_level === "critical" && (
+            <AlertTriangle className="w-4 h-4 text-red-400" />
+          )}
         </div>
-      );
-    }
-
-    return status ? (
-      <CheckCircle className="w-4 h-4 text-green-400" />
-    ) : (
-      <XCircle className="w-4 h-4 text-red-400" />
-    );
-  };
-
-  // 数据状态横幅
-  const DataStatusBanner: React.FC = () => {
-    if (!isUsingMockData && !dataError) {
-      return (
-        <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mb-6">
-          <div className="flex items-center space-x-2">
-            <Cloud className="w-5 h-5 text-green-400" />
-            <span className="text-green-400 font-medium">
-              正在使用真实API数据
-            </span>
-            <div className="ml-auto flex items-center space-x-2 text-green-400 text-sm">
-              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span>实时同步</span>
-            </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="font-medium truncate">{process.name}</span>
+            <Badge className={getStatusColor(process.status)} size="sm">
+              {process.status === "running" ? "运行" : "停止"}
+            </Badge>
           </div>
-        </div>
-      );
-    }
-
-    if (isUsingMockData) {
-      return (
-        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-6">
-          <div className="flex items-center space-x-2">
-            <AlertTriangle className="w-5 h-5 text-yellow-400" />
-            <span className="text-yellow-400 font-medium">
-              正在使用模拟数据
-            </span>
-            <span className="text-yellow-300 text-sm">
-              (API连接失败，已切换到演示模式)
-            </span>
-          </div>
-        </div>
-      );
-    }
-
-    if (dataError) {
-      return (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-6">
-          <div className="flex items-center space-x-2">
-            <XCircle className="w-5 h-5 text-red-400" />
-            <span className="text-red-400 font-medium">数据获取失败</span>
-            <span className="text-red-300 text-sm">错误: {dataError}</span>
-          </div>
-        </div>
-      );
-    }
-
-    return null;
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* 页面头部 */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-4xl font-bold font-orbitron mb-2 neon-text-blue">
-              系统监控中心
-            </h1>
-            <p className="text-gray-400">基于真实API的系统性能和状态监控</p>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => setShowRawData(!showRawData)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
-                showRawData
-                  ? "bg-blue-500/20 text-blue-400"
-                  : "bg-gray-700 hover:bg-gray-600"
-              }`}
-            >
-              {showRawData ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
-              <span>原始数据</span>
-            </button>
-
-            <button
-              onClick={() => setIsPaused(!isPaused)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
-                isPaused
-                  ? "bg-orange-500/20 text-orange-400"
-                  : "bg-green-500/20 text-green-400"
-              }`}
-            >
-              {isPaused ? (
-                <Play className="w-4 h-4" />
-              ) : (
-                <Pause className="w-4 h-4" />
-              )}
-              <span>{isPaused ? "继续" : "暂停"}</span>
-            </button>
-
-            <button
-              onClick={handleRefreshAll}
-              disabled={refreshing}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-all disabled:opacity-50"
-            >
-              <RefreshCw
-                className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`}
-              />
-              <span>刷新</span>
-            </button>
-
-            <button
-              onClick={handleCollectMetrics}
-              className="flex items-center space-x-2 px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg hover:bg-purple-500/30 transition-all"
-            >
-              <Database className="w-4 h-4" />
-              <span>收集指标</span>
-            </button>
-          </div>
-        </div>
-
-        {/* 数据状态横幅 */}
-        <DataStatusBanner />
-
-        {/* 指标卡片网格 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
-          {getMetricCards().map((metric, index) => {
-            const Icon = metric.icon;
-            return (
-              <div
-                key={index}
-                className={`bg-gray-800 rounded-lg p-6 border ${
-                  metric.alert
-                    ? "border-red-500/50 bg-red-500/5"
-                    : "border-gray-700"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <Icon className="w-8 h-8" style={{ color: metric.color }} />
-                  {metric.alert && (
-                    <AlertTriangle className="w-5 h-5 text-red-400" />
-                  )}
-                </div>
-                <div
-                  className="text-3xl font-bold mb-1"
-                  style={{ color: metric.color }}
-                >
-                  {metric.value}
-                  <span className="text-lg ml-1">{metric.unit}</span>
-                </div>
-                <div className="text-sm text-gray-400">{metric.title}</div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* 图表和详细信息 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* 系统性能趋势 */}
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-bold mb-4 flex items-center">
-              <TrendingUp className="w-5 h-5 mr-2 text-blue-400" />
-              性能趋势
-            </h3>
-            <div style={{ width: "100%", height: "300px" }}>
-              <ResponsiveContainer>
-                <LineChart data={[]}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis stroke="#9CA3AF" />
-                  <YAxis stroke="#9CA3AF" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#1F2937",
-                      border: "1px solid #374151",
-                      borderRadius: "8px",
-                    }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="cpu"
-                    stroke="#3B82F6"
-                    strokeWidth={2}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="memory"
-                    stroke="#10B981"
-                    strokeWidth={2}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* 网络接口状态 */}
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-bold mb-4 flex items-center">
-              <Network className="w-5 h-5 mr-2 text-green-400" />
-              网络接口
-              <StatusIndicator
-                status={!interfacesError}
-                loading={interfacesLoading}
-              />
-            </h3>
-            <div className="space-y-3">
-              {(interfaces || []).slice(0, 6).map((iface, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg"
-                >
-                  <div className="flex-1">
-                    <div className="font-medium">{iface.interface_name}</div>
-                    <div className="text-sm text-gray-400 flex items-center gap-2">
-                      {iface.config?.ip_address || "无IP地址"}
-                      {iface.config?.ip_address && (
-                        <InvestigationTrigger
-                          ip={iface.config.ip_address}
-                          variant="icon"
-                          className="text-xs"
-                        />
-                      )}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm">
-                      ↑ {Math.round(iface.bytes_sent / 1024)} KB
-                    </div>
-                    <div className="text-sm">
-                      ↓ {Math.round(iface.bytes_recv / 1024)} KB
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* 进程和服务 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* 进程监控 */}
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-bold mb-4 flex items-center">
-              <Activity className="w-5 h-5 mr-2 text-purple-400" />
-              进程监控
-              <StatusIndicator
-                status={!processesError}
-                loading={processesLoading}
-              />
-            </h3>
-            <div className="space-y-2">
-              {(processes || []).slice(0, 8).map((process, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-2 bg-gray-700/30 rounded"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate">{process.name}</div>
-                    <div className="text-xs text-gray-400">
-                      PID: {process.pid}
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3 text-sm">
-                    <span className="text-blue-400">
-                      {process.cpu_percent.toFixed(1)}%
-                    </span>
-                    <span className="text-green-400">
-                      {process.memory_percent.toFixed(1)}%
-                    </span>
-                    <span
-                      className={`px-2 py-1 rounded text-xs ${
-                        process.status === "running"
-                          ? "bg-green-500/20 text-green-400"
-                          : "bg-gray-500/20 text-gray-400"
-                      }`}
-                    >
-                      {process.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 服务状态 */}
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-bold mb-4 flex items-center">
-              <Server className="w-5 h-5 mr-2 text-orange-400" />
-              服务状态
-              <StatusIndicator
-                status={!servicesError}
-                loading={servicesLoading}
-              />
-            </h3>
-            <div className="space-y-2">
-              {(services || []).slice(0, 8).map((service, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-2 bg-gray-700/30 rounded"
-                >
-                  <div className="font-medium">{service.name}</div>
-                  <div className="flex items-center space-x-2">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        service.running
-                          ? "bg-green-500/20 text-green-400"
-                          : "bg-red-500/20 text-red-400"
-                      }`}
-                    >
-                      {service.running ? "运行中" : "已停止"}
-                    </span>
-                    <span className="text-gray-400 text-xs">
-                      {service.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* 原始数据视图 */}
-        {showRawData && (
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-bold mb-4 flex items-center">
-              <Info className="w-5 h-5 mr-2 text-cyan-400" />
-              原始API数据
-            </h3>
-            <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-              <pre className="text-sm text-gray-300">
-                {JSON.stringify(
-                  {
-                    realTimeData,
-                    summary,
-                    healthStatus: health,
-                    dataSource: isUsingMockData ? "mock" : "api",
-                    errors: {
-                      data: dataError,
-                      summary: summaryError,
-                      interfaces: interfacesError,
-                      processes: processesError,
-                      services: servicesError,
-                      health: healthError,
-                    },
-                  },
-                  null,
-                  2,
-                )}
-              </pre>
-            </div>
-          </div>
-        )}
-
-        {/* 页面底部信息 */}
-        <div className="mt-8 text-center text-gray-500 text-sm">
-          <p>
-            API服务器:{" "}
-            {import.meta.env.VITE_API_URL || "http://jq41030xx76.vicp.fun"} |
-            数据源: {isUsingMockData ? "模拟数据" : "真实API"} | 最后��新:{" "}
-            {realTimeData?.timestamp
-              ? new Date(realTimeData.timestamp).toLocaleString()
-              : "无数据"}
+          <p className="text-xs text-muted-foreground truncate">
+            {process.username.split("\\").pop()}
           </p>
         </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="text-right">
+          <p
+            className={cn(
+              "text-sm font-mono",
+              process.cpu_percent > 50 ? "text-red-400" : "text-green-400",
+            )}
+          >
+            {process.cpu_percent.toFixed(1)}%
+          </p>
+          <p className="text-xs text-muted-foreground">CPU</p>
+        </div>
+        <div className="text-right">
+          <p className="text-sm font-mono">
+            {process.memory_percent.toFixed(1)}%
+          </p>
+          <p className="text-xs text-muted-foreground">MEM</p>
+        </div>
+        <Badge className={getRiskColor(process.risk_level || "low")} size="sm">
+          {process.risk_level === "critical"
+            ? "严重"
+            : process.risk_level === "medium"
+              ? "中危"
+              : "正常"}
+        </Badge>
+        <Button
+          size="sm"
+          className="bg-blue-500/20 text-blue-400 border-blue-500/30 px-2"
+        >
+          <Eye className="w-3 h-3" />
+        </Button>
+      </div>
+    </div>
+  );
+
+  const CompactConnectionRow = ({
+    connection,
+  }: {
+    connection: NetworkConnection;
+  }) => (
+    <div
+      className={cn(
+        "flex items-center justify-between p-3 rounded-lg border border-matrix-border hover:bg-matrix-surface/50 transition-colors",
+        connection.risk_level === "critical" &&
+          "border-red-500/30 bg-red-500/5",
+      )}
+    >
+      <div className="flex items-center gap-3 flex-1">
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-sm bg-matrix-surface px-2 py-1 rounded">
+            {connection.id}
+          </span>
+          {connection.risk_level === "critical" && (
+            <AlertTriangle className="w-4 h-4 text-red-400" />
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="font-medium truncate">
+              {connection.process_name || "系统"}
+            </span>
+            <Badge className={getStatusColor(connection.status)} size="sm">
+              {connection.status}
+            </Badge>
+          </div>
+          <p className="text-xs text-muted-foreground font-mono truncate">
+            {connection.connection}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="text-right">
+          <Badge variant="outline" size="sm">
+            {connection.protocol || "Unknown"}
+          </Badge>
+        </div>
+        <Badge
+          className={getRiskColor(connection.risk_level || "low")}
+          size="sm"
+        >
+          {connection.risk_level === "critical"
+            ? "严重"
+            : connection.risk_level === "medium"
+              ? "中危"
+              : "正常"}
+        </Badge>
+        <Button
+          size="sm"
+          className="bg-blue-500/20 text-blue-400 border-blue-500/30 px-2"
+        >
+          <Eye className="w-3 h-3" />
+        </Button>
+      </div>
+    </div>
+  );
+
+  const CompactServiceRow = ({ service }: { service: WindowsService }) => (
+    <div
+      className={cn(
+        "flex items-center justify-between p-3 rounded-lg border border-matrix-border hover:bg-matrix-surface/50 transition-colors",
+        service.risk_level === "critical" && "border-red-500/30 bg-red-500/5",
+      )}
+    >
+      <div className="flex items-center gap-3 flex-1">
+        <div className="flex items-center gap-2">
+          {service.risk_level === "critical" && (
+            <AlertTriangle className="w-4 h-4 text-red-400" />
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="font-mono font-medium">{service.name}</span>
+            <Badge className={getStatusColor(service.status)} size="sm">
+              {service.status === "running"
+                ? "运行"
+                : service.status === "stopped"
+                  ? "停止"
+                  : service.status}
+            </Badge>
+          </div>
+          <p className="text-xs text-muted-foreground truncate">
+            {service.display_name}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="text-right">
+          <p className="text-xs">
+            {service.startup_type === "automatic"
+              ? "自动"
+              : service.startup_type === "manual"
+                ? "手动"
+                : "禁用"}
+          </p>
+        </div>
+        <Badge className={getRiskColor(service.risk_level || "low")} size="sm">
+          {service.risk_level === "critical"
+            ? "严重"
+            : service.risk_level === "medium"
+              ? "中危"
+              : "正常"}
+        </Badge>
+        <Button
+          size="sm"
+          className="bg-blue-500/20 text-blue-400 border-blue-500/30 px-2"
+        >
+          <Eye className="w-3 h-3" />
+        </Button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen matrix-bg">
+      <div className="p-6 max-w-[1600px] mx-auto space-y-6">
+        {/* Optimized Header */}
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-white glow-text mb-2">
+              系统实时监控
+            </h1>
+            <p className="text-muted-foreground">
+              统一监控系统进程、网络连接和系统服务 •{" "}
+              <span className="text-green-400">
+                最后更新: {formatTimestamp(new Date().toISOString())}
+              </span>
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Search className="w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="全局搜索..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-64 cyber-input"
+              />
+            </div>
+            <Button
+              size="sm"
+              onClick={() =>
+                setViewMode(viewMode === "compact" ? "detailed" : "compact")
+              }
+              className="bg-purple-500/20 text-purple-400 border-purple-500/30"
+            >
+              {viewMode === "compact" ? (
+                <BarChart3 className="w-4 h-4 mr-2" />
+              ) : (
+                <PieChart className="w-4 h-4 mr-2" />
+              )}
+              {viewMode === "compact" ? "详细" : "紧凑"}
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="bg-blue-500/20 text-blue-400 border-blue-500/30"
+            >
+              <RefreshCw
+                className={cn("w-4 h-4 mr-2", refreshing && "animate-spin")}
+              />
+              刷新
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => setAutoRefresh(!autoRefresh)}
+              className={cn(
+                "border",
+                autoRefresh
+                  ? "bg-green-500/20 text-green-400 border-green-500/30"
+                  : "bg-gray-500/20 text-gray-400 border-gray-500/30",
+              )}
+            >
+              {autoRefresh ? (
+                <Play className="w-4 h-4 mr-2" />
+              ) : (
+                <Pause className="w-4 h-4 mr-2" />
+              )}
+              {autoRefresh ? "自动" : "手动"}
+            </Button>
+          </div>
+        </div>
+
+        {/* Enhanced System Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+          {[
+            {
+              label: "CPU使用率",
+              value: systemStats.cpuUsage,
+              unit: "%",
+              icon: Cpu,
+              color: "blue",
+              progress: systemStats.cpuUsage,
+            },
+            {
+              label: "内存使用",
+              value: systemStats.memoryUsage,
+              unit: "%",
+              icon: MemoryStick,
+              color: "green",
+              progress: systemStats.memoryUsage,
+            },
+            {
+              label: "运行进程",
+              value: systemStats.totalProcesses,
+              unit: "个",
+              icon: Activity,
+              color: "purple",
+            },
+            {
+              label: "网络连接",
+              value: systemStats.totalConnections,
+              unit: "个",
+              icon: Network,
+              color: "orange",
+            },
+            {
+              label: "系统服务",
+              value: systemStats.totalServices,
+              unit: "个",
+              icon: Settings,
+              color: "cyan",
+            },
+            {
+              label: "严重威胁",
+              value: systemStats.criticalThreats,
+              unit: "个",
+              icon: AlertTriangle,
+              color: "red",
+            },
+          ].map((stat, index) => (
+            <Card key={index} className="cyber-card-enhanced">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <stat.icon
+                    className={cn(
+                      "w-5 h-5",
+                      stat.color === "blue" && "text-blue-400",
+                      stat.color === "green" && "text-green-400",
+                      stat.color === "purple" && "text-purple-400",
+                      stat.color === "orange" && "text-orange-400",
+                      stat.color === "cyan" && "text-cyan-400",
+                      stat.color === "red" && "text-red-400",
+                    )}
+                  />
+                  <span className="text-xs text-muted-foreground">
+                    {stat.label}
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-baseline gap-1">
+                    <span
+                      className={cn(
+                        "text-xl font-bold",
+                        stat.color === "blue" && "text-blue-400",
+                        stat.color === "green" && "text-green-400",
+                        stat.color === "purple" && "text-purple-400",
+                        stat.color === "orange" && "text-orange-400",
+                        stat.color === "cyan" && "text-cyan-400",
+                        stat.color === "red" && "text-red-400",
+                      )}
+                    >
+                      {stat.value}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {stat.unit}
+                    </span>
+                  </div>
+                  {stat.progress !== undefined && (
+                    <Progress value={stat.progress} className="h-1" />
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Critical Threats Alert Panel */}
+        {systemStats.criticalThreats > 0 && (
+          <Card className="cyber-card-enhanced border-red-500/30">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-red-400" />
+                  严重威胁告警
+                  <Badge className="bg-red-600/20 text-red-400 border-red-600/40">
+                    {systemStats.criticalThreats} 个威胁
+                  </Badge>
+                </CardTitle>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toggleSection("threats")}
+                  className="bg-matrix-surface border-matrix-border"
+                >
+                  {expandedSections.threats ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+            </CardHeader>
+            {expandedSections.threats && (
+              <CardContent className="pt-0">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {mockProcesses
+                    .filter((p) => p.risk_level === "critical")
+                    .map((process) => (
+                      <div
+                        key={process.id}
+                        className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <Activity className="w-4 h-4 text-red-400" />
+                            <span className="font-medium text-red-400">
+                              高危进程
+                            </span>
+                          </div>
+                          <Badge className="bg-red-600/20 text-red-400 border-red-600/40">
+                            PID: {process.pid}
+                          </Badge>
+                        </div>
+                        <h4 className="font-medium mb-1">{process.name}</h4>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <span>CPU: {process.cpu_percent.toFixed(1)}%</span>
+                          <span>
+                            内存: {process.memory_percent.toFixed(1)}%
+                          </span>
+                          <span>线程: {process.num_threads}</span>
+                          <span>
+                            用户: {process.username.split("\\").pop()}
+                          </span>
+                        </div>
+                        <div className="flex gap-2 mt-3">
+                          <Button
+                            size="sm"
+                            className="bg-red-500/20 text-red-400 border-red-500/30 text-xs px-2 py-1 flex-1"
+                          >
+                            <Flag className="w-3 h-3 mr-1" />
+                            标记
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs px-2 py-1 flex-1"
+                          >
+                            <Shield className="w-3 h-3 mr-1" />
+                            隔离
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  {mockConnections
+                    .filter((c) => c.risk_level === "critical")
+                    .map((connection) => (
+                      <div
+                        key={connection.id}
+                        className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <Network className="w-4 h-4 text-red-400" />
+                            <span className="font-medium text-red-400">
+                              可疑连接
+                            </span>
+                          </div>
+                          <Badge className="bg-red-600/20 text-red-400 border-red-600/40">
+                            ID: {connection.id}
+                          </Badge>
+                        </div>
+                        <h4 className="font-medium mb-1">
+                          {connection.process_name}
+                        </h4>
+                        <p className="text-sm text-muted-foreground mb-2 font-mono">
+                          {connection.connection}
+                        </p>
+                        <div className="flex gap-2 mt-3">
+                          <Button
+                            size="sm"
+                            className="bg-red-500/20 text-red-400 border-red-500/30 text-xs px-2 py-1 flex-1"
+                          >
+                            <XCircle className="w-3 h-3 mr-1" />
+                            阻断
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs px-2 py-1 flex-1"
+                          >
+                            <Eye className="w-3 h-3 mr-1" />
+                            详情
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  {mockServices
+                    .filter((s) => s.risk_level === "critical")
+                    .map((service) => (
+                      <div
+                        key={service.name}
+                        className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <Settings className="w-4 h-4 text-red-400" />
+                            <span className="font-medium text-red-400">
+                              可疑服务
+                            </span>
+                          </div>
+                          <Badge className="bg-red-600/20 text-red-400 border-red-600/40">
+                            {service.status}
+                          </Badge>
+                        </div>
+                        <h4 className="font-medium mb-1">{service.name}</h4>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {service.display_name}
+                        </p>
+                        <div className="flex gap-2 mt-3">
+                          <Button
+                            size="sm"
+                            className="bg-red-500/20 text-red-400 border-red-500/30 text-xs px-2 py-1 flex-1"
+                          >
+                            <Pause className="w-3 h-3 mr-1" />
+                            停止
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs px-2 py-1 flex-1"
+                          >
+                            <Flag className="w-3 h-3 mr-1" />
+                            标记
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </CardContent>
+            )}
+          </Card>
+        )}
+
+        {/* Main Monitoring Sections */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          {/* System Processes */}
+          <Card className="cyber-card-enhanced">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-green-400" />
+                  系统进程
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/40">
+                    {filteredProcesses.length} 个
+                  </Badge>
+                </CardTitle>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toggleSection("processes")}
+                  className="bg-matrix-surface border-matrix-border"
+                >
+                  {expandedSections.processes ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+            </CardHeader>
+            {expandedSections.processes && (
+              <CardContent className="pt-0">
+                <div className="space-y-3">
+                  {filteredProcesses.slice(0, 8).map((process) => (
+                    <CompactProcessRow key={process.id} process={process} />
+                  ))}
+                </div>
+                {filteredProcesses.length > 8 && (
+                  <div className="mt-4 text-center">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-matrix-surface border-matrix-border"
+                    >
+                      查看全部 {filteredProcesses.length} 个进程
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            )}
+          </Card>
+
+          {/* Network Connections */}
+          <Card className="cyber-card-enhanced">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Network className="w-5 h-5 text-purple-400" />
+                  网络连接
+                  <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/40">
+                    {filteredConnections.length} 个
+                  </Badge>
+                </CardTitle>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => toggleSection("connections")}
+                  className="bg-matrix-surface border-matrix-border"
+                >
+                  {expandedSections.connections ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+            </CardHeader>
+            {expandedSections.connections && (
+              <CardContent className="pt-0">
+                <div className="space-y-3">
+                  {filteredConnections.slice(0, 8).map((connection) => (
+                    <CompactConnectionRow
+                      key={connection.id}
+                      connection={connection}
+                    />
+                  ))}
+                </div>
+                {filteredConnections.length > 8 && (
+                  <div className="mt-4 text-center">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-matrix-surface border-matrix-border"
+                    >
+                      查看全部 {filteredConnections.length} 个连接
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            )}
+          </Card>
+        </div>
+
+        {/* System Services */}
+        <Card className="cyber-card-enhanced">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="w-5 h-5 text-orange-400" />
+                系统服务
+                <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/40">
+                  {filteredServices.length} 个
+                </Badge>
+              </CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => toggleSection("services")}
+                className="bg-matrix-surface border-matrix-border"
+              >
+                {expandedSections.services ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </Button>
+            </div>
+          </CardHeader>
+          {expandedSections.services && (
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                {filteredServices.map((service, index) => (
+                  <CompactServiceRow key={index} service={service} />
+                ))}
+              </div>
+            </CardContent>
+          )}
+        </Card>
       </div>
     </div>
   );

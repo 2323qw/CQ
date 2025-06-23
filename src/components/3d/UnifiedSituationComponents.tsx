@@ -1,6 +1,7 @@
 import React, { useRef, useMemo, useCallback } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Text, Line, Html } from "@react-three/drei";
+import { Text, Html } from "@react-three/drei";
+// Line component removed to prevent uniform errors
 import {
   Group,
   Vector3,

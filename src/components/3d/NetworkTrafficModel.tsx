@@ -1,7 +1,8 @@
 import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Mesh, Group, Vector3, BufferGeometry, LineBasicMaterial } from "three";
-import { Line } from "@react-three/drei";
+// Line component removed to prevent uniform errors
+// import { Line } from "@react-three/drei";
 
 // 网络流量粒子
 function TrafficParticle({
@@ -215,13 +216,13 @@ export function NetworkTrafficModel() {
       {/* 网络连接线 */}
       {networkPaths.map((path, pathIndex) => (
         <group key={pathIndex}>
-          <Line
+          {/* <Line
             points={path}
             color="#39ff14"
             lineWidth={2}
             transparent
             opacity={0.4}
-          />
+          /> */}
 
           {/* 流量粒子 */}
           <TrafficParticle

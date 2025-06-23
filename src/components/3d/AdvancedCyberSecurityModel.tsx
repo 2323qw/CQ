@@ -10,7 +10,6 @@ import {
   PointsMaterial,
   Points,
   AdditiveBlending,
-  DoubleSide,
 } from "three";
 import {
   Text,
@@ -139,7 +138,7 @@ function QuantumShield({
           emissiveIntensity={0.4}
           transparent
           opacity={0.15}
-          side={DoubleSide}
+          side={2}
         />
       </mesh>
 
@@ -192,7 +191,7 @@ function HolographicDisplay({
           emissiveIntensity={0.2}
           transparent
           opacity={0.3}
-          side={DoubleSide}
+          side={2}
         />
       </mesh>
 

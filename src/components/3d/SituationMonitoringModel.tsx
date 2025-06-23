@@ -9,9 +9,9 @@ import {
   Float32BufferAttribute,
   Points,
   AdditiveBlending,
-  DoubleSide,
 } from "three";
-import { Text, Line } from "@react-three/drei";
+import { Text } from "@react-three/drei";
+// Line component removed to prevent uniform errors
 
 // 中央控制台组件
 function CentralControlHub({ realTimeData }: { realTimeData: any }) {
@@ -109,7 +109,7 @@ function ActiveConnectionTower({ realTimeData }: { realTimeData: any }) {
             color="#00f5ff"
             transparent
             opacity={1 - i * 0.08}
-            side={DoubleSide}
+            side={2}
           />
         </mesh>
       ))}
@@ -371,7 +371,7 @@ function FirewallFortress({ realTimeData }: { realTimeData: any }) {
         />
       </mesh>
 
-      {/* 防火墙状态显示 */}
+      {/* 防火墙状态显��� */}
       <Text
         position={[0, 2.5, 0]}
         fontSize={0.15}

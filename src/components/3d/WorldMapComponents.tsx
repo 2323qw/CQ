@@ -1,6 +1,7 @@
 import React, { useRef, useMemo, useCallback } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Text, Line, Html } from "@react-three/drei";
+import { Text, Html } from "@react-three/drei";
+// Line component removed to prevent uniform errors
 import {
   Group,
   Vector3,
@@ -331,7 +332,7 @@ const OPTIMIZED_WORLD_MAP_DATA = {
     },
   ],
 
-  // 优化的威胁源分布 - 错开位置，避免与数据中心重叠
+  // 优化的威胁���分布 - 错开位置，避免与数据中心重叠
   threatSources: [
     { position: [25, 2.5, 35], level: 8, type: "botnet", id: "threat-1" },
     { position: [-48, 2.5, 12], level: 6, type: "malware", id: "threat-2" },

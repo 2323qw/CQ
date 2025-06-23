@@ -2,7 +2,6 @@ import React, { useRef, useMemo, useCallback } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import {
   Text,
-  Line,
   Html,
   Sphere,
   Box,
@@ -34,7 +33,6 @@ import {
   Points,
   PointsMaterial,
   AdditiveBlending,
-  DoubleSide,
   BackSide,
   ShaderMaterial,
   TextureLoader,
@@ -368,7 +366,7 @@ export function EnhancedQuantumTower() {
               );
             })}
 
-            {/* 楼层光源 */}
+            {/* ��层光源 */}
             <pointLight
               position={[0, 0, 0]}
               color={quantumTower.accentColor}
@@ -389,7 +387,7 @@ export function EnhancedQuantumTower() {
             emissiveIntensity={0.8}
             transparent
             opacity={0.9}
-            side={DoubleSide}
+            side={2}
           />
         </mesh>
 
@@ -402,7 +400,7 @@ export function EnhancedQuantumTower() {
             emissiveIntensity={0.4}
             transparent
             opacity={0.3}
-            side={DoubleSide}
+            side={2}
           />
         </mesh>
       </group>
@@ -780,6 +778,17 @@ function EnhancedConnectionPoints({
                 opacity={0.7}
               />
             </mesh>
+
+            {/* Disabled Line component to prevent uniform errors */}
+            {/* <group>
+              <Line
+                points={points}
+                color={connectionColor}
+                lineWidth={2 + connection.strength * 3}
+                transparent
+                opacity={connection.opacity}
+              />
+            </group> */}
           </group>
         );
       })}
@@ -787,9 +796,6 @@ function EnhancedConnectionPoints({
   );
 }
 
-/**
- * 神经网络连接矩阵
- */
 function NeuralConnectionMatrix({ nodes }: { nodes: any[] }) {
   const connectionsRef = useRef<Group>(null);
 
@@ -891,7 +897,7 @@ function NeuralConnection({ connection }: { connection: any }) {
 }
 
 /**
- * 连接线粒子流
+ * ��接线粒子流
  */
 function ConnectionParticleFlow({
   path,
@@ -1483,7 +1489,7 @@ function EnhancedQuantumShield({
           emissiveIntensity={0.4}
           transparent
           opacity={shield.opacity}
-          side={DoubleSide}
+          side={2}
         />
       </mesh>
 
@@ -1509,7 +1515,7 @@ function EnhancedQuantumShield({
         />
       </mesh>
 
-      {/* 防护罩粒子环 */}
+      {/* 防护罩粒子��� */}
       <ShieldParticleRing
         radius={shield.radius}
         color={shieldColor}

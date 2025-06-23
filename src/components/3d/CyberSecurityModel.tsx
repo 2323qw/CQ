@@ -1,7 +1,8 @@
 import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Mesh, Group, Vector3, Color } from "three";
-import { Text, Line, Sphere, Box } from "@react-three/drei";
+import { Text, Sphere, Box } from "@react-three/drei";
+// Line component removed to prevent uniform errors
 
 // 网络节点组件
 function NetworkNode({
@@ -73,13 +74,13 @@ function DataConnection({
 
   return (
     <group ref={lineRef}>
-      <Line
+      {/* <Line
         points={points}
         color={color}
         lineWidth={2}
         transparent
         opacity={0.6}
-      />
+      /> */}
       {/* 数据包动画 */}
       <mesh
         position={[

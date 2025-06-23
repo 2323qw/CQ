@@ -4,7 +4,15 @@
  */
 
 // API基础配置
-const API_BASE_URL = "http://jq41030xx76.vicp.fun";
+const API_BASE_URL = import.meta.env.DEV
+  ? "" // 开发环境使用代理
+  : "http://jq41030xx76.vicp.fun"; // 生产环境直接连接
+
+console.log("🔧 API配置:", {
+  isDev: import.meta.env.DEV,
+  baseURL: API_BASE_URL || "使用代理",
+  fullURL: `${API_BASE_URL}/api/v1/metrics/`,
+});
 const API_VERSION = "v1";
 const API_PREFIX = `/api/${API_VERSION}`;
 
@@ -19,11 +27,12 @@ export interface SystemMetrics {
   disk_used: number;
   disk_free: number;
   disk_percent: number;
+  disk_is_simulated: boolean;
   net_bytes_sent: number;
   net_bytes_recv: number;
-  load_1min?: number;
-  load_5min?: number;
-  load_15min?: number;
+  load_1min: number | null;
+  load_5min: number | null;
+  load_15min: number | null;
   cpu_alert: boolean;
   memory_alert: boolean;
   disk_alert: boolean;
@@ -195,17 +204,23 @@ class HttpClient {
     options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
     const url = `${API_BASE_URL}${endpoint}`;
+
+    // 添加更多CORS和网络兼容性选项
     const config: RequestInit = {
       ...options,
-      mode: "cors", // 明确设置CORS模式
-      credentials: "omit", // 暂时不发送凭据以避免预检请求问题
+      mode: "cors",
+      credentials: "omit",
       headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
         ...this.authManager.getAuthHeaders(),
         ...options.headers,
       },
-      // 添加超时设置
-      signal: this.createTimeoutSignal(10000), // 10秒超时
+      signal: this.createTimeoutSignal(15000), // 增加到15秒超时
     };
+
+    console.log(`API Request: ${options.method || "GET"} ${url}`);
 
     try {
       const response = await fetch(url, config);
@@ -220,6 +235,9 @@ class HttpClient {
       }
 
       if (!response.ok) {
+        console.error(
+          `API Error: ${response.status} - ${data?.detail || data}`,
+        );
         return {
           error:
             data?.detail || data || `HTTP error! status: ${response.status}`,
@@ -239,12 +257,20 @@ class HttpClient {
         if (error.name === "AbortError") {
           return {
             error: "请求超时，请检查网络连接",
-            code: 0,
+            code: 408,
           };
-        } else if (error.message.includes("Failed to fetch")) {
+        } else if (
+          error.message.includes("Failed to fetch") ||
+          error.message.includes("NetworkError")
+        ) {
           return {
-            error: "无法连接到API服务器，请检查网络连接或稍后重试",
+            error: `无法连接到API服务器 (${API_BASE_URL})，可能原因：
+            1. 网络连接问题
+            2. CORS跨域限制
+            3. API服务器不可访问
+            4. 防火墙阻止连接`,
             code: 0,
+            message: "Connection failed",
           };
         } else {
           return {
@@ -391,15 +417,19 @@ export class ApiService {
     );
   }
 
-  async getCurrentMetrics(): Promise<ApiResponse<any>> {
-    return this.http.get<any>(`${API_PREFIX}/metrics/current/`);
+  async getCurrentMetrics(): Promise<ApiResponse<SystemMetrics>> {
+    return this.http.get<SystemMetrics>(`${API_PREFIX}/metrics/`);
+  }
+
+  async getLatestMetrics(): Promise<ApiResponse<SystemMetrics>> {
+    return this.http.get<SystemMetrics>(`${API_PREFIX}/metrics/`);
   }
 
   async collectMetrics(): Promise<ApiResponse<any>> {
     return this.http.post<any>(`${API_PREFIX}/metrics/collect/`);
   }
 
-  // === 网络接口相关 ===
+  // === 网络接��相关 ===
   async getNetworkInterfaces(params?: {
     start_time?: string;
     end_time?: string;

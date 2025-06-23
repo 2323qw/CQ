@@ -10,9 +10,9 @@ import {
   Points,
   AdditiveBlending,
   MathUtils,
+  DoubleSide,
 } from "three";
-import { Text } from "@react-three/drei";
-// Line component removed to prevent uniform errors
+import { Text, Line } from "@react-three/drei";
 
 // 量子核心组件 - 丰富版
 function QuantumCore() {
@@ -73,7 +73,7 @@ function QuantumCore() {
     <group ref={coreRef}>
       {/* 内层量子核心 */}
       <mesh ref={innerCoreRef}>
-        <icosahedronGeometry args={[0.6, 2]} />
+        <icosahedronGeometry args={[0.4, 2]} />
         <meshStandardMaterial
           color="#ffffff"
           emissive="#00f5ff"
@@ -85,7 +85,7 @@ function QuantumCore() {
 
       {/* 中层核心 */}
       <mesh ref={middleCoreRef}>
-        <dodecahedronGeometry args={[0.8, 0]} />
+        <dodecahedronGeometry args={[0.6, 0]} />
         <meshStandardMaterial
           color="#ff6b00"
           emissive="#ff6b00"
@@ -98,7 +98,7 @@ function QuantumCore() {
 
       {/* 外层核心 */}
       <mesh ref={outerCoreRef}>
-        <icosahedronGeometry args={[1.0, 1]} />
+        <icosahedronGeometry args={[0.8, 1]} />
         <meshStandardMaterial
           color="#00ff88"
           emissive="#00ff88"
@@ -111,7 +111,7 @@ function QuantumCore() {
 
       {/* 第一层脉冲环 */}
       <mesh ref={pulseRing1Ref}>
-        <ringGeometry args={[1.2, 1.6, 32]} />
+        <ringGeometry args={[1.0, 1.3, 32]} />
         <meshBasicMaterial
           color="#00f5ff"
           transparent
@@ -122,7 +122,7 @@ function QuantumCore() {
 
       {/* 第二层脉冲环 */}
       <mesh ref={pulseRing2Ref}>
-        <ringGeometry args={[1.8, 2.2, 32]} />
+        <ringGeometry args={[1.5, 1.8, 32]} />
         <meshBasicMaterial
           color="#ff6b00"
           transparent
@@ -133,7 +133,7 @@ function QuantumCore() {
 
       {/* 第三层脉冲环 */}
       <mesh ref={pulseRing3Ref}>
-        <ringGeometry args={[2.4, 2.8, 32]} />
+        <ringGeometry args={[2.0, 2.3, 32]} />
         <meshBasicMaterial
           color="#00ff88"
           transparent
@@ -176,14 +176,14 @@ function AdvancedDefenseMatrix() {
     const nodesPerLayer = [6, 8, 10, 12];
 
     for (let layer = 0; layer < layers; layer++) {
-      const radius = 3 + layer * 1.8;
+      const radius = 2.8 + layer * 1.4;
       const nodeCount = nodesPerLayer[layer];
       const layerNodes = [];
 
       for (let i = 0; i < nodeCount; i++) {
         const angle = (i / nodeCount) * Math.PI * 2;
-        const yOffset = (layer - 1.5) * 1.2;
-        const yVariation = Math.sin(angle * 3) * 0.5;
+        const yOffset = (layer - 1.5) * 0.9;
+        const yVariation = Math.sin(angle * 3) * 0.3;
 
         layerNodes.push({
           position: [
@@ -199,7 +199,7 @@ function AdvancedDefenseMatrix() {
                 : layer === 2
                   ? "#00ff88"
                   : "#ff00ff",
-          size: 0.18 - layer * 0.02,
+          size: 0.14 - layer * 0.015,
           type:
             layer === 0
               ? "core"
@@ -267,65 +267,69 @@ function AdvancedDefenseMatrix() {
       )}
 
       {/* 层间连接线 */}
-      {nodeNetworks.map((layer, layerIndex) =>
-        layer.map((node, nodeIndex) => {
-          const nextNodeIndex = (nodeIndex + 1) % layer.length;
-          const nextNode = layer[nextNodeIndex];
-          return (
-            <></>
-            /* <Line
-              key={`layer-${layerIndex}-${nodeIndex}`}
-              points={[
-                new Vector3(...node.position),
-                new Vector3(...nextNode.position),
-              ]}
-              color={node.color}
-              lineWidth={2}
-              transparent
-              opacity={0.4}
-            /> */
-          );
-        }),
-      )}
+      {nodeNetworks.map((layer, layerIndex) => (
+        <group key={`layer-connections-${layerIndex}`}>
+          {layer.map((node, nodeIndex) => {
+            const nextNodeIndex = (nodeIndex + 1) % layer.length;
+            const nextNode = layer[nextNodeIndex];
+            return (
+              <group key={`layer-${layerIndex}-${nodeIndex}`}>
+                {/* <Line
+                  points={[
+                    new Vector3(...node.position),
+                    new Vector3(...nextNode.position),
+                  ]}
+                  color={node.color}
+                  lineWidth={2}
+                  transparent
+                  opacity={0.4}
+                /> */}
+              </group>
+            );
+          })}
+        </group>
+      ))}
 
       {/* 核心连接线 */}
       {nodeNetworks[0]?.map((node, index) => (
-        <></>
-        /* <Line
-          key={`core-${index}`}
-          points={[new Vector3(0, 0, 0), new Vector3(...node.position)]}
-          color={node.color}
-          lineWidth={1.5}
-          transparent
-          opacity={0.3}
-        /> */
+        <group key={`core-${index}`}>
+          {/* <Line
+            points={[new Vector3(0, 0, 0), new Vector3(...node.position)]}
+            color={node.color}
+            lineWidth={1.5}
+            transparent
+            opacity={0.3}
+          /> */}
+        </group>
       ))}
 
       {/* 跨层连接 */}
-      {nodeNetworks.slice(0, -1).map((layer, layerIndex) =>
-        layer
-          .slice(
-            0,
-            Math.min(layer.length, nodeNetworks[layerIndex + 1]?.length || 0),
-          )
-          .map((node, nodeIndex) => {
-            const nextLayerNode = nodeNetworks[layerIndex + 1]?.[nodeIndex];
-            if (!nextLayerNode) return null;
-            return (
-              <Line
-                key={`cross-${layerIndex}-${nodeIndex}`}
-                points={[
-                  new Vector3(...node.position),
-                  new Vector3(...nextLayerNode.position),
-                ]}
-                color="#ffffff"
-                lineWidth={1}
-                transparent
-                opacity={0.2}
-              />
-            );
-          }),
-      )}
+      {nodeNetworks.slice(0, -1).map((layer, layerIndex) => (
+        <group key={`cross-layer-${layerIndex}`}>
+          {layer
+            .slice(
+              0,
+              Math.min(layer.length, nodeNetworks[layerIndex + 1]?.length || 0),
+            )
+            .map((node, nodeIndex) => {
+              const nextLayerNode = nodeNetworks[layerIndex + 1]?.[nodeIndex];
+              if (!nextLayerNode) return null;
+              return (
+                <Line
+                  key={`cross-${layerIndex}-${nodeIndex}`}
+                  points={[
+                    new Vector3(...node.position),
+                    new Vector3(...nextLayerNode.position),
+                  ]}
+                  color="#ffffff"
+                  lineWidth={1}
+                  transparent
+                  opacity={0.2}
+                />
+              );
+            })}
+        </group>
+      ))}
     </group>
   );
 }
@@ -641,7 +645,7 @@ function MultiLayerProtectionRings() {
     () => [
       // 内层快速环
       ...Array.from({ length: 3 }, (_, i) => ({
-        radius: 6 + i * 0.5,
+        radius: 5.2 + i * 0.4,
         color: "#00f5ff",
         speed: 0.8 - i * 0.1,
         axis: "y" as const,
@@ -650,7 +654,7 @@ function MultiLayerProtectionRings() {
       })),
       // 中层中速环
       ...Array.from({ length: 4 }, (_, i) => ({
-        radius: 8 + i * 0.7,
+        radius: 6.8 + i * 0.6,
         color: "#ff6b00",
         speed: 0.5 - i * 0.05,
         axis: "x" as const,
@@ -659,7 +663,7 @@ function MultiLayerProtectionRings() {
       })),
       // 外层慢速环
       ...Array.from({ length: 3 }, (_, i) => ({
-        radius: 11 + i * 0.9,
+        radius: 9.5 + i * 0.7,
         color: "#00ff88",
         speed: 0.3 - i * 0.05,
         axis: "z" as const,
@@ -878,17 +882,17 @@ export function UltraCyberSecurityModel() {
 
       {/* 外层扫描环系统 */}
       <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[15, 15.1, 128]} />
+        <ringGeometry args={[12, 12.08, 128]} />
         <meshBasicMaterial color="#00ff88" transparent opacity={0.6} />
       </mesh>
 
       <mesh rotation={[0, 0, Math.PI / 3]}>
-        <ringGeometry args={[14, 14.1, 128]} />
+        <ringGeometry args={[11.2, 11.28, 128]} />
         <meshBasicMaterial color="#00f5ff" transparent opacity={0.5} />
       </mesh>
 
       <mesh rotation={[Math.PI / 6, Math.PI / 4, 0]}>
-        <ringGeometry args={[13, 13.1, 128]} />
+        <ringGeometry args={[10.4, 10.48, 128]} />
         <meshBasicMaterial color="#ff6b00" transparent opacity={0.4} />
       </mesh>
     </group>

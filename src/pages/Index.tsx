@@ -3,6 +3,8 @@ import { NetworkChart } from "@/components/dashboard/NetworkChart";
 import { NetworkAnalysis } from "@/components/dashboard/NetworkAnalysis";
 import { AlertsList } from "@/components/dashboard/AlertsList";
 import { ApiStatus } from "@/components/ApiStatus";
+import { ApiConnectionStatus } from "@/components/ApiConnectionStatus";
+import { ApiTestPanel } from "@/components/ApiTestPanel";
 
 export default function Index() {
   return (
@@ -20,8 +22,9 @@ export default function Index() {
         </div>
 
         {/* API状态检查 */}
-        <div className="mb-6">
+        <div className="mb-6 flex items-center gap-4">
           <ApiStatus />
+          <ApiConnectionStatus />
         </div>
 
         <div className="space-y-8">
@@ -45,10 +48,7 @@ export default function Index() {
             <AlertsList />
           </section>
         </div>
-      </div>
 
-      {/* 背景动画效果 */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
         {/* 矩阵雨效果 */}
         {Array.from({ length: 20 }).map((_, i) => (
           <div
@@ -69,6 +69,9 @@ export default function Index() {
           style={{ animationDuration: "8s" }}
         />
       </div>
+
+      {/* API测试面板 */}
+      <ApiTestPanel />
     </div>
   );
 }

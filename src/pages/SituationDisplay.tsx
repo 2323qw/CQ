@@ -103,6 +103,12 @@ import {
   Rows,
 } from "lucide-react";
 import {
+  useSystemMetrics,
+  formatBytes,
+  formatMemory,
+} from "@/hooks/useSystemMetrics";
+import { ApiTestPanel } from "@/components/ApiTestPanel";
+import {
   LineChart,
   Line as RechartsLine,
   XAxis,
@@ -577,121 +583,93 @@ function NetworkTopologyView({
 }
 
 /**
- * 统计图表视图
+ * 统计图表视图 - 专为4分屏优化
  */
 function StatsChartsView({ realTimeData }: { realTimeData: any }) {
+  const { data: systemMetrics, error } = useSystemMetrics({
+    interval: 5000,
+    enabled: true,
+  });
   const chartData = useMemo(() => generateTrendData(), []);
 
   return (
-    <div className="w-full h-full bg-gray-900 rounded-lg p-4 space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
-        {/* CPU使用率图表 */}
-        <div className="bg-gray-800 rounded-lg p-4">
-          <h3 className="text-white font-bold mb-4">CPU使用率趋势</h3>
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis stroke="#9CA3AF" />
-              <YAxis stroke="#9CA3AF" />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#1F2937",
-                  border: "1px solid #374151",
-                  borderRadius: "8px",
-                }}
-              />
-              <Area
-                type="monotone"
-                dataKey="cpu"
-                stroke={DISPLAY_COLORS.neon.blue}
-                fill={`${DISPLAY_COLORS.neon.blue}20`}
-                strokeWidth={2}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+    <div className="w-full h-full flex flex-col p-2 overflow-hidden">
+      {/* 性能综合图表 */}
+      <div className="flex-1 bg-gray-800 rounded-lg p-3 min-h-0">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-white text-sm font-medium">系统性能趋势</h3>
+          {systemMetrics ? (
+            <div className="text-xs text-gray-400">
+              最后更新: {new Date(systemMetrics.timestamp).toLocaleTimeString()}
+            </div>
+          ) : (
+            <div className="text-xs text-red-400">API连接失败</div>
+          )}
         </div>
-
-        {/* 内存使用率图表 */}
-        <div className="bg-gray-800 rounded-lg p-4">
-          <h3 className="text-white font-bold mb-4">内存使用率趋势</h3>
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis stroke="#9CA3AF" />
-              <YAxis stroke="#9CA3AF" />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#1F2937",
-                  border: "1px solid #374151",
-                  borderRadius: "8px",
-                }}
-              />
-              <Area
-                type="monotone"
-                dataKey="memory"
-                stroke={DISPLAY_COLORS.neon.green}
-                fill={`${DISPLAY_COLORS.neon.green}20`}
-                strokeWidth={2}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* 网络延迟图表 */}
-        <div className="bg-gray-800 rounded-lg p-4">
-          <h3 className="text-white font-bold mb-4">网络延迟监控</h3>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis stroke="#9CA3AF" />
-              <YAxis stroke="#9CA3AF" />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#1F2937",
-                  border: "1px solid #374151",
-                  borderRadius: "8px",
-                }}
-              />
-              <RechartsLine
-                type="monotone"
-                dataKey="network"
-                stroke={DISPLAY_COLORS.neon.purple}
-                strokeWidth={2}
-                dot={{ fill: DISPLAY_COLORS.neon.purple, strokeWidth: 2 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* 威胁分布图表 */}
-        <div className="bg-gray-800 rounded-lg p-4">
-          <h3 className="text-white font-bold mb-4">威胁等级分布</h3>
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                dataKey="value"
-                data={[
-                  { name: "低危", value: 35, fill: DISPLAY_COLORS.neon.green },
-                  { name: "中危", value: 25, fill: DISPLAY_COLORS.neon.yellow },
-                  { name: "高危", value: 15, fill: DISPLAY_COLORS.neon.orange },
-                  { name: "严重", value: 5, fill: DISPLAY_COLORS.neon.red },
-                ]}
-                cx="50%"
-                cy="50%"
-                outerRadius={80}
-                label={({ name, percent }) =>
-                  `${name} ${(percent * 100).toFixed(0)}%`
-                }
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#1F2937",
-                  border: "1px solid #374151",
-                  borderRadius: "8px",
-                }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+        <div className="h-full" style={{ height: "calc(100% - 32px)" }}>
+          {systemMetrics ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData}>
+                <CartesianGrid strokeDasharray="2 2" stroke="#374151" />
+                <XAxis
+                  stroke="#9CA3AF"
+                  fontSize={10}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  stroke="#9CA3AF"
+                  fontSize={10}
+                  tickLine={false}
+                  axisLine={false}
+                  width={30}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#1F2937",
+                    border: "1px solid #374151",
+                    borderRadius: "6px",
+                    fontSize: "12px",
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="cpu"
+                  stackId="1"
+                  stroke={DISPLAY_COLORS.neon.blue}
+                  fill={`${DISPLAY_COLORS.neon.blue}40`}
+                  strokeWidth={1.5}
+                  name="CPU使用率"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="memory"
+                  stackId="2"
+                  stroke={DISPLAY_COLORS.neon.green}
+                  fill={`${DISPLAY_COLORS.neon.green}40`}
+                  strokeWidth={1.5}
+                  name="内存使用率"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="network"
+                  stackId="3"
+                  stroke={DISPLAY_COLORS.neon.purple}
+                  fill={`${DISPLAY_COLORS.neon.purple}40`}
+                  strokeWidth={1.5}
+                  name="网络延迟"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <AlertTriangle className="w-16 h-16 text-red-400 mb-4" />
+              <h4 className="text-red-400 font-medium mb-2">
+                无法获取性能数据
+              </h4>
+              <p className="text-gray-400 text-xs">请检查API连接状态</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -713,7 +691,7 @@ function ViewModeSelector({
       id: "3d" as ViewMode,
       label: "3D视图",
       icon: BoxIcon,
-      desc: "立体态势展示",
+      desc: "立���态势展示",
     },
     {
       id: "2d" as ViewMode,
@@ -792,12 +770,12 @@ function OptimizedTopControlBar({
       <div className="flex items-center justify-between h-full px-6">
         <div className="flex items-center space-x-6">
           <button
-            onClick={() => navigate("/overview")}
+            onClick={() => navigate("/")}
             className="neural-button px-4 py-2"
-            title="返回总览"
+            title="返回智能概览"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            返回
+            返回智能概览
           </button>
 
           <div className="text-xl font-bold font-orbitron neon-text">
@@ -992,41 +970,132 @@ function MultiViewContainer({
   if (viewMode === "quad") {
     return (
       <div
-        className="absolute inset-0 grid grid-cols-2 gap-1"
-        style={{ top: "80px", padding: "4px", zIndex: Z_INDEX.canvas }}
+        className="absolute inset-0 grid gap-2 p-3"
+        style={{
+          top: "80px",
+          zIndex: Z_INDEX.canvas,
+          gridTemplateColumns: "1.5fr 1fr",
+          gridTemplateRows: "1.3fr 1fr",
+        }}
       >
-        <div className="bg-gray-900 rounded-lg overflow-hidden">
-          {renderView("3d", { width: "100%", height: "100%" })}
+        {/* 左上 - 3D态势视图 (主要视图，最大) */}
+        <div className="bg-gray-900 rounded-lg overflow-hidden border border-gray-700">
+          <div className="h-full relative">
+            <div className="absolute top-2 left-3 z-10">
+              <span className="text-xs font-medium text-cyan-400 bg-gray-800/90 px-2 py-1 rounded">
+                3D 态势视图
+              </span>
+            </div>
+            {renderView("3d", { width: "100%", height: "100%" })}
+          </div>
         </div>
-        <div className="bg-gray-900 rounded-lg overflow-hidden">
-          {renderView("2d", { width: "100%", height: "100%" })}
+
+        {/* 右上 - 2D网络拓扑 */}
+        <div className="bg-gray-900 rounded-lg overflow-hidden border border-gray-700">
+          <div className="h-full relative">
+            <div className="absolute top-2 left-3 z-10">
+              <span className="text-xs font-medium text-green-400 bg-gray-800/90 px-2 py-1 rounded">
+                网络拓扑
+              </span>
+            </div>
+            {renderView("2d", { width: "100%", height: "100%" })}
+          </div>
         </div>
-        <div className="bg-gray-900 rounded-lg overflow-hidden">
-          {renderView("charts", { width: "100%", height: "100%" })}
+
+        {/* 左下 - 数据图表 */}
+        <div className="bg-gray-900 rounded-lg overflow-hidden border border-gray-700">
+          <div className="h-full relative">
+            <div className="absolute top-2 left-3 z-10">
+              <span className="text-xs font-medium text-purple-400 bg-gray-800/90 px-2 py-1 rounded">
+                性能图表
+              </span>
+            </div>
+            {renderView("charts", { width: "100%", height: "100%" })}
+          </div>
         </div>
-        <div className="bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
-          <div className="text-center text-gray-400">
-            <Monitor className="w-12 h-12 mx-auto mb-4" />
-            <p>系统状态监控</p>
-            <div className="mt-4 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>CPU:</span>
-                <span className="text-neon-blue">
-                  {realTimeData?.cpuUsage || 68}%
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>内存:</span>
-                <span className="text-neon-green">
-                  {realTimeData?.memoryUsage || 78}%
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>网络:</span>
-                <span className="text-neon-purple">
-                  {realTimeData?.networkLatency || 23}ms
-                </span>
-              </div>
+
+        {/* 右下 - 系统监控面板 */}
+        <div className="bg-gray-900 rounded-lg overflow-hidden border border-gray-700">
+          <div className="h-full flex flex-col">
+            <div className="px-3 py-2 border-b border-gray-700">
+              <span className="text-xs font-medium text-orange-400 bg-gray-800/90 px-2 py-1 rounded">
+                系统监控
+              </span>
+            </div>
+            <div className="flex-1 p-3 overflow-y-auto">
+              {systemMetrics ? (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs bg-gray-800/50 rounded px-2 py-1.5">
+                    <span className="flex items-center gap-1">
+                      <Cpu className="w-3 h-3 text-cyan-400" />
+                      CPU:
+                    </span>
+                    <span className="text-cyan-400 font-mono text-xs">
+                      {systemMetrics.cpu_percent.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs bg-gray-800/50 rounded px-2 py-1.5">
+                    <span className="flex items-center gap-1">
+                      <Database className="w-3 h-3 text-green-400" />
+                      内存:
+                    </span>
+                    <span className="text-green-400 font-mono text-xs">
+                      {systemMetrics.memory_percent.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs bg-gray-800/50 rounded px-2 py-1.5">
+                    <span className="flex items-center gap-1">
+                      <HardDrive className="w-3 h-3 text-yellow-400" />
+                      磁盘:
+                    </span>
+                    <span className="text-yellow-400 font-mono text-xs">
+                      {systemMetrics.disk_percent.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs bg-gray-800/50 rounded px-2 py-1.5">
+                    <span className="flex items-center gap-1">
+                      <Wifi className="w-3 h-3 text-purple-400" />
+                      网络:
+                    </span>
+                    <span className="text-purple-400 font-mono text-xs">
+                      {formatBytes(
+                        systemMetrics.net_bytes_recv +
+                          systemMetrics.net_bytes_sent,
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs bg-gray-800/50 rounded px-2 py-1.5">
+                    <span className="flex items-center gap-1">
+                      <Shield className="w-3 h-3 text-red-400" />
+                      警报:
+                    </span>
+                    <span className="text-red-400 font-mono text-xs">
+                      {systemMetrics.cpu_alert ||
+                      systemMetrics.memory_alert ||
+                      systemMetrics.disk_alert
+                        ? "有"
+                        : "无"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs bg-gray-800/50 rounded px-2 py-1.5">
+                    <span className="flex items-center gap-1">
+                      <Activity className="w-3 h-3 text-orange-400" />
+                      时间:
+                    </span>
+                    <span className="text-orange-400 font-mono text-xs">
+                      {new Date(systemMetrics.timestamp).toLocaleTimeString()}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-center">
+                  <AlertTriangle className="w-8 h-8 text-red-400 mb-2" />
+                  <p className="text-red-400 text-xs font-medium mb-1">
+                    API连接失败
+                  </p>
+                  <p className="text-gray-500 text-xs">无法获取系统数据</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1156,7 +1225,12 @@ function Advanced2DPanel({
   const { data: realTimeData } = useRealTimeAPI({
     interval: 1000,
     enabled: !sceneConfig.isPaused,
-    fallbackToMock: true,
+    fallbackToMock: false,
+  });
+
+  const { data: systemMetrics } = useSystemMetrics({
+    interval: 10000,
+    enabled: true,
   });
 
   const [activeTab, setActiveTab] = useState("overview");
@@ -1617,7 +1691,7 @@ function OptimizedLoadingScreen() {
   const loadingSteps = [
     { text: "正在启动3D引擎", icon: "🔮", color: DISPLAY_COLORS.neon.purple },
     { text: "加载网络拓扑数据", icon: "🌐", color: DISPLAY_COLORS.neon.blue },
-    { text: "初始化威胁检测", icon: "🛡️", color: DISPLAY_COLORS.neon.green },
+    { text: "初始化威胁检测", icon: "🛡��", color: DISPLAY_COLORS.neon.green },
     { text: "构建态势模型", icon: "⚡", color: DISPLAY_COLORS.neon.cyan },
     { text: "同步实时数据", icon: "📡", color: DISPLAY_COLORS.neon.orange },
     { text: "启动完成", icon: "✨", color: DISPLAY_COLORS.neon.green },

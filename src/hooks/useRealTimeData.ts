@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { apiService, SystemMetrics } from "@/services/api";
 
 interface RealTimeDataOptions {
   interval?: number;

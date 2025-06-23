@@ -6,12 +6,21 @@ import {
   Eye,
   Zap,
   RefreshCw,
+  Cpu,
+  Database,
+  HardDrive,
+  Wifi,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   useRealTimeData,
   generateThreatMetrics,
 } from "@/hooks/useRealTimeData";
+import {
+  useSystemMetrics,
+  formatMemory,
+  formatBytes,
+} from "@/hooks/useSystemMetrics";
 
 interface MetricCardProps {
   title: string;
@@ -122,46 +131,137 @@ export function ThreatMetrics() {
     enabled: true,
   });
 
+  const {
+    data: systemMetrics,
+    loading: metricsLoading,
+    refetch,
+  } = useSystemMetrics({
+    interval: 10000,
+    enabled: true,
+  });
+
+  // 计算警报状态
+  const alertCount = systemMetrics
+    ? (systemMetrics.cpu_alert ? 1 : 0) +
+      (systemMetrics.memory_alert ? 1 : 0) +
+      (systemMetrics.disk_alert ? 1 : 0)
+    : 0;
+
+  // 如果没有API数据，显示错误状态
+  if (!systemMetrics && !metricsLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-white">实时系统监控</h2>
+          <button
+            onClick={refetch}
+            disabled={metricsLoading}
+            className="neon-button flex items-center space-x-2 px-4 py-2"
+          >
+            <RefreshCw
+              className={cn("w-4 h-4", metricsLoading && "animate-spin")}
+            />
+            <span>重新连接</span>
+          </button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="col-span-full bg-red-900/20 border border-red-500/30 rounded-lg p-6 text-center">
+            <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-red-400 mb-2">
+              API连接失败
+            </h3>
+            <p className="text-red-300 text-sm mb-4">
+              无法获取系统监控数据，请检查网络连接或API服务状态
+            </p>
+            <button
+              onClick={refetch}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+            >
+              重试连接
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const metrics = [
     {
-      title: "实时威胁检测",
-      value: realTimeData.realTimeThreats.toString(),
-      change: Math.floor(Math.random() * 30) - 10,
-      trend: Math.random() > 0.5 ? ("up" as const) : ("down" as const),
-      icon: AlertTriangle,
-      threatLevel:
-        realTimeData.realTimeThreats > 45
-          ? ("critical" as const)
-          : ("high" as const),
-      description: "过去1小时",
+      title: "CPU 使用率",
+      value: systemMetrics
+        ? `${systemMetrics.cpu_percent.toFixed(1)}%`
+        : "连接中...",
+      change: systemMetrics?.cpu_percent > 70 ? 1 : -1,
+      trend:
+        systemMetrics?.cpu_percent > 70 ? ("up" as const) : ("down" as const),
+      icon: Cpu,
+      threatLevel: systemMetrics?.cpu_alert
+        ? ("critical" as const)
+        : systemMetrics && systemMetrics.cpu_percent > 80
+          ? ("high" as const)
+          : systemMetrics && systemMetrics.cpu_percent > 60
+            ? ("medium" as const)
+            : ("low" as const),
+      description: systemMetrics
+        ? `${systemMetrics.cpu_count} 核心`
+        : "获取中...",
     },
     {
-      title: "活跃连接监控",
-      value: realTimeData.activeConnections.toLocaleString(),
-      change: Math.floor(Math.random() * 10) - 5,
-      trend: Math.random() > 0.5 ? ("up" as const) : ("down" as const),
-      icon: Eye,
-      threatLevel: "info" as const,
-      description: "当前连接数",
+      title: "内存使用",
+      value: systemMetrics
+        ? `${systemMetrics.memory_percent.toFixed(1)}%`
+        : "连接中...",
+      change: systemMetrics?.memory_percent > 80 ? 1 : -1,
+      trend:
+        systemMetrics?.memory_percent > 80
+          ? ("up" as const)
+          : ("down" as const),
+      icon: Database,
+      threatLevel: systemMetrics?.memory_alert
+        ? ("critical" as const)
+        : systemMetrics && systemMetrics.memory_percent > 85
+          ? ("high" as const)
+          : systemMetrics && systemMetrics.memory_percent > 70
+            ? ("medium" as const)
+            : ("low" as const),
+      description: systemMetrics
+        ? `${formatMemory(systemMetrics.memory_available)} 可用`
+        : "获取中...",
     },
     {
-      title: "防火墙拦截",
-      value: realTimeData.blockedAttacks.toString(),
-      change: Math.floor(Math.random() * 20) - 5,
+      title: "磁盘使用",
+      value: systemMetrics
+        ? `${systemMetrics.disk_percent.toFixed(1)}%`
+        : "连接中...",
+      change: systemMetrics?.disk_percent > 80 ? 1 : -1,
+      trend:
+        systemMetrics?.disk_percent > 80 ? ("up" as const) : ("down" as const),
+      icon: HardDrive,
+      threatLevel: systemMetrics?.disk_alert
+        ? ("critical" as const)
+        : systemMetrics && systemMetrics.disk_percent > 90
+          ? ("high" as const)
+          : systemMetrics && systemMetrics.disk_percent > 75
+            ? ("medium" as const)
+            : ("low" as const),
+      description: systemMetrics
+        ? `${systemMetrics.disk_free.toFixed(1)}GB 剩余`
+        : "获取中...",
+    },
+    {
+      title: "网络流量",
+      value: systemMetrics
+        ? formatBytes(
+            systemMetrics.net_bytes_recv + systemMetrics.net_bytes_sent,
+          )
+        : "连接中...",
+      change: 0,
       trend: "up" as const,
-      icon: Shield,
-      threatLevel: "medium" as const,
-      description: "今日拦截次数",
-    },
-    {
-      title: "系统性能",
-      value: `${realTimeData.systemHealth}%`,
-      change: Math.floor(Math.random() * 3),
-      trend: "up" as const,
-      icon: Zap,
-      threatLevel:
-        realTimeData.systemHealth > 96 ? ("low" as const) : ("medium" as const),
-      description: "运行稳定性",
+      icon: Wifi,
+      threatLevel: alertCount > 0 ? ("medium" as const) : ("info" as const),
+      description: systemMetrics
+        ? `↓${formatBytes(systemMetrics.net_bytes_recv)} ↑${formatBytes(systemMetrics.net_bytes_sent)}`
+        : "获取中...",
     },
   ];
 
@@ -169,20 +269,40 @@ export function ThreatMetrics() {
     <div className="space-y-4">
       {/* 控制按钮 */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-white">实时威胁监控</h2>
-        <button
-          onClick={updateData}
-          disabled={isUpdating}
-          className="neon-button flex items-center space-x-2 px-4 py-2"
-        >
-          <RefreshCw className={cn("w-4 h-4", isUpdating && "animate-spin")} />
-          <span>{isUpdating ? "更新中..." : "手动刷新"}</span>
-        </button>
+        <div>
+          <h2 className="text-xl font-semibold text-white">实时系统监控</h2>
+          {systemMetrics && (
+            <p className="text-sm text-gray-400 mt-1">
+              最后更新: {new Date(systemMetrics.timestamp).toLocaleTimeString()}
+              {alertCount > 0 && (
+                <span className="ml-2 text-orange-400">
+                  • {alertCount} 个警报
+                </span>
+              )}
+            </p>
+          )}
+        </div>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={refetch}
+            disabled={metricsLoading}
+            className="neon-button flex items-center space-x-2 px-4 py-2"
+          >
+            <RefreshCw
+              className={cn("w-4 h-4", metricsLoading && "animate-spin")}
+            />
+            <span>{metricsLoading ? "更新中..." : "刷新数据"}</span>
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {metrics.map((metric, index) => (
-          <MetricCard key={index} {...metric} isUpdating={isUpdating} />
+          <MetricCard
+            key={index}
+            {...metric}
+            isUpdating={metricsLoading || isUpdating}
+          />
         ))}
       </div>
     </div>

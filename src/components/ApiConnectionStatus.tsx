@@ -13,14 +13,15 @@ export function ApiConnectionStatus() {
   const checkConnection = async () => {
     try {
       setStatus("checking");
-      const response = await apiService.getLatestMetrics();
+      // 使用健康检查端点进行快速连接测试
+      const response = await apiService.healthCheck();
 
-      if (response.data) {
+      if (response.code >= 200 && response.code < 300) {
         setStatus("connected");
         setErrorMessage("");
       } else {
         setStatus("disconnected");
-        setErrorMessage(response.error || "API连接失败");
+        setErrorMessage(response.error || "API健康检查失败");
       }
     } catch (error) {
       setStatus("error");

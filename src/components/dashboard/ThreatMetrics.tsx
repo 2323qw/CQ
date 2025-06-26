@@ -138,7 +138,8 @@ export function ThreatMetrics() {
     data: systemMetrics,
     loading: metricsLoading,
     error: metricsError,
-    refetch,
+    refresh,
+    isUsingMockData,
   } = useSystemMetrics({
     interval: 10000,
     enabled: true,
@@ -151,14 +152,14 @@ export function ThreatMetrics() {
       (systemMetrics.disk_alert ? 1 : 0)
     : 0;
 
-  // 如果没有API数据，显示错误状态
-  if (!systemMetrics && !metricsLoading) {
+  // 如果完全没有数据且不在加载中，显示错误状态
+  if (!systemMetrics && !metricsLoading && !isUsingMockData) {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-white">实时系统监控</h2>
           <button
-            onClick={refetch}
+            onClick={refresh}
             disabled={metricsLoading}
             className="neon-button flex items-center space-x-2 px-4 py-2"
           >
@@ -172,20 +173,20 @@ export function ThreatMetrics() {
         {/* API Failure Notification */}
         <ApiFailureNotification
           error={metricsError || "无法获取系统监控数据"}
-          onRetry={refetch}
+          onRetry={refresh}
           className="mb-4"
         />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="col-span-full bg-red-900/20 border border-red-500/30 rounded-lg p-6 text-center">
             <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-red-400 mb-2">
-              API连接失败
+              连接中断
             </h3>
             <p className="text-red-300 text-sm mb-4">
-              无法获取系统监控数据，请检查网络连接或API服务状态
+              正在尝试连接到API服务器，请稍候...
             </p>
             <button
-              onClick={refetch}
+              onClick={refresh}
               className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition-colors"
             >
               重试连接
@@ -349,6 +350,25 @@ export function ThreatMetrics() {
         />
       )}
 
+      {/* 数据源状态指示器 */}
+      {isUsingMockData && (
+        <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-3 mb-4">
+          <div className="flex items-center space-x-2">
+            <Activity className="w-4 h-4 text-yellow-400" />
+            <p className="text-yellow-300 text-sm">
+              <span className="font-medium">演示模式:</span>{" "}
+              API服务器暂时不可用，正在显示模拟数据以展示系统功能
+            </p>
+            <button
+              onClick={refresh}
+              className="ml-auto text-yellow-400 hover:text-yellow-300 text-sm underline"
+            >
+              重试连接
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 控制按钮 */}
       <div className="flex items-center justify-between">
         <div>
@@ -356,6 +376,9 @@ export function ThreatMetrics() {
           {systemMetrics && (
             <p className="text-sm text-gray-400 mt-1">
               最后更新: {new Date(systemMetrics.timestamp).toLocaleTimeString()}
+              {isUsingMockData && (
+                <span className="ml-2 text-yellow-400">• 演示数据</span>
+              )}
               {alertCount > 0 && (
                 <span className="ml-2 text-orange-400">
                   • {alertCount} 个警报
@@ -366,7 +389,7 @@ export function ThreatMetrics() {
         </div>
         <div className="flex items-center space-x-2">
           <button
-            onClick={refetch}
+            onClick={refresh}
             disabled={metricsLoading}
             className="neon-button flex items-center space-x-2 px-4 py-2"
           >

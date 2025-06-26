@@ -32,6 +32,7 @@ export function useSystemMetrics(options: UseSystemMetricsOptions = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [isUsingMockData, setIsUsingMockData] = useState(false);
 
   console.log(
     `🔧 useSystemMetrics: enabled=${enabled}, loading=${loading}, hasData=${!!data}`,
@@ -85,26 +86,36 @@ export function useSystemMetrics(options: UseSystemMetricsOptions = {}) {
       setLoading(true);
       setError(null);
 
-      // 尝试从API获取数据
+      // 直接调用 /api/v1/metrics/ 不带任何参数
       const response = await apiService.getCurrentMetrics();
 
       if (response.data) {
         setData(response.data);
         setLastUpdated(new Date());
-        console.log("✅ API metrics fetched successfully");
+        setIsUsingMockData(false);
+        setError(null);
+        console.log("✅ API metrics fetched successfully", {
+          timestamp: response.data.timestamp,
+        });
       } else {
-        throw new Error(response.error || "API调用失败");
+        throw new Error(response.error || "API返回空数据");
       }
     } catch (error) {
-      console.warn("⚠️ API failed, using mock data:", error);
+      console.warn("⚠️ API连接失败，切换到模拟数据模式:", error);
 
-      // API失败时生成模拟数据
+      // API失败时生成模拟数据 - 提供更好的用户体验
       const mockData = generateMockMetrics();
       setData(mockData);
       setLastUpdated(new Date());
-      setError(
-        `API连接失败，正在使用模拟数据: ${error instanceof Error ? error.message : "未知错误"}`,
-      );
+      setIsUsingMockData(true);
+      setError(`API暂时不可用，正在使用模拟数据展示系统功能`);
+
+      // 记录详细错误信息供调试用
+      console.error("🔧 API错误详情:", {
+        error: error instanceof Error ? error.message : error,
+        apiUrl: "http://l4flhxbv.beesnat.com/api/v1/metrics/",
+        timestamp: new Date().toISOString(),
+      });
     } finally {
       setLoading(false);
     }
@@ -137,5 +148,6 @@ export function useSystemMetrics(options: UseSystemMetricsOptions = {}) {
     error,
     lastUpdated,
     refresh,
+    isUsingMockData,
   };
 }

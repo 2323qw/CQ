@@ -22,9 +22,30 @@ export default function Index() {
         </div>
 
         {/* API状态检查 */}
-        <div className="mb-6 flex items-center gap-4">
-          <ApiStatus />
-          <ApiConnectionStatus />
+        <div className="mb-6 space-y-4">
+          <div className="flex items-center gap-4">
+            <ApiStatus />
+            <ApiConnectionStatus />
+          </div>
+
+          {/* 用户友好的状态说明 */}
+          <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 animate-pulse"></div>
+              <div>
+                <h3 className="text-blue-300 font-medium mb-1">系统状态说明</h3>
+                <p className="text-blue-400 text-sm leading-relaxed">
+                  系统正在尝试连接到API服务器{" "}
+                  <code className="bg-blue-800/30 px-1 rounded text-xs">
+                    http://l4flhxbv.beesnat.com
+                  </code>
+                  。
+                  如果显示"连接中..."，这是正常的加载过程。如果连接失败，系统会自动切换到演示模式，
+                  使用模拟数据展示所有功能，您仍然可以正常使用和体验系统的所有特性。
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-8">

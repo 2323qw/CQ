@@ -43,6 +43,10 @@ export interface SystemMetrics {
   memory_alert: boolean;
   disk_alert: boolean;
   bandwidth_alert: boolean; // 带宽警报
+  uptime?: number; // 系统运行时间(秒)
+  boot_time?: string; // 系统启动时间
+  process_count?: number; // 进程数量
+  thread_count?: number; // 线程数量
   id: number;
   timestamp: string;
 }
@@ -639,16 +643,47 @@ export class ApiService {
   }
 
   async getCurrentMetrics(): Promise<ApiResponse<SystemMetrics>> {
-    return this.http.get<SystemMetrics>(`${API_PREFIX}/metrics/`);
+    // 直接调用 /api/v1/metrics/ 不带任何参数
+    const response = await this.http.get<SystemMetrics[] | SystemMetrics>(
+      `${API_PREFIX}/metrics/`,
+      undefined,
+      15000,
+    );
+
+    if (response.data) {
+      // 处理不同的返���格式：可能是数组也可能是单个对象
+      let latestMetric: SystemMetrics;
+
+      if (Array.isArray(response.data)) {
+        // 如果是数组，取最后一个（最新的）
+        if (response.data.length > 0) {
+          latestMetric = response.data[response.data.length - 1];
+        } else {
+          return {
+            error: "API返回空数组",
+            code: 404,
+          };
+        }
+      } else {
+        // 如果是单个对象，直接使用
+        latestMetric = response.data;
+      }
+
+      return {
+        data: latestMetric,
+        code: response.code,
+      };
+    } else {
+      return {
+        error: response.error || "没有找到系统指标数据",
+        code: response.code || 404,
+      };
+    }
   }
 
   async getLatestMetrics(): Promise<ApiResponse<SystemMetrics>> {
     // Use longer timeout for metrics data (35 seconds) due to database initialization issues
-    return this.http.get<SystemMetrics>(
-      `${API_PREFIX}/metrics/`,
-      undefined,
-      35000,
-    );
+    return this.getCurrentMetrics();
   }
 
   async collectMetrics(): Promise<ApiResponse<any>> {

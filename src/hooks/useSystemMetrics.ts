@@ -113,7 +113,7 @@ export function useSystemMetrics(options: UseSystemMetricsOptions = {}) {
       // 记录详细错误信息供调试用
       console.error("🔧 API错误详情:", {
         error: error instanceof Error ? error.message : error,
-        apiUrl: "http://l4flhxbv.beesnat.com/api/v1/metrics/",
+        apiUrl: "http://rc56132tg24.vicp.fun/api/v1/metrics/",
         timestamp: new Date().toISOString(),
       });
     } finally {

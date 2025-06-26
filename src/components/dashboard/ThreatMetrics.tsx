@@ -197,13 +197,31 @@ export function ThreatMetrics() {
     );
   }
 
+  // 添加调试日志
+  console.log("🔧 ThreatMetrics Debug:", {
+    hasSystemMetrics: !!systemMetrics,
+    metricsLoading,
+    isUsingMockData,
+    systemMetricsType: typeof systemMetrics,
+    cpuPercent: systemMetrics?.cpu_percent,
+    memoryPercent: systemMetrics?.memory_percent,
+    diskPercent: systemMetrics?.disk_percent,
+    bandwidthPercent: systemMetrics?.bandwidth_percent,
+  });
+
   const metrics = [
     {
       title: "CPU 使用率",
       value:
-        systemMetrics && typeof systemMetrics.cpu_percent === "number"
+        systemMetrics &&
+        typeof systemMetrics.cpu_percent === "number" &&
+        !isNaN(systemMetrics.cpu_percent)
           ? `${systemMetrics.cpu_percent.toFixed(1)}%`
-          : "连接中...",
+          : metricsLoading
+            ? "加载中..."
+            : systemMetrics
+              ? "数据解析中..."
+              : "连接中...",
       change: systemMetrics?.cpu_percent > 70 ? 1 : -1,
       trend:
         systemMetrics?.cpu_percent > 70 ? ("up" as const) : ("down" as const),
@@ -223,9 +241,15 @@ export function ThreatMetrics() {
     {
       title: "内存使用",
       value:
-        systemMetrics && typeof systemMetrics.memory_percent === "number"
+        systemMetrics &&
+        typeof systemMetrics.memory_percent === "number" &&
+        !isNaN(systemMetrics.memory_percent)
           ? `${systemMetrics.memory_percent.toFixed(1)}%`
-          : "连接中...",
+          : metricsLoading
+            ? "加载中..."
+            : systemMetrics
+              ? "数据解析中..."
+              : "连接中...",
       change: systemMetrics?.memory_percent > 80 ? 1 : -1,
       trend:
         systemMetrics?.memory_percent > 80
@@ -247,9 +271,15 @@ export function ThreatMetrics() {
     {
       title: "磁盘使用",
       value:
-        systemMetrics && typeof systemMetrics.disk_percent === "number"
+        systemMetrics &&
+        typeof systemMetrics.disk_percent === "number" &&
+        !isNaN(systemMetrics.disk_percent)
           ? `${systemMetrics.disk_percent.toFixed(1)}%`
-          : "连接中...",
+          : metricsLoading
+            ? "加载中..."
+            : systemMetrics
+              ? "数据解析中..."
+              : "连接中...",
       change: systemMetrics?.disk_percent > 80 ? 1 : -1,
       trend:
         systemMetrics?.disk_percent > 80 ? ("up" as const) : ("down" as const),
@@ -269,9 +299,15 @@ export function ThreatMetrics() {
     {
       title: "带宽使用情况",
       value:
-        systemMetrics && typeof systemMetrics.bandwidth_percent === "number"
+        systemMetrics &&
+        typeof systemMetrics.bandwidth_percent === "number" &&
+        !isNaN(systemMetrics.bandwidth_percent)
           ? `${systemMetrics.bandwidth_percent.toFixed(1)}%`
-          : "连接中...",
+          : metricsLoading
+            ? "加载中..."
+            : systemMetrics
+              ? "数据解析中..."
+              : "连接中...",
       change: (() => {
         if (
           !systemMetrics ||
@@ -345,7 +381,7 @@ export function ThreatMetrics() {
       {metricsError && (
         <ApiFailureNotification
           error={metricsError}
-          onRetry={refetch}
+          onRetry={refresh}
           className="mb-4"
         />
       )}

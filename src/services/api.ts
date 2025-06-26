@@ -652,6 +652,7 @@ export class ApiService {
     // 直接调用 /api/v1/metrics/ 不带任何参数
     const response = await this.http.get<
       { metrics: SystemMetrics[] } | SystemMetrics[] | SystemMetrics
+<<<<<<< Updated upstream
     >(`${API_PREFIX}/metrics/`, undefined, 10000);
 
     if (response.data) {
@@ -663,6 +664,26 @@ export class ApiService {
         const metricsArray = response.data.metrics;
         if (Array.isArray(metricsArray) && metricsArray.length > 0) {
           latestMetric = metricsArray[metricsArray.length - 1];
+=======
+    >(`${API_PREFIX}/metrics/`, undefined, 15000);
+
+    if (response.data) {
+      // 处理不同的返回格式
+      let latestMetric: SystemMetrics;
+
+      // 检查是否是包装格式 {"metrics": [...]}
+      if (
+        response.data &&
+        typeof response.data === "object" &&
+        "metrics" in response.data
+      ) {
+        const wrappedData = response.data as { metrics: SystemMetrics[] };
+        if (
+          Array.isArray(wrappedData.metrics) &&
+          wrappedData.metrics.length > 0
+        ) {
+          latestMetric = wrappedData.metrics[wrappedData.metrics.length - 1];
+>>>>>>> Stashed changes
         } else {
           return {
             error: "API返回空的metrics数组",
@@ -670,7 +691,11 @@ export class ApiService {
           };
         }
       } else if (Array.isArray(response.data)) {
+<<<<<<< Updated upstream
         // 格式: [...]
+=======
+        // 如果是直接数组，取最后一个（最新的）
+>>>>>>> Stashed changes
         if (response.data.length > 0) {
           latestMetric = response.data[response.data.length - 1];
         } else {
@@ -680,6 +705,7 @@ export class ApiService {
           };
         }
       } else {
+<<<<<<< Updated upstream
         // 格式: {...} (单个对象)
         latestMetric = response.data;
       }
@@ -688,6 +714,17 @@ export class ApiService {
         cpu: latestMetric.cpu_percent,
         memory: latestMetric.memory_percent,
         disk: latestMetric.disk_percent,
+=======
+        // 如果是单个对象，直接使用
+        latestMetric = response.data as SystemMetrics;
+      }
+
+      console.log("🔧 API解析后的指标数据:", {
+        cpu_percent: latestMetric.cpu_percent,
+        memory_percent: latestMetric.memory_percent,
+        disk_percent: latestMetric.disk_percent,
+        bandwidth_percent: latestMetric.bandwidth_percent,
+>>>>>>> Stashed changes
         timestamp: latestMetric.timestamp,
       });
 

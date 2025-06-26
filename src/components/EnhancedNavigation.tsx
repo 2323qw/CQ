@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { useDataSource } from "@/contexts/DataSourceContext";
+
 import { useEffect, useState } from "react";
 import {
   Shield,
@@ -403,7 +403,6 @@ export function EnhancedNavigation({
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { isApiMode } = useDataSource();
   const [userRole, setUserRole] = useState("");
   const [userColor, setUserColor] = useState("");
   const [expandedGroups, setExpandedGroups] = useState<string[]>([
@@ -580,7 +579,7 @@ export function EnhancedNavigation({
     }))
     .filter((group) => group.items.length > 0);
 
-  // 获取最终显示的分组（考虑搜索）
+  // 获取最终显示的分组（考虑搜���）
   const displayGroups = getFilteredGroups();
 
   // 更新最后活跃时间
@@ -755,7 +754,7 @@ export function EnhancedNavigation({
                 className={`w-2 h-2 rounded-full ${isOnline ? "bg-green-400" : "bg-red-400"} animate-pulse`}
               />
               <span className="text-xs text-muted-foreground">
-                {isOnline ? (isApiMode ? "API模式" : "模拟模式") : "离线模式"}
+                {isOnline ? "API模式" : "离线模式"}
               </span>
             </div>
             <div className="flex items-center gap-3">

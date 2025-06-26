@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { DataSourceProvider } from "@/contexts/DataSourceContext";
 import { NavigationProvider } from "@/contexts/NavigationContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { EnhancedNavigation } from "@/components/EnhancedNavigation";
@@ -360,13 +359,11 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <DataSourceProvider>
-          <NavigationProvider>
-            <KeyboardShortcuts />
-            <AppLayout />
-            <ToastContainer />
-          </NavigationProvider>
-        </DataSourceProvider>
+        <NavigationProvider>
+          <KeyboardShortcuts />
+          <AppLayout />
+          <ToastContainer />
+        </NavigationProvider>
       </AuthProvider>
     </BrowserRouter>
   );

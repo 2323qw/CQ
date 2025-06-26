@@ -1,6 +1,24 @@
 import { useState, useEffect, useCallback } from "react";
 import { apiService, SystemMetrics } from "@/services/api";
-import { useDataSource } from "@/contexts/DataSourceContext";
+
+// 工具函数
+export function formatBytes(bytes: number): string {
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${(bytes / Math.pow(k, i)).toFixed(1)} ${sizes[i]}`;
+}
+
+export function formatMemory(mb: number): string {
+  if (mb < 1024) return `${mb.toFixed(1)} MB`;
+  return `${(mb / 1024).toFixed(1)} GB`;
+}
+
+export function formatBandwidth(mbps: number): string {
+  if (mbps < 1000) return `${mbps.toFixed(1)} Mbps`;
+  return `${(mbps / 1000).toFixed(1)} Gbps`;
+}
 
 interface UseSystemMetricsOptions {
   interval?: number;
@@ -9,7 +27,6 @@ interface UseSystemMetricsOptions {
 
 export function useSystemMetrics(options: UseSystemMetricsOptions = {}) {
   const { interval = 5000, enabled = true } = options;
-  const { isMockMode, dataSource } = useDataSource();
 
   const [data, setData] = useState<SystemMetrics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -17,7 +34,7 @@ export function useSystemMetrics(options: UseSystemMetricsOptions = {}) {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   console.log(
-    `🔧 useSystemMetrics: mode=${dataSource}, enabled=${enabled}, loading=${loading}, hasData=${!!data}`,
+    `🔧 useSystemMetrics: enabled=${enabled}, loading=${loading}, hasData=${!!data}`,
   );
 
   // Generate mock system metrics
@@ -48,11 +65,15 @@ export function useSystemMetrics(options: UseSystemMetricsOptions = {}) {
       load_1min: Math.random() * 2,
       load_5min: Math.random() * 2,
       load_15min: Math.random() * 2,
-      cpu_alert: Math.random() > 0.8, // 20% chance of alert
-      memory_alert: Math.random() > 0.85, // 15% chance of alert
-      disk_alert: Math.random() > 0.9, // 10% chance of alert
-      bandwidth_alert: bandwidthPercent > 80, // Alert when > 80% bandwidth used
-      id: Date.now(),
+      uptime: Math.floor(Math.random() * 1000000), // Random uptime in seconds
+      boot_time: new Date(
+        Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000,
+      ).toISOString(),
+      process_count: Math.floor(Math.random() * 200) + 100, // 100-300 processes
+      thread_count: Math.floor(Math.random() * 1000) + 500, // 500-1500 threads
+      cpu_alert: Math.random() > 0.8, // 20% chance of CPU alert
+      memory_alert: Math.random() > 0.85, // 15% chance of memory alert
+      disk_alert: Math.random() > 0.9, // 10% chance of disk alert
       timestamp: now,
     };
   }, []);
@@ -60,126 +81,61 @@ export function useSystemMetrics(options: UseSystemMetricsOptions = {}) {
   const fetchMetrics = useCallback(async () => {
     if (!enabled) return;
 
-    // If in mock mode, generate mock data
-    if (isMockMode) {
+    try {
       setLoading(true);
       setError(null);
 
-      // Simulate network delay
-      setTimeout(
-        () => {
-          const mockData = generateMockMetrics();
-          setData(mockData);
-          setLastUpdated(new Date());
-          setLoading(false);
-          console.log("✅ 模拟数据生成成功:", mockData);
-        },
-        200 + Math.random() * 300,
-      ); // 200-500ms delay
-      return;
-    }
-
-    try {
-      setError(null);
-      console.log("🔄 正在获取API数据...");
-      const response = await apiService.getLatestMetrics();
-
-      console.log("📥 API响应:", {
-        hasData: !!response.data,
-        error: response.error,
-        code: response.code,
-        dataType: typeof response.data,
-        dataKeys: response.data ? Object.keys(response.data) : [],
-      });
+      // 尝试从API获取数据
+      const response = await apiService.getCurrentMetrics();
 
       if (response.data) {
         setData(response.data);
         setLastUpdated(new Date());
-        console.log("✅ API数据获取成功:", response.data);
+        console.log("✅ API metrics fetched successfully");
       } else {
-        throw new Error(response.error || "API返回数据为空");
+        throw new Error(response.error || "API调用失败");
       }
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to fetch metrics";
-      console.error("❌ API数据获取失败:", errorMessage);
+    } catch (error) {
+      console.warn("⚠️ API failed, using mock data:", error);
 
-      // Provide helpful error message with suggestion to use mock mode
-      if (
-        errorMessage.includes("aborted") ||
-        errorMessage.includes("timeout")
-      ) {
-        setError(
-          "API请求超时，服务器响应缓慢。建议切换到模拟模式以查看系统功能。",
-        );
-      } else if (
-        errorMessage.includes("Database Error") ||
-        errorMessage.includes("数据库")
-      ) {
-        setError(
-          "服务器数据库正在初始化或维护中，请稍后重试或切换到模拟模式。",
-        );
-      } else if (
-        errorMessage.includes("服务器错误") ||
-        errorMessage.includes("500")
-      ) {
-        setError("服务器遇到内部错误，建议切换到模拟模式以正常使用系统功能。");
-      } else {
-        setError(`API连接失败: ${errorMessage}`);
-      }
-      setData(null);
-      setLastUpdated(null);
+      // API失败时生成模拟数据
+      const mockData = generateMockMetrics();
+      setData(mockData);
+      setLastUpdated(new Date());
+      setError(
+        `API连接失败，正在使用模拟数据: ${error instanceof Error ? error.message : "未知错误"}`,
+      );
     } finally {
       setLoading(false);
     }
-  }, [enabled, isMockMode, generateMockMetrics]);
+  }, [enabled, generateMockMetrics]);
 
-  // 初始加载
   useEffect(() => {
+    if (!enabled) {
+      setLoading(false);
+      return;
+    }
+
+    // 立即获取一次数据
+    fetchMetrics();
+
+    // 设置定时器
+    const timer = setInterval(fetchMetrics, interval);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [fetchMetrics, interval, enabled]);
+
+  const refresh = useCallback(() => {
     fetchMetrics();
   }, [fetchMetrics]);
-
-  // 定时更新
-  useEffect(() => {
-    if (!enabled) return;
-
-    const timer = setInterval(fetchMetrics, interval);
-    return () => clearInterval(timer);
-  }, [fetchMetrics, interval, enabled]);
 
   return {
     data,
     loading,
     error,
     lastUpdated,
-    refetch: fetchMetrics,
+    refresh,
   };
-}
-
-// 格式化辅助函数
-export function formatBytes(bytes: number): string {
-  if (bytes === 0) return "0 B";
-
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
-}
-
-export function formatMemory(mb: number): string {
-  if (mb < 1024) {
-    return `${mb.toFixed(1)} MB`;
-  }
-  return `${(mb / 1024).toFixed(1)} GB`;
-}
-
-export function formatBandwidth(mbps: number): string {
-  if (mbps < 1) {
-    return `${(mbps * 1000).toFixed(0)} Kbps`;
-  } else if (mbps < 1000) {
-    return `${mbps.toFixed(1)} Mbps`;
-  } else {
-    return `${(mbps / 1000).toFixed(2)} Gbps`;
-  }
 }

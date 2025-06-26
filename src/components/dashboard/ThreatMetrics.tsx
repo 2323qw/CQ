@@ -24,8 +24,6 @@ import {
   formatBandwidth,
 } from "@/hooks/useSystemMetrics";
 import { ApiFailureNotification } from "@/components/ApiFailureNotification";
-import { DataSourceToggle } from "@/components/DataSourceToggle";
-import { useDataSource } from "@/contexts/DataSourceContext";
 
 interface MetricCardProps {
   title: string;
@@ -127,8 +125,6 @@ function MetricCard({
 }
 
 export function ThreatMetrics() {
-  const { isApiMode, isMockMode } = useDataSource();
-
   const {
     data: realTimeData,
     isUpdating,
@@ -381,15 +377,11 @@ export function ThreatMetrics() {
           </button>
         </div>
 
-        {/* Data source toggle when in API mode but no data */}
-        {isApiMode && !systemMetrics && !metricsLoading && (
-          <DataSourceToggle showLabel={true} size="md" variant="full" />
-        )}
+        {/* Data source toggle removed - now only API mode */}
       </div>
 
-      {/* Show suggestion if API mode but all metrics show "connecting" */}
-      {isApiMode &&
-        systemMetrics &&
+      {/* Show suggestion if all metrics show "connecting" */}
+      {systemMetrics &&
         !systemMetrics.cpu_percent &&
         !systemMetrics.memory_percent &&
         !systemMetrics.disk_percent && (
@@ -398,10 +390,9 @@ export function ThreatMetrics() {
               <div>
                 <p className="text-blue-300 font-medium">API数据解析中...</p>
                 <p className="text-blue-400 text-sm">
-                  如果持续显示"连接中"，建议切换到模拟模式查看系统功能
+                  正在从API获取系统指标数据，请稍候...
                 </p>
               </div>
-              <DataSourceToggle showLabel={true} size="sm" />
             </div>
           </div>
         )}

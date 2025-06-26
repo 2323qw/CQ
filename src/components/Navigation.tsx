@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { useDataSource } from "@/contexts/DataSourceContext";
+
 import { useEffect, useState } from "react";
 import {
   Shield,
@@ -103,7 +103,6 @@ export function Navigation({
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { isApiMode } = useDataSource();
   const [userRole, setUserRole] = useState("");
   const [userColor, setUserColor] = useState("");
   const [expandedGroups, setExpandedGroups] = useState<string[]>([
@@ -203,7 +202,7 @@ export function Navigation({
           isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
         )}
       >
-        {/* 顶部 Logo 区域 */}
+        {/* ���部 Logo 区域 */}
         <div className="p-6 border-b border-matrix-border">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -234,12 +233,8 @@ export function Navigation({
         <div className="p-4 border-b border-matrix-border/50">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div
-                className={`w-2 h-2 rounded-full ${isApiMode ? "bg-green-400" : "bg-amber-400"} animate-pulse`}
-              ></div>
-              <span className="text-xs text-muted-foreground">
-                {isApiMode ? "API模式" : "模拟模式"}
-              </span>
+              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+              <span className="text-xs text-muted-foreground">API模式</span>
             </div>
             <div className="flex items-center gap-1">
               <Bell className="w-4 h-4 text-amber-400" />

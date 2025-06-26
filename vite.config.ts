@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     proxy: {
       "/api": {
-        target: "http://l4flhxbv.beesnat.com",
+        target: "http://rc56132tg24.vicp.fun",
         changeOrigin: true,
         secure: false,
         configure: (proxy, _options) => {

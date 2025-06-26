@@ -6,12 +6,13 @@
 // API基础配置
 const API_BASE_URL = import.meta.env.DEV
   ? "" // 开发环境使用代理
-  : "http://jq41030xx76.vicp.fun"; // 生产环境直接连接
+  : "http://l4flhxbv.beesnat.com"; // 生产环境直接连接
 
 console.log("🔧 API配置:", {
   isDev: import.meta.env.DEV,
   baseURL: API_BASE_URL || "使用代理",
   fullURL: `${API_BASE_URL}/api/v1/metrics/`,
+  proxyTarget: "http://l4flhxbv.beesnat.com",
 });
 const API_VERSION = "v1";
 const API_PREFIX = `/api/${API_VERSION}`;
@@ -30,12 +31,18 @@ export interface SystemMetrics {
   disk_is_simulated: boolean;
   net_bytes_sent: number;
   net_bytes_recv: number;
+  bandwidth_total: number; // 总带宽 (Mbps)
+  bandwidth_used: number; // 已使用带宽 (Mbps)
+  bandwidth_percent: number; // 带宽使用百分比
+  bandwidth_upload: number; // 上传带宽 (Mbps)
+  bandwidth_download: number; // 下载带宽 (Mbps)
   load_1min: number | null;
   load_5min: number | null;
   load_15min: number | null;
   cpu_alert: boolean;
   memory_alert: boolean;
   disk_alert: boolean;
+  bandwidth_alert: boolean; // 带宽警报
   id: number;
   timestamp: string;
 }
@@ -199,11 +206,166 @@ class HttpClient {
     return controller.signal;
   }
 
+  // 尝试多种策略解析可能损坏的JSON
+  private tryParseJsonWithFallbacks(rawText: string, originalError: any): any {
+    console.error(`🔧 Attempting to fix malformed JSON...`);
+
+    // Strategy 1: Remove BOM and trim whitespace
+    try {
+      const cleaned = rawText.replace(/^\uFEFF/, "").trim();
+      const result = JSON.parse(cleaned);
+      console.log(`✅ Strategy 1 success: Removed BOM/whitespace`);
+      return result;
+    } catch (e) {
+      console.log(`❌ Strategy 1 failed: BOM/whitespace removal didn't help`);
+    }
+
+    // Strategy 2: Extract JSON from the beginning until first closing brace
+    try {
+      let braceCount = 0;
+      let jsonEnd = -1;
+      let started = false;
+
+      for (let i = 0; i < rawText.length; i++) {
+        if (rawText[i] === "{") {
+          braceCount++;
+          started = true;
+        }
+        if (rawText[i] === "}" && started) {
+          braceCount--;
+          if (braceCount === 0) {
+            jsonEnd = i + 1;
+            break;
+          }
+        }
+      }
+
+      if (jsonEnd > 0) {
+        const extracted = rawText.substring(0, jsonEnd);
+        const result = JSON.parse(extracted);
+        console.log(
+          `✅ Strategy 2 success: Extracted JSON from position 0 to ${jsonEnd}`,
+        );
+        const discarded = rawText.substring(jsonEnd);
+        if (discarded.length > 0) {
+          console.log(
+            `🗑️ Discarded extra content (${discarded.length} chars): "${discarded.substring(0, 50)}..."`,
+          );
+        }
+        return result;
+      }
+    } catch (e) {
+      console.log(
+        `❌ Strategy 2 failed: Could not extract complete JSON object - ${e.message}`,
+      );
+    }
+
+    // Strategy 3: Handle JSON followed by HTML (common API pattern)
+    try {
+      // Look for JSON at start followed by HTML tags
+      const htmlMatch = rawText.match(/^(\{.*?\})(?=<|$)/);
+      if (htmlMatch) {
+        const result = JSON.parse(htmlMatch[1]);
+        console.log(
+          `✅ Strategy 3 success: Extracted JSON before HTML content`,
+        );
+        return result;
+      }
+    } catch (e) {
+      console.log(
+        `❌ Strategy 3 failed: JSON-before-HTML pattern didn't work - ${e.message}`,
+      );
+    }
+
+    // Strategy 3.5: Handle truncated server error responses
+    try {
+      // Look for server error pattern that might be truncated
+      if (
+        rawText.includes('"code":500') ||
+        rawText.includes("Database Error")
+      ) {
+        // Try to extract as much meaningful info as possible
+        const codeMatch = rawText.match(/"code":(\d+)/);
+        const messageMatch = rawText.match(/"message":"([^"]+)"/);
+
+        if (codeMatch || messageMatch) {
+          const result = {
+            code: codeMatch ? parseInt(codeMatch[1]) : 500,
+            message: messageMatch ? messageMatch[1] : "Database Error",
+            data: rawText.includes("mapper")
+              ? "Database mapper initialization failed"
+              : "Server error",
+          };
+          console.log(
+            `✅ Strategy 3.5 success: Reconstructed server error from truncated response`,
+          );
+          return result;
+        }
+      }
+    } catch (e) {
+      console.log(
+        `❌ Strategy 3.5 failed: Could not reconstruct server error - ${e.message}`,
+      );
+    }
+
+    // Strategy 4: Try to find and parse the largest JSON-like substring
+    try {
+      const jsonPattern = /\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g;
+      const matches = rawText.match(jsonPattern);
+
+      if (matches && matches.length > 0) {
+        // Try the longest match first
+        const sortedMatches = matches.sort((a, b) => b.length - a.length);
+
+        for (const match of sortedMatches) {
+          try {
+            const result = JSON.parse(match);
+            console.log(`✅ Strategy 3 success: Parsed JSON substring`);
+            return result;
+          } catch (e) {
+            continue;
+          }
+        }
+      }
+    } catch (e) {
+      console.log(`❌ Strategy 4 failed: No valid JSON substring found`);
+    }
+
+    // Strategy 5: Last resort - return error info for debugging
+    console.error(`❌ All JSON parsing strategies failed`);
+    return {
+      error: "Could not parse malformed JSON response",
+      originalError: originalError.message,
+      rawTextSample: rawText.substring(0, 100),
+      textLength: rawText.length,
+      position22Context:
+        rawText.length > 22
+          ? {
+              char: rawText.charAt(22),
+              charCode: rawText.charCodeAt(22),
+              before: rawText.substring(18, 22),
+              after: rawText.substring(22, 26),
+            }
+          : null,
+    };
+  }
+
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
+    customTimeout?: number,
   ): Promise<ApiResponse<T>> {
-    const url = `${API_BASE_URL}${endpoint}`;
+    // In development mode, use relative URLs for proxy
+    const url = API_BASE_URL ? `${API_BASE_URL}${endpoint}` : endpoint;
+
+    // Use appropriate timeouts for different endpoints
+    const timeout =
+      customTimeout ||
+      (endpoint.includes("/health")
+        ? 8000
+        : endpoint.includes("/metrics")
+          ? 25000
+          : 15000);
 
     // 添加更多CORS和网络兼容性选项
     const config: RequestInit = {
@@ -217,30 +379,66 @@ class HttpClient {
         ...this.authManager.getAuthHeaders(),
         ...options.headers,
       },
-      signal: this.createTimeoutSignal(15000), // 增加到15秒超时
+      signal: this.createTimeoutSignal(timeout),
     };
 
     console.log(`API Request: ${options.method || "GET"} ${url}`);
 
     try {
       const response = await fetch(url, config);
+      console.log(
+        `API Response: ${response.status} ${response.statusText} for ${url}`,
+      );
 
-      // 检查响应是否为有效的JSON
-      let data;
+      // Read response as text first to avoid "body stream already read" error
+      const rawText = await response.text();
       const contentType = response.headers.get("content-type");
+
+      let data: any;
       if (contentType && contentType.includes("application/json")) {
-        data = await response.json();
+        try {
+          // Parse the text as JSON
+          data = JSON.parse(rawText);
+          console.log(`✅ Successfully parsed JSON response`);
+        } catch (jsonError) {
+          console.error("❌ Failed to parse JSON response:", jsonError);
+          console.error(
+            `📄 Raw response (${rawText.length} chars):`,
+            rawText.substring(0, 200),
+          );
+
+          // Try multiple strategies to fix the JSON
+          data = this.tryParseJsonWithFallbacks(rawText, jsonError);
+        }
       } else {
-        data = await response.text();
+        // For non-JSON responses, just use the raw text
+        data = rawText;
+        console.log(`📄 Non-JSON response received (${rawText.length} chars)`);
       }
 
+      // Check if the response was successful
       if (!response.ok) {
         console.error(
           `API Error: ${response.status} - ${data?.detail || data}`,
         );
+
+        // Handle specific server errors
+        if (response.status === 500) {
+          const errorMessage =
+            typeof data === "object" && data.message
+              ? `服务器错误: ${data.message}`
+              : typeof data === "string" && data.includes("Database Error")
+                ? "数据库连接错误，请稍后重试或联系系统管理员"
+                : "服务器内部错误，请稍后重试";
+
+          return {
+            error: errorMessage,
+            code: response.status,
+          };
+        }
+
         return {
-          error:
-            data?.detail || data || `HTTP error! status: ${response.status}`,
+          error: data?.detail || data || `HTTP错误! 状态码: ${response.status}`,
           code: response.status,
         };
       }
@@ -256,7 +454,8 @@ class HttpClient {
       if (error instanceof Error) {
         if (error.name === "AbortError") {
           return {
-            error: "请求超时，请检查网络连接",
+            error:
+              "API请求超时。服务器可能正在重启或数据库连接繁忙，请稍后重试或切换到模拟模式查看系统功能。",
             code: 408,
           };
         } else if (
@@ -264,11 +463,13 @@ class HttpClient {
           error.message.includes("NetworkError")
         ) {
           return {
-            error: `无法连接到API服务器 (${API_BASE_URL})，可能原因：
+            error: `无法连接到API服务器，可能原因：
             1. 网络连接问题
-            2. CORS跨域限制
-            3. API服务器不可访问
-            4. 防火墙阻止连接`,
+            2. API服务器不可访问
+            3. CORS跨域限制
+            4. 防火墙阻止连接
+
+建议切换到模拟模式以继续使用系统功能。`,
             code: 0,
             message: "Connection failed",
           };
@@ -290,17 +491,37 @@ class HttpClient {
   async get<T>(
     endpoint: string,
     params?: Record<string, any>,
+    customTimeout?: number,
   ): Promise<ApiResponse<T>> {
-    const url = new URL(`${API_BASE_URL}${endpoint}`);
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          url.searchParams.append(key, String(value));
-        }
-      });
+    // Handle empty base URL in development mode
+    let finalEndpoint = endpoint;
+
+    if (API_BASE_URL) {
+      // Production mode with full base URL
+      const url = new URL(`${API_BASE_URL}${endpoint}`);
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            url.searchParams.append(key, String(value));
+          }
+        });
+      }
+      finalEndpoint = url.pathname + url.search;
+    } else {
+      // Development mode - use relative paths with proxy
+      if (params) {
+        const searchParams = new URLSearchParams();
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            searchParams.append(key, String(value));
+          }
+        });
+        const queryString = searchParams.toString();
+        finalEndpoint = queryString ? `${endpoint}?${queryString}` : endpoint;
+      }
     }
 
-    return this.request<T>(url.pathname + url.search);
+    return this.request<T>(finalEndpoint, {}, customTimeout);
   }
 
   async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
@@ -343,7 +564,7 @@ export class ApiService {
     this.auth = AuthManager.getInstance();
   }
 
-  // === 认证相关 ===
+  // === 认证�������� ===
   async login(
     credentials: LoginCredentials,
   ): Promise<ApiResponse<AuthTokenResponse>> {
@@ -422,7 +643,12 @@ export class ApiService {
   }
 
   async getLatestMetrics(): Promise<ApiResponse<SystemMetrics>> {
-    return this.http.get<SystemMetrics>(`${API_PREFIX}/metrics/`);
+    // Use longer timeout for metrics data (35 seconds) due to database initialization issues
+    return this.http.get<SystemMetrics>(
+      `${API_PREFIX}/metrics/`,
+      undefined,
+      35000,
+    );
   }
 
   async collectMetrics(): Promise<ApiResponse<any>> {
@@ -537,9 +763,31 @@ export class ApiService {
     );
   }
 
+  // === 带宽使用相关 ===
+  async getBandwidthUsage(): Promise<
+    ApiResponse<{
+      total: number;
+      used: number;
+      percent: number;
+      upload: number;
+      download: number;
+      alert: boolean;
+    }>
+  > {
+    return this.http.get<{
+      total: number;
+      used: number;
+      percent: number;
+      upload: number;
+      download: number;
+      alert: boolean;
+    }>(`${API_PREFIX}/bandwidth/usage`);
+  }
+
   // === 健康检查 ===
   async healthCheck(): Promise<ApiResponse<any>> {
-    return this.http.get<any>("/health");
+    // Use correct health check endpoint and longer timeout to avoid aborts
+    return this.http.get<any>(`/health`, undefined, 8000);
   }
 
   // === 数据转换工具 ===
@@ -602,7 +850,7 @@ export class ApiService {
   }
 }
 
-// 导出单例实例
+// ��出单例实例
 export const apiService = new ApiService();
 
 // 导出认证管理器

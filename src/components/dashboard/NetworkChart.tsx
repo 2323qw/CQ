@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
+  Cell,
 } from "recharts";
 import { Activity, TrendingUp, Wifi } from "lucide-react";
 
@@ -36,12 +37,19 @@ const generateNetworkData = () => {
 };
 
 const generateThreatData = () => {
-  return [
-    { name: "DDoS攻击", value: 34, color: "#ff0040" },
-    { name: "恶意软件", value: 28, color: "#ff6600" },
-    { name: "钓鱼攻击", value: 21, color: "#ffcc00" },
-    { name: "暴力破解", value: 17, color: "#39ff14" },
+  // 生成动态数据以确保威胁分布有变化
+  const baseData = [
+    { name: "DDoS攻击", baseValue: 45, color: "#ff4444" },
+    { name: "恶意软件", baseValue: 38, color: "#ff8800" },
+    { name: "钓鱼攻击", baseValue: 29, color: "#ffdd00" },
+    { name: "暴力破解", baseValue: 22, color: "#44ff44" },
+    { name: "异常流量", baseValue: 15, color: "#4488ff" },
   ];
+
+  return baseData.map((item) => ({
+    ...item,
+    value: item.baseValue + Math.floor(Math.random() * 20) - 10, // ±10 变化
+  }));
 };
 
 function CustomTooltip({ active, payload, label }: any) {
@@ -189,11 +197,11 @@ export function NetworkChart() {
                   return null;
                 }}
               />
-              <Bar
-                dataKey="value"
-                radius={[0, 4, 4, 0]}
-                fill={(entry: any) => entry.color}
-              />
+              <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                {threatData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -10,6 +10,7 @@ import {
   Database,
   HardDrive,
   Wifi,
+  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -20,7 +21,11 @@ import {
   useSystemMetrics,
   formatMemory,
   formatBytes,
+  formatBandwidth,
 } from "@/hooks/useSystemMetrics";
+import { ApiFailureNotification } from "@/components/ApiFailureNotification";
+import { DataSourceToggle } from "@/components/DataSourceToggle";
+import { useDataSource } from "@/contexts/DataSourceContext";
 
 interface MetricCardProps {
   title: string;
@@ -122,6 +127,8 @@ function MetricCard({
 }
 
 export function ThreatMetrics() {
+  const { isApiMode, isMockMode } = useDataSource();
+
   const {
     data: realTimeData,
     isUpdating,
@@ -134,6 +141,7 @@ export function ThreatMetrics() {
   const {
     data: systemMetrics,
     loading: metricsLoading,
+    error: metricsError,
     refetch,
   } = useSystemMetrics({
     interval: 10000,
@@ -164,6 +172,13 @@ export function ThreatMetrics() {
             <span>重新连接</span>
           </button>
         </div>
+
+        {/* API Failure Notification */}
+        <ApiFailureNotification
+          error={metricsError || "无法获取系统监控数据"}
+          onRetry={refetch}
+          className="mb-4"
+        />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="col-span-full bg-red-900/20 border border-red-500/30 rounded-lg p-6 text-center">
             <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
@@ -188,9 +203,10 @@ export function ThreatMetrics() {
   const metrics = [
     {
       title: "CPU 使用率",
-      value: systemMetrics
-        ? `${systemMetrics.cpu_percent.toFixed(1)}%`
-        : "连接中...",
+      value:
+        systemMetrics && typeof systemMetrics.cpu_percent === "number"
+          ? `${systemMetrics.cpu_percent.toFixed(1)}%`
+          : "连接中...",
       change: systemMetrics?.cpu_percent > 70 ? 1 : -1,
       trend:
         systemMetrics?.cpu_percent > 70 ? ("up" as const) : ("down" as const),
@@ -202,15 +218,17 @@ export function ThreatMetrics() {
           : systemMetrics && systemMetrics.cpu_percent > 60
             ? ("medium" as const)
             : ("low" as const),
-      description: systemMetrics
-        ? `${systemMetrics.cpu_count} 核心`
-        : "获取中...",
+      description:
+        systemMetrics && typeof systemMetrics.cpu_count === "number"
+          ? `${systemMetrics.cpu_count} 核心`
+          : "获取中...",
     },
     {
       title: "内存使用",
-      value: systemMetrics
-        ? `${systemMetrics.memory_percent.toFixed(1)}%`
-        : "连接中...",
+      value:
+        systemMetrics && typeof systemMetrics.memory_percent === "number"
+          ? `${systemMetrics.memory_percent.toFixed(1)}%`
+          : "连接中...",
       change: systemMetrics?.memory_percent > 80 ? 1 : -1,
       trend:
         systemMetrics?.memory_percent > 80
@@ -224,15 +242,17 @@ export function ThreatMetrics() {
           : systemMetrics && systemMetrics.memory_percent > 70
             ? ("medium" as const)
             : ("low" as const),
-      description: systemMetrics
-        ? `${formatMemory(systemMetrics.memory_available)} 可用`
-        : "获取中...",
+      description:
+        systemMetrics && typeof systemMetrics.memory_available === "number"
+          ? `${formatMemory(systemMetrics.memory_available)} 可用`
+          : "获取中...",
     },
     {
       title: "磁盘使用",
-      value: systemMetrics
-        ? `${systemMetrics.disk_percent.toFixed(1)}%`
-        : "连接中...",
+      value:
+        systemMetrics && typeof systemMetrics.disk_percent === "number"
+          ? `${systemMetrics.disk_percent.toFixed(1)}%`
+          : "连接中...",
       change: systemMetrics?.disk_percent > 80 ? 1 : -1,
       trend:
         systemMetrics?.disk_percent > 80 ? ("up" as const) : ("down" as const),
@@ -244,29 +264,95 @@ export function ThreatMetrics() {
           : systemMetrics && systemMetrics.disk_percent > 75
             ? ("medium" as const)
             : ("low" as const),
-      description: systemMetrics
-        ? `${systemMetrics.disk_free.toFixed(1)}GB 剩余`
-        : "获取中...",
+      description:
+        systemMetrics && typeof systemMetrics.disk_free === "number"
+          ? `${systemMetrics.disk_free.toFixed(1)}GB 剩余`
+          : "获取中...",
     },
     {
-      title: "网络流量",
-      value: systemMetrics
-        ? formatBytes(
-            systemMetrics.net_bytes_recv + systemMetrics.net_bytes_sent,
-          )
-        : "连接中...",
-      change: 0,
-      trend: "up" as const,
-      icon: Wifi,
-      threatLevel: alertCount > 0 ? ("medium" as const) : ("info" as const),
-      description: systemMetrics
-        ? `↓${formatBytes(systemMetrics.net_bytes_recv)} ↑${formatBytes(systemMetrics.net_bytes_sent)}`
-        : "获取中...",
+      title: "带宽使用情况",
+      value:
+        systemMetrics && typeof systemMetrics.bandwidth_percent === "number"
+          ? `${systemMetrics.bandwidth_percent.toFixed(1)}%`
+          : "连接中...",
+      change: (() => {
+        if (
+          !systemMetrics ||
+          typeof systemMetrics.bandwidth_percent !== "number"
+        ) {
+          return 0;
+        }
+
+        // 基于带宽使用率和时间因素计算变化
+        const usage = systemMetrics.bandwidth_percent;
+        const timeVariation = Math.sin(Date.now() / 8000) * 10; // 8秒周期，±10%变化
+
+        return Math.round(
+          usage > 50
+            ? usage - 50 + timeVariation
+            : -(50 - usage) + timeVariation,
+        );
+      })(),
+      trend: (() => {
+        if (
+          !systemMetrics ||
+          typeof systemMetrics.bandwidth_percent !== "number"
+        ) {
+          return "up" as const;
+        }
+
+        const usage = systemMetrics.bandwidth_percent;
+        const timeVariation = Math.sin(Date.now() / 12000) > 0; // 12秒周期变化
+
+        // 多重因素决定趋势
+        if (usage > 80) {
+          return "up" as const; // 高使用率总是上升趋势
+        } else if (usage > 60) {
+          return timeVariation ? ("up" as const) : ("down" as const); // 中等使用率有波动
+        } else if (usage > 30) {
+          // 正常使用率，基于上传下载比例
+          if (
+            systemMetrics.bandwidth_upload &&
+            systemMetrics.bandwidth_download
+          ) {
+            return systemMetrics.bandwidth_upload >
+              systemMetrics.bandwidth_download
+              ? ("up" as const)
+              : ("down" as const);
+          }
+          return timeVariation ? ("up" as const) : ("down" as const);
+        } else {
+          return "down" as const; // 低使用率为下降趋势
+        }
+      })(),
+      icon: Activity,
+      threatLevel: systemMetrics?.bandwidth_alert
+        ? ("critical" as const)
+        : systemMetrics && systemMetrics.bandwidth_percent > 80
+          ? ("high" as const)
+          : systemMetrics && systemMetrics.bandwidth_percent > 60
+            ? ("medium" as const)
+            : ("low" as const),
+      description:
+        systemMetrics &&
+        typeof systemMetrics.bandwidth_used === "number" &&
+        typeof systemMetrics.bandwidth_total === "number"
+          ? `${formatBandwidth(systemMetrics.bandwidth_used)} / ${formatBandwidth(systemMetrics.bandwidth_total)} 可用`
+          : "获取中...",
     },
   ];
 
   return (
     <div className="space-y-4">
+      {/* API Failure Notification */}
+      {metricsError && (
+        <ApiFailureNotification
+          error={metricsError}
+          onRetry={refetch}
+          className="mb-4"
+        />
+      )}
+
       {/* 控制按钮 */}
       <div className="flex items-center justify-between">
         <div>
@@ -294,7 +380,31 @@ export function ThreatMetrics() {
             <span>{metricsLoading ? "更新中..." : "刷新数据"}</span>
           </button>
         </div>
+
+        {/* Data source toggle when in API mode but no data */}
+        {isApiMode && !systemMetrics && !metricsLoading && (
+          <DataSourceToggle showLabel={true} size="md" variant="full" />
+        )}
       </div>
+
+      {/* Show suggestion if API mode but all metrics show "connecting" */}
+      {isApiMode &&
+        systemMetrics &&
+        !systemMetrics.cpu_percent &&
+        !systemMetrics.memory_percent &&
+        !systemMetrics.disk_percent && (
+          <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4 mb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-blue-300 font-medium">API数据解析中...</p>
+                <p className="text-blue-400 text-sm">
+                  如果持续显示"连接中"，建议切换到模拟模式查看系统功能
+                </p>
+              </div>
+              <DataSourceToggle showLabel={true} size="sm" />
+            </div>
+          </div>
+        )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {metrics.map((metric, index) => (

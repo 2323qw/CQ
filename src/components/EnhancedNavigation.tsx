@@ -914,7 +914,7 @@ export function EnhancedNavigation({
                             to={item.path || "#"}
                             onClick={() => {
                               handleMobileNavClick(item.path);
-                              setSelectedMainGroup(null); // 导航后关闭子选项视图
+                              // 保持在子菜单界面，不自动返回主菜���
                             }}
                             className={cn(
                               "flex items-center gap-4 p-4 rounded-xl text-sm transition-all duration-300 group relative overflow-hidden",

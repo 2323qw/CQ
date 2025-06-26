@@ -35,6 +35,13 @@ export const ApiStatus: React.FC<ApiStatusProps> = ({ className = "" }) => {
 
       if (response.data !== undefined && response.code === 200) {
         setStatus("online");
+      } else if (
+        response.code === 408 ||
+        response.error?.includes("请求超时")
+      ) {
+        setStatus("offline"); // Treat timeouts as offline
+      } else if (response.code === 500 || response.error?.includes("数据库")) {
+        setStatus("error"); // Database errors are different from offline
       } else if (response.code === 0 && response.error?.includes("无法连接")) {
         setStatus("offline");
       } else {
@@ -43,9 +50,17 @@ export const ApiStatus: React.FC<ApiStatusProps> = ({ className = "" }) => {
     } catch (error) {
       console.error("API health check failed:", error);
 
-      // 根据错误类型设��不同状态
-      if (error instanceof Error && error.message.includes("Failed to fetch")) {
-        setStatus("offline");
+      // 根据错误类型设置不同状态
+      if (error instanceof Error) {
+        if (
+          error.message.includes("Failed to fetch") ||
+          error.message.includes("请求超时") ||
+          error.name === "AbortError"
+        ) {
+          setStatus("offline");
+        } else {
+          setStatus("error");
+        }
       } else {
         setStatus("error");
       }

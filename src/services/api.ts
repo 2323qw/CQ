@@ -650,18 +650,27 @@ export class ApiService {
 
   async getCurrentMetrics(): Promise<ApiResponse<SystemMetrics>> {
     // 直接调用 /api/v1/metrics/ 不带任何参数
-    const response = await this.http.get<SystemMetrics[] | SystemMetrics>(
-      `${API_PREFIX}/metrics/`,
-      undefined,
-      15000,
-    );
+    const response = await this.http.get<
+      { metrics: SystemMetrics[] } | SystemMetrics[] | SystemMetrics
+    >(`${API_PREFIX}/metrics/`, undefined, 10000);
 
     if (response.data) {
-      // 处理不同的返���格式：可能是数组也可能是单个对象
       let latestMetric: SystemMetrics;
 
-      if (Array.isArray(response.data)) {
-        // 如果是数组，取最后一个（最新的）
+      // 处理不同的API响应格式
+      if (typeof response.data === "object" && "metrics" in response.data) {
+        // 格式: {"metrics": [...]}
+        const metricsArray = response.data.metrics;
+        if (Array.isArray(metricsArray) && metricsArray.length > 0) {
+          latestMetric = metricsArray[metricsArray.length - 1];
+        } else {
+          return {
+            error: "API返回空的metrics数组",
+            code: 404,
+          };
+        }
+      } else if (Array.isArray(response.data)) {
+        // 格式: [...]
         if (response.data.length > 0) {
           latestMetric = response.data[response.data.length - 1];
         } else {
@@ -671,9 +680,16 @@ export class ApiService {
           };
         }
       } else {
-        // 如果是单个对象，直接使用
+        // 格式: {...} (单个对象)
         latestMetric = response.data;
       }
+
+      console.log("🎯 成功解析系统指标数据:", {
+        cpu: latestMetric.cpu_percent,
+        memory: latestMetric.memory_percent,
+        disk: latestMetric.disk_percent,
+        timestamp: latestMetric.timestamp,
+      });
 
       return {
         data: latestMetric,
@@ -681,7 +697,7 @@ export class ApiService {
       };
     } else {
       return {
-        error: response.error || "没有找到系统指标数据",
+        error: response.error || "��有找到系统指标数据",
         code: response.code || 404,
       };
     }

@@ -6,13 +6,13 @@
 // API基础配置
 const API_BASE_URL = import.meta.env.DEV
   ? "" // 开发环境使用代理
-  : "http://l4flhxbv.beesnat.com"; // 生产环境直接连接
+  : "http://rc56132tg24.vicp.fun"; // 生产环境直接连接
 
 console.log("🔧 API配置:", {
   isDev: import.meta.env.DEV,
   baseURL: API_BASE_URL || "使用代理",
   fullURL: `${API_BASE_URL}/api/v1/metrics/`,
-  proxyTarget: "http://l4flhxbv.beesnat.com",
+  proxyTarget: "http://rc56132tg24.vicp.fun",
 });
 const API_VERSION = "v1";
 const API_PREFIX = `/api/${API_VERSION}`;
@@ -362,14 +362,14 @@ class HttpClient {
     // In development mode, use relative URLs for proxy
     const url = API_BASE_URL ? `${API_BASE_URL}${endpoint}` : endpoint;
 
-    // Use appropriate timeouts for different endpoints
+    // Use appropriate timeouts for different endpoints - 缩短超时时间以便更快诊断问题
     const timeout =
       customTimeout ||
       (endpoint.includes("/health")
-        ? 8000
+        ? 5000
         : endpoint.includes("/metrics")
-          ? 25000
-          : 15000);
+          ? 10000
+          : 8000);
 
     // 添加更多CORS和网络兼容性选项
     const config: RequestInit = {
@@ -386,12 +386,18 @@ class HttpClient {
       signal: this.createTimeoutSignal(timeout),
     };
 
-    console.log(`API Request: ${options.method || "GET"} ${url}`);
+    console.log(`🚀 API Request: ${options.method || "GET"} ${url}`, config);
 
     try {
       const response = await fetch(url, config);
       console.log(
-        `API Response: ${response.status} ${response.statusText} for ${url}`,
+        `✅ API Response: ${response.status} ${response.statusText} for ${url}`,
+        {
+          headers: Object.fromEntries(response.headers.entries()),
+          ok: response.ok,
+          type: response.type,
+          url: response.url,
+        },
       );
 
       // Read response as text first to avoid "body stream already read" error
@@ -454,7 +460,7 @@ class HttpClient {
     } catch (error) {
       console.error(`API Request failed for ${url}:`, error);
 
-      // 更详细的错误处理
+      // 更详细的错误处���
       if (error instanceof Error) {
         if (error.name === "AbortError") {
           return {
@@ -644,18 +650,27 @@ export class ApiService {
 
   async getCurrentMetrics(): Promise<ApiResponse<SystemMetrics>> {
     // 直接调用 /api/v1/metrics/ 不带任何参数
-    const response = await this.http.get<SystemMetrics[] | SystemMetrics>(
-      `${API_PREFIX}/metrics/`,
-      undefined,
-      15000,
-    );
+    const response = await this.http.get<
+      { metrics: SystemMetrics[] } | SystemMetrics[] | SystemMetrics
+    >(`${API_PREFIX}/metrics/`, undefined, 10000);
 
     if (response.data) {
-      // 处理不同的返���格式：可能是数组也可能是单个对象
       let latestMetric: SystemMetrics;
 
-      if (Array.isArray(response.data)) {
-        // 如果是数组，取最后一个（最新的）
+      // 处理不同的API响应格式
+      if (typeof response.data === "object" && "metrics" in response.data) {
+        // 格式: {"metrics": [...]}
+        const metricsArray = response.data.metrics;
+        if (Array.isArray(metricsArray) && metricsArray.length > 0) {
+          latestMetric = metricsArray[metricsArray.length - 1];
+        } else {
+          return {
+            error: "API返回空的metrics数组",
+            code: 404,
+          };
+        }
+      } else if (Array.isArray(response.data)) {
+        // 格式: [...]
         if (response.data.length > 0) {
           latestMetric = response.data[response.data.length - 1];
         } else {
@@ -665,9 +680,16 @@ export class ApiService {
           };
         }
       } else {
-        // 如果是单个对象，直接使用
+        // 格式: {...} (单个对象)
         latestMetric = response.data;
       }
+
+      console.log("🎯 成功解析系统指标数据:", {
+        cpu: latestMetric.cpu_percent,
+        memory: latestMetric.memory_percent,
+        disk: latestMetric.disk_percent,
+        timestamp: latestMetric.timestamp,
+      });
 
       return {
         data: latestMetric,
@@ -675,7 +697,7 @@ export class ApiService {
       };
     } else {
       return {
-        error: response.error || "没有找到系统指标数据",
+        error: response.error || "��有找到系统指标数据",
         code: response.code || 404,
       };
     }

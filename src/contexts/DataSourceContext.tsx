@@ -22,9 +22,9 @@ export function DataSourceProvider({
   children: React.ReactNode;
 }) {
   const [dataSource, setDataSourceState] = useState<DataSourceType>(() => {
-    // 从localStorage读取用户之前的选择，默认为mock模式以确保系统可用
+    // 从localStorage读取用户之前的选择，默认为api模式以测试新接口
     const saved = localStorage.getItem(DATA_SOURCE_STORAGE_KEY);
-    return (saved as DataSourceType) || "mock";
+    return (saved as DataSourceType) || "api";
   });
 
   const setDataSource = (source: DataSourceType) => {

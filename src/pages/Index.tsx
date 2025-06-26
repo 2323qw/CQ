@@ -37,7 +37,7 @@ export default function Index() {
                 <p className="text-blue-400 text-sm leading-relaxed">
                   系统正在尝试连接到API服务器{" "}
                   <code className="bg-blue-800/30 px-1 rounded text-xs">
-                    http://l4flhxbv.beesnat.com
+                    http://rc56132tg24.vicp.fun
                   </code>
                   。
                   如果显示"连接中..."，这是正常的加载过程。如果连接失败，系统会自动切换到演示模式，

@@ -362,14 +362,14 @@ class HttpClient {
     // In development mode, use relative URLs for proxy
     const url = API_BASE_URL ? `${API_BASE_URL}${endpoint}` : endpoint;
 
-    // Use appropriate timeouts for different endpoints
+    // Use appropriate timeouts for different endpoints - 缩短超时时间以便更快诊断问题
     const timeout =
       customTimeout ||
       (endpoint.includes("/health")
-        ? 8000
+        ? 5000
         : endpoint.includes("/metrics")
-          ? 25000
-          : 15000);
+          ? 10000
+          : 8000);
 
     // 添加更多CORS和网络兼容性选项
     const config: RequestInit = {
@@ -386,12 +386,18 @@ class HttpClient {
       signal: this.createTimeoutSignal(timeout),
     };
 
-    console.log(`API Request: ${options.method || "GET"} ${url}`);
+    console.log(`🚀 API Request: ${options.method || "GET"} ${url}`, config);
 
     try {
       const response = await fetch(url, config);
       console.log(
-        `API Response: ${response.status} ${response.statusText} for ${url}`,
+        `✅ API Response: ${response.status} ${response.statusText} for ${url}`,
+        {
+          headers: Object.fromEntries(response.headers.entries()),
+          ok: response.ok,
+          type: response.type,
+          url: response.url,
+        },
       );
 
       // Read response as text first to avoid "body stream already read" error
@@ -454,7 +460,7 @@ class HttpClient {
     } catch (error) {
       console.error(`API Request failed for ${url}:`, error);
 
-      // 更详细的错误处理
+      // 更详细的错误处���
       if (error instanceof Error) {
         if (error.name === "AbortError") {
           return {

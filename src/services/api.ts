@@ -6,13 +6,13 @@
 // API基础配置
 const API_BASE_URL = import.meta.env.DEV
   ? "" // 开发环境使用代理
-  : "http://l4flhxbv.beesnat.com"; // 生产环境直接连接
+  : "http://rc56132tg24.vicp.fun"; // 生产环境直接连接
 
 console.log("🔧 API配置:", {
   isDev: import.meta.env.DEV,
   baseURL: API_BASE_URL || "使用代理",
   fullURL: `${API_BASE_URL}/api/v1/metrics/`,
-  proxyTarget: "http://l4flhxbv.beesnat.com",
+  proxyTarget: "http://rc56132tg24.vicp.fun",
 });
 const API_VERSION = "v1";
 const API_PREFIX = `/api/${API_VERSION}`;
